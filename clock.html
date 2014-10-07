@@ -63,6 +63,12 @@ var clock_widget = function(){
 
 	synchronize();
 
+	// seconds toggle
+	clock.el.querySelector('.time').addEventListener('click', function(){
+		var sec_style = clock.el.querySelector('.seconds-wrap').style;
+		sec_style.display = sec_style.display !== 'none' ? 'none' : 'inline';
+	});
+
 };
 
 clock_widget();
