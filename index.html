@@ -50,7 +50,7 @@ var clock_widget = function(){
 		clock.minutes.innerHTML = zeropad( t.getMinutes(), 2 );
 		clock.seconds.innerHTML = zeropad( t.getSeconds(), 2 );
 		clock.weekday.innerHTML = weekday_name;
-		clock.numdate.innerHTML = t.toISOString().split('T')[0];
+		clock.numdate.innerHTML = t.getFullYear()+'-'+('0' + (t.getMonth()+1)).slice(-2)+'-'+('0' + t.getDate()).slice(-2);
 		clock.date.innerHTML = month_name+' '+ t.getDate();
 	}
 
