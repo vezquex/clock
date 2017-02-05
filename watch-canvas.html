@@ -42,13 +42,17 @@ palettes.blue = {
 }
 palettes.body = palettes.black
 palettes.sec = palettes.cyan
-palettes.batt = palettes.green
+palettes.batt_hi = palettes.green
+palettes.batt_mid = palettes.black
+palettes.batt_lo = palettes.red
 palettes.weather = palettes.blue_cyan
 palettes.bluetooth_0 = palettes.red
 palettes.bluetooth_1 = palettes.blue
 
 const locale = "en-us"
 const months = ['JAN.', 'FEB.', 'MAR.', 'APR.', 'MAY', 'JUNE', 'JULY', 'AUG.', 'SEPT', 'OCT.', 'NOV.', 'DEC.']
+
+const _ = void 0
 
 var can = document.getElementById('face')
 const c = can.getContext('2d')
@@ -318,7 +322,7 @@ const fonts = {
 		O: [
 			1,1,1,1,1,
 			1,0,0,0,1,
-			1,0,2,0,1,
+			1,0,0,0,1,
 			1,0,0,0,1,
 			1,1,1,1,1,
 		],
@@ -399,6 +403,13 @@ const fonts = {
 			1,1,0,0,0,
 			1,1,1,1,1,
 		],
+		'█': [
+			1,1,1,1,1,
+			1,1,1,1,1,
+			1,1,1,1,1,
+			1,1,1,1,1,
+			1,1,1,1,1,
+		],
 		'🔋': [
 			0,1,1,1,0,
 			1,1,1,1,1,
@@ -431,9 +442,9 @@ const fonts = {
 			1,0,0,0,1,
 		],
 		'*': [
-			0,1,1,1,0,
+			0,0,1,0,0,
 			0,1,0,1,0,
-			0,1,1,1,0,
+			0,0,1,0,0,
 		],
 		'-': [
 			0,0,0,0,0,
@@ -566,11 +577,11 @@ const fonts = {
 			1,1,1,1,0,
 		],
 		C: [
-			1,1,1,1,1,
+			0,1,1,1,1,
 			1,0,0,0,0,
 			1,0,0,0,0,
 			1,0,0,0,0,
-			1,1,1,1,1,
+			0,1,1,1,1,
 		],
 		D: [
 			1,1,1,1,0,
@@ -650,11 +661,11 @@ const fonts = {
 			1,0,0,0,1,
 		],
 		O: [
-			1,1,1,1,1,
+			0,1,1,1,0,
 			1,0,0,0,1,
-			1,0,2,0,1,
 			1,0,0,0,1,
-			1,1,1,1,1,
+			1,0,0,0,1,
+			0,1,1,1,0,
 		],
 		P: [
 			1,1,1,1,0,
@@ -733,6 +744,13 @@ const fonts = {
 			0,1,0,0,0,
 			1,1,1,1,1,
 		],
+		'…': [
+			0,0,0,0,0,
+			0,0,0,0,0,
+			0,0,0,0,0,
+			0,0,0,0,0,
+			1,0,1,0,1,
+		],
 		'🔋': [
 			0,1,1,1,0,
 			1,1,1,1,1,
@@ -754,6 +772,8 @@ const sym_w = 5
 const g = sym_w + 1
 const slots_h = Math.floor((width - pad_h) / g)
 const slots_v = Math.floor((height - pad_v) / g)
+const tiles_h = Math.ceil(width / g)
+const tiles_v = Math.ceil(height / g)
 
 function symbol(s, x, y, m, p, f){
 	const font = fonts[f]
@@ -783,7 +803,7 @@ function str(s, x, y, m = 1, p = 'body', f = font){
 	}
 }
 
-// const ss = Object.keys(fonts.jag)
+const ss = Object.keys(fonts.jag)
 
 function display(t){
 	const month = months[t.getMonth()]
@@ -800,7 +820,20 @@ function display(t){
 		'-'+
 		zeropad2(t.getDate())
 
-	c.clearRect(0, 0, 512, 512)
+	c.clearRect(0, 0, width, height)
+
+	for(var i = 0; i < tiles_h * tiles_v; ++i){
+		c.fillStyle = 'rgba('+
+			Array.apply(null, Array(3)).map(
+				() => Math.floor(Math.random() * 256)
+			).concat(.1).join()
+			+')'
+		c.fillRect(
+			i % tiles_h * g,
+			Math.floor(i / tiles_h) * g,
+			sym_w, sym_w
+		)
+	}
 
 	var y = 0
 
@@ -815,7 +848,7 @@ function display(t){
 	// 	)
 	// }
 	// y += 3
-	const _ = void 0
+
 	// str(s, x, y, m, p, f)
 	str(month, 10, y)
 	str(weekday.slice(0,3)+'.', 16, y)
@@ -826,29 +859,32 @@ function display(t){
 	// y += 2
 
 	const temperature = Math.floor((t % 864e5) / 864e3)
-	const weathers = ['SNOW', 'RAIN', 'CLOUDS', 'FAIR']
+	const weathers = ['SNOW', 'RAIN', 'FOG', 'CLOUD', 'FAIR', 'SUN']
 	const weather = weathers[Math.floor(temperature * .01 * weathers.length)]
-	str(temperature + '*F ' + weather, 0, y+=2, 2, 'weather')
+	str((temperature + '*F').slice(0, 4) + ' ' + weather, 0, y+=2, 2, 'weather')
 
-	const battery = 101 - Math.floor((t % 864e5) / 864e3)
+	const battery = 100 - Math.floor((t % 864e5) / 864e3)
 	const batt_s = (' ' + battery).slice(-2)
-	str('🔋', 0, y+=3, 2, 'batt')
-	str(batt_s, 1.5, y, 2, 'batt')
+	const batt_c = 'batt_' + ['lo', 'mid', 'hi'][Math.floor(battery * .03)]
+	str('🔋', 0, y+=3, 2, batt_c)
+	str(batt_s+'%', 1.5, y, 2, batt_c)
 
-	const bluetooth = 1 || Math.round((t % 864e5) / 864e5)
+	const bluetooth = 1
 	str(
 		''
-		, 0, y+=2, 2
+		, 5.5, y, 2
 		,'bluetooth_'+bluetooth
 	)
 	str(
-		(bluetooth ? 'PAIRED' : 'UNPAIRED')
-		, 1.5, y, 2
+		(bluetooth ? 'ON' : 'OFF')
+		, 7, y, 2
 		,'bluetooth_'+bluetooth
 	)
 
 	y = 23
-	str('VEZ', 3.5, y, 2, 'red')
+	str('█', 3.5, y, 2, 'red', 'block')
+	str('█', 4.5, y, 2, 'green', 'block')
+	str('█', 5.5, y, 2, 'blue', 'block')
 }
 
 function zeropad2(s){
