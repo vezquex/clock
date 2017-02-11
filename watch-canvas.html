@@ -163,7 +163,7 @@ const fonts = {
 			0,0,1,0,0,
 			0,0,1,0,0,
 			0,0,1,0,0,
-			1,1,1,1,1,
+			0,0,1,0,0,
 		],
 		2: [
 			1,1,1,1,1,
@@ -403,13 +403,7 @@ const fonts = {
 			1,1,0,0,0,
 			1,1,1,1,1,
 		],
-		'█': [
-			1,1,1,1,1,
-			1,1,1,1,1,
-			1,1,1,1,1,
-			1,1,1,1,1,
-			1,1,1,1,1,
-		],
+		'█': [1],
 		'🔋': [
 			0,1,1,1,0,
 			1,1,1,1,1,
@@ -535,11 +529,11 @@ const fonts = {
 			1,1,1,1,0,
 		],
 		6: [
-			1,1,1,1,1,
+			0,1,1,1,0,
 			1,0,0,0,0,
-			1,1,1,1,1,
+			1,1,1,1,0,
 			1,0,0,0,1,
-			1,1,1,1,1,
+			0,1,1,1,0,
 		],
 		7: [
 			1,1,1,1,1,
@@ -744,13 +738,6 @@ const fonts = {
 			0,1,0,0,0,
 			1,1,1,1,1,
 		],
-		'…': [
-			0,0,0,0,0,
-			0,0,0,0,0,
-			0,0,0,0,0,
-			0,0,0,0,0,
-			1,0,1,0,1,
-		],
 		'🔋': [
 			0,1,1,1,0,
 			1,1,1,1,1,
@@ -769,11 +756,13 @@ const fonts = {
 }
 
 const sym_w = 5
+const sym_w2 = sym_w * 2
 const g = sym_w + 1
+const g2 = g * 2
 const slots_h = Math.floor((width - pad_h) / g)
 const slots_v = Math.floor((height - pad_v) / g)
-const tiles_h = Math.ceil(width / g)
-const tiles_v = Math.ceil(height / g)
+const tiles_h = Math.ceil(width / g * .5)
+const tiles_v = Math.ceil(height / g * .5) - 1
 
 function symbol(s, x, y, m, p, f){
 	const font = fonts[f]
@@ -803,7 +792,7 @@ function str(s, x, y, m = 1, p = 'body', f = font){
 	}
 }
 
-const ss = Object.keys(fonts.jag)
+// const ss = Object.keys(fonts.jag)
 
 function display(t){
 	const month = months[t.getMonth()]
@@ -829,9 +818,9 @@ function display(t){
 			).concat(.1).join()
 			+')'
 		c.fillRect(
-			i % tiles_h * g,
-			Math.floor(i / tiles_h) * g,
-			sym_w, sym_w
+			i % tiles_h * g2,
+			Math.floor(i / tiles_h) * g2,
+			sym_w2, sym_w2
 		)
 	}
 
@@ -882,9 +871,9 @@ function display(t){
 	)
 
 	y = 23
-	str('█', 3.5, y, 2, 'red', 'block')
-	str('█', 4.5, y, 2, 'green', 'block')
-	str('█', 5.5, y, 2, 'blue', 'block')
+	str('█', .7, y, 10, 'red', 'block')
+	str('█', .9, y, 10, 'green', 'block')
+	str('█', 1.1, y, 10, 'blue', 'block')
 }
 
 function zeropad2(s){
