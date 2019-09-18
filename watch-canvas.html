@@ -6,48 +6,80 @@
 </title>
 <style type="text/css">
 	body {
-		background: #222;
+		background: #000;
+		color: #FFF;
 		/*margin: 0;*/
-	}
-	#face {
-		background: #B0D0FF;
 	}
 </style>
 
 <canvas id="face"></canvas>
+<br>
+<input id="offset" type="range" max="86400000" step="100000" onChange="synchronize()">
+<br>
+<select id="theme" onChange="setTheme(this.value)"></select>
 
 <script type="text/javascript">
 
 const font = 'jag'
-const palettes = {}
-palettes.black = {
-	1: '#000',
-	2: '#408080',
+let palettes
+const color_palettes = {
+	black: {
+		1: '#000',
+		2: '#408080',
+	},
+	white: {
+		1: '#FFF',
+		2: '#E0FFFF',
+	},
+	red: {
+		1: '#800000',
+	},
+	green: {
+		1: '#008000',
+	},
+	cyan: {
+		1: '#408080',
+		2: '#80C0C0',
+	},
+	blue_cyan: {
+		1: '#0080FF',
+	},
+	blue: {
+		1: '#000080',
+	},
+	sky: {
+		1: '#B0D0FF',
+	},
 }
-palettes.red = {
-	1: '#800000',
+const themes = {
+	day: {
+		background: color_palettes.sky[1],
+		body: color_palettes.black,
+		sec: color_palettes.cyan,
+		batt_hi: color_palettes.green,
+		batt_mid: color_palettes.black,
+		batt_lo: color_palettes.red,
+		weather: color_palettes.blue_cyan,
+		bluetooth_0: color_palettes.red,
+		bluetooth_1: color_palettes.blue,
+	},
+	night: {
+		background: color_palettes.black[1],
+		body: color_palettes.white,
+		sec: color_palettes.cyan,
+		batt_hi: color_palettes.green,
+		batt_mid: color_palettes.white,
+		batt_lo: color_palettes.red,
+		weather: color_palettes.blue_cyan,
+		bluetooth_0: color_palettes.red,
+		bluetooth_1: color_palettes.sky,
+	},
 }
-palettes.green = {
-	1: '#008000',
+for(k in themes){
+	Object.assign(themes[k], color_palettes)
 }
-palettes.cyan = {
-	1: '#408080',
-	2: '#80C0C0',
-}
-palettes.blue_cyan = {
-	1: '#0080FF',
-}
-palettes.blue = {
-	1: '#000080',
-}
-palettes.body = palettes.black
-palettes.sec = palettes.cyan
-palettes.batt_hi = palettes.green
-palettes.batt_mid = palettes.black
-palettes.batt_lo = palettes.red
-palettes.weather = palettes.blue_cyan
-palettes.bluetooth_0 = palettes.red
-palettes.bluetooth_1 = palettes.blue
+document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option>${t}</option>`).join('')
+
 
 const locale = "en-us"
 const months = ['JAN.', 'FEB.', 'MAR.', 'APR.', 'MAY', 'JUNE', 'JULY', 'AUG.', 'SEPT', 'OCT.', 'NOV.', 'DEC.']
@@ -74,23 +106,25 @@ function init(){
 	synchronize()
 }
 
-	// display at the start of each second
+// display at the start of each second
 function synchronize(){
-	const t = new Date//(2017,(new Date).getSeconds() % 12)
+	window.clearTimeout(window.synchronizeTimeout)
+	const offset = Number(document.getElementById('offset').value)
+	const t = new Date(Date.now() + offset)
 	display(t)
 	const r = 1000 - (t % 1000)
-	window.setTimeout(synchronize, r)
+	window.synchronizeTimeout = window.setTimeout(synchronize, r)
 	// console.log(r)
 }
 
 const fonts = {
 	block: {
 		missing: [
-			2,0,0,0,2,
-			0,2,0,2,0,
-			0,0,2,0,0,
-			0,2,0,2,0,
-			2,0,0,0,2,
+			2,2,2,2,2,
+			2,2,0,2,2,
+			2,0,2,0,2,
+			2,2,0,2,2,
+			2,2,2,2,2,
 		],
 		' ': [],
 		'%': [
@@ -421,11 +455,11 @@ const fonts = {
 	},
 	jag: {
 		missing: [
-			2,0,0,0,2,
-			0,2,0,2,0,
-			0,0,2,0,0,
-			0,2,0,2,0,
-			2,0,0,0,2,
+			2,2,2,2,2,
+			2,0,2,2,2,
+			2,0,2,0,2,
+			2,2,2,0,2,
+			2,2,2,2,2,
 		],
 		' ': [],
 		'%': [
@@ -715,7 +749,7 @@ const fonts = {
 			1,0,1,0,1,
 			1,0,1,0,1,
 			1,0,1,0,1,
-			1,1,1,1,1,
+			0,1,0,1,0,
 		],
 		X: [
 			1,0,0,0,1,
@@ -764,11 +798,20 @@ const slots_v = Math.floor((height - pad_v) / g)
 const tiles_h = Math.ceil(width / g * .5)
 const tiles_v = Math.ceil(height / g * .5) - 1
 
+setTheme('day')
+
+function setTheme(theme){
+	palettes = themes[theme]
+	document.getElementById('face').style.backgroundColor = palettes.background
+	synchronize()
+}
+
 function symbol(s, x, y, m, p, f){
 	const font = fonts[f]
 	const bmp = font[s] || font.missing
 	const l = bmp.length
 	var i = 0, b
+	// palettes[p] || console.log('p', p, Object.keys(palettes).join())
 	for(var i = 0; i < l; ++i){
 		b = bmp[i]
 		if(b === 0) continue
@@ -847,18 +890,18 @@ function display(t){
 	str(weekday, 0, y+=5, 2)
 	// y += 2
 
-	const temperature = Math.floor((t % 864e5) / 864e3)
-	const weathers = ['SNOW', 'RAIN', 'FOG', 'CLOUD', 'FAIR', 'SUN']
-	const weather = weathers[Math.floor(temperature * .01 * weathers.length)]
+	const temperature = Math.floor((t % 864e5) / 864e3)+1
+	const weathers = ['SNOW', 'RAIN', 'FOG', 'CLOUD', 'FAIR', 'SUNNY']
+	const weather = weathers[Math.floor(temperature * .0099 * weathers.length)]
 	str((temperature + '*F').slice(0, 4) + ' ' + weather, 0, y+=2, 2, 'weather')
 
 	const battery = 100 - Math.floor((t % 864e5) / 864e3)
 	const batt_s = (' ' + battery).slice(-2)
-	const batt_c = 'batt_' + ['lo', 'mid', 'hi'][Math.floor(battery * .03)]
+	const batt_c = 'batt_' + ['lo', 'mid', 'hi'][Math.floor(battery * .0299)]
 	str('🔋', 0, y+=3, 2, batt_c)
 	str(batt_s+'%', 1.5, y, 2, batt_c)
 
-	const bluetooth = 1
+	const bluetooth = Math.floor(hours / 12)
 	str(
 		''
 		, 5.5, y, 2
