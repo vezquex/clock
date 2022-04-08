@@ -1,6 +1,7 @@
 <!doctype html>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width"/>
+<link id='favicon' rel='shortcut icon'>
 <title>
 Clock
 </title>
@@ -8,12 +9,12 @@ Clock
 body {
 	background: #000;
 	color: #BEBEBE;
-	font-family: monospace;
+	font-family: 'Roboto Mono', 'Consolas', monospace;
 	font-size: 1.5em;
 	margin: 0 auto;
 	padding: .5em;
 }
-.time { font-size: 3.5em; color: #3C3; }
+.time { font-size: 3.5em; color: #3C3; cursor: pointer; }
 .seconds-wrap { font-size: .5em; }
 </style>
 <div class="clock">
@@ -26,6 +27,7 @@ body {
 		<span class="date"></span>
 	</div>
 </div>
+<canvas id='icon-render'></canvas>
 <script>
 var clock_widget = function(){
 	var clock = {};
@@ -40,12 +42,19 @@ var clock_widget = function(){
 	function display(t){
 		var month_name = t.toLocaleString(locale, { month: 'long' });
 		var weekday_name = t.toLocaleString(locale, { weekday: 'long' });
-		clock.hours.innerHTML = zeropad( t.getHours(), 2 );
-		clock.minutes.innerHTML = zeropad( t.getMinutes(), 2 );
+		const hours = clock.hours.innerHTML = zeropad( t.getHours(), 2 );
+		const minutes = clock.minutes.innerHTML = zeropad( t.getMinutes(), 2 );
 		clock.seconds.innerHTML = zeropad( t.getSeconds(), 2 );
 		clock.weekday.innerHTML = weekday_name;
-		clock.numdate.innerHTML = t.getFullYear()+'-'+('0' + (t.getMonth()+1)).slice(-2)+'-'+('0' + t.getDate()).slice(-2);
-		clock.date.innerHTML = month_name+' '+ t.getDate();
+		const numdate = clock.numdate.innerHTML = t.getFullYear()+'-'+('0' + (t.getMonth()+1)).slice(-2)+'-'+('0' + t.getDate()).slice(-2);
+		const date = clock.date.innerHTML = month_name+' '+ t.getDate();
+		document.title = `${hours}:${minutes} ${date}, ${numdate}`
+		const emoji = String.fromCodePoint(
+			((t.getHours() % 12) || 12) + 0x1F54F
+			+ (t.getMinutes() < 30 ? 0 : 12)
+		)
+		ic.fillText(emoji, icon_center, icon_center + 2.5)
+		favicon.href = icon.toDataURL('image/png')
 	}
 
 	// display at the start of each second
@@ -63,6 +72,21 @@ var clock_widget = function(){
 		sec_style.display = sec_style.display !== 'none' ? 'none' : 'inline';
 	});
 };
+
+// icon
+const icon_size = 32
+const icon_center = icon_size / 2
+const favicon = document.getElementById('favicon')
+const icon = document.getElementById('icon-render')
+icon.style.display = 'none'
+const ic = icon.getContext('2d')
+icon.style.width = icon.style.height = icon_size + 'px'
+const scale = window.devicePixelRatio
+icon.height = icon.width = Math.floor(icon_size * scale)
+ic.scale(scale, scale)
+ic.font = '32px sans-serif'
+ic.textAlign = 'center'
+ic.textBaseline = 'middle'
 
 clock_widget();
 
