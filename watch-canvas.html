@@ -1,22 +1,29 @@
 <!doctype html>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width" />
+<link id='favicon' rel='shortcut icon'>
 <title>
 	Watch
 </title>
 <style type="text/css">
-	body {
+	body, input, select {
 		background: #000;
 		color: #FFF;
-		/*margin: 0;*/
+		margin: 0;
+	}
+	input, select {
+		border: 0;
+		width: 130px;
 	}
 </style>
 
 <canvas id="face"></canvas>
 <br>
-<input id="offset" type="range" max="86400000" step="100000" onChange="synchronize()">
+<input id="offset" title="Demo Offset" value="0" type="range" max="86400000" step="100000" onChange="synchronize()">
 <br>
-<select id="theme" onChange="setTheme(this.value)"></select>
+<select id="theme" title="Theme" onChange="setTheme(this.value)"></select>
+<br>
+<canvas id="icon"></canvas>
 
 <script type="text/javascript">
 
@@ -52,18 +59,7 @@ const color_palettes = {
 	},
 }
 const themes = {
-	day: {
-		background: color_palettes.sky[1],
-		body: color_palettes.black,
-		sec: color_palettes.cyan,
-		batt_hi: color_palettes.green,
-		batt_mid: color_palettes.black,
-		batt_lo: color_palettes.red,
-		weather: color_palettes.blue_cyan,
-		bluetooth_0: color_palettes.red,
-		bluetooth_1: color_palettes.blue,
-	},
-	night: {
+	Dark: {
 		background: color_palettes.black[1],
 		body: color_palettes.white,
 		sec: color_palettes.cyan,
@@ -74,11 +70,22 @@ const themes = {
 		bluetooth_0: color_palettes.red,
 		bluetooth_1: color_palettes.sky,
 	},
+	Light: {
+		background: color_palettes.sky[1],
+		body: color_palettes.black,
+		sec: color_palettes.cyan,
+		batt_hi: color_palettes.green,
+		batt_mid: color_palettes.black,
+		batt_lo: color_palettes.red,
+		weather: color_palettes.blue_cyan,
+		bluetooth_0: color_palettes.red,
+		bluetooth_1: color_palettes.blue,
+	},
 }
 for(k in themes){
 	Object.assign(themes[k], color_palettes)
 }
-document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option>${t}</option>`).join('')
+document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
 
 
 const locale = "en-us"
@@ -86,30 +93,39 @@ const months = ['JAN.', 'FEB.', 'MAR.', 'APR.', 'MAY', 'JUNE', 'JULY', 'AUG.', '
 
 const _ = void 0
 
-var can = document.getElementById('face')
+const can = document.getElementById('face')
 const c = can.getContext('2d')
 
-const width = 130
 const height = 160
+const width = 130
 const pad_h = 6
 const pad_v = 6
 
 // zoom dev
 const z = 3
-can.width = width * z
 can.height = height * z
-can.style.width = width + 'px';
+can.width = width * z
 can.style.height = height + 'px';
+can.style.width = width + 'px';
 c.setTransform(z, 0, 0, z, 0, 0)
 
 function init(){
 	synchronize()
 }
 
+// icon
+const icon_size = 32
+const favicon = document.getElementById('favicon')
+const icon = document.getElementById('icon')
+icon.style.display = 'none'
+const ic = icon.getContext('2d')
+icon.height = icon.width = icon_size
+
 // display at the start of each second
 function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(document.getElementById('offset').value)
+	console.log(offset)
 	const t = new Date(Date.now() + offset)
 	display(t)
 	const r = 1000 - (t % 1000)
@@ -798,15 +814,16 @@ const slots_v = Math.floor((height - pad_v) / g)
 const tiles_h = Math.ceil(width / g * .5)
 const tiles_v = Math.ceil(height / g * .5) - 1
 
-setTheme('day')
+setTheme('Light')
 
 function setTheme(theme){
 	palettes = themes[theme]
 	document.getElementById('face').style.backgroundColor = palettes.background
+	document.querySelector(`#theme [value=${theme}]`).selected = true
 	synchronize()
 }
 
-function symbol(s, x, y, m, p, f){
+function symbol(s, x, y, m, p, f, c = c){
 	const font = fonts[f]
 	const bmp = font[s] || font.missing
 	const l = bmp.length
@@ -824,13 +841,13 @@ function symbol(s, x, y, m, p, f){
 	}
 }
 
-function str(s, x, y, m = 1, p = 'body', f = font){
+function str(s, x, y, m = 1, p = 'body', f = font, ctx = c){
 	s = [...s] // unicode
 	for(var i = 0; i < s.length; ++i){
 		symbol(
 			s[i],
 			x + i,
-			y, m, p, f
+			y, m, p, f, ctx
 		)
 	}
 }
@@ -917,6 +934,10 @@ function display(t){
 	str('█', .7, y, 10, 'red', 'block')
 	str('█', .9, y, 10, 'green', 'block')
 	str('█', 1.1, y, 10, 'blue', 'block')
+
+	str(`${zeropad2(hours)}`, 0, 0, 2, 'white', 'block', ic)
+	str(`${zeropad2(minutes)}`, 0, 2, 2, 'white', 'block', ic)
+	favicon.href = icon.toDataURL('image/png')
 }
 
 function zeropad2(s){
