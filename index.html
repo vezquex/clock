@@ -7,18 +7,38 @@ Clock
 </title>
 <style>
 body {
-	background: #000;
-	color: #BEBEBE;
-	font-family: 'Roboto Mono', 'Consolas', monospace;
-	font-size: 1.5em;
-	margin: 0 auto;
-	padding: .5em;
+	background:#000;
+	color:#BEBEBE;
+	font-family:'Roboto Mono','Consolas',monospace;
+	font-size:1.5rem;
+	line-height:1.25;
+	margin:0 auto;
+	padding:0.5em;
 }
-.time { font-size: 3.5em; color: #3C3; cursor: pointer; }
-.seconds-wrap { font-size: .5em; }
+.time {font-size:3.5em; color:#3C3; cursor:pointer; clear:left;}
+.seconds-wrap {font-size:.5em;}
+.numdate {float:left;}
+.weekday_ja {
+	float:left;
+	font-family:sans-serif;
+	font-size:.75em;
+	height:1.5rem;
+	line-height:1.5rem;
+	margin:.25rem 0 0 .5rem;
+	text-align:center;
+	width:1.5rem;
+}
+.weekday_ja[day='0'] {color:#E0E000;background:#202000;}
+.weekday_ja[day='1'] {color:#E0E0E0;background:#202020;}
+.weekday_ja[day='2'] {color:#C02000;background:#200000;}
+.weekday_ja[day='3'] {color:#0060C0;background:#001020;}
+.weekday_ja[day='4'] {color:#008020;background:#001000;}
+.weekday_ja[day='5'] {color:#E8D880;background:#201A08;}
+.weekday_ja[day='6'] {color:#803000;background:#180900;}
 </style>
 <div class="clock">
 	<div class="numdate">&nbsp;</div>
+	<div class="weekday_ja">&nbsp;</div>
 	<div class="time">
 		<span class="hours">--</span>:<span class="minutes">--</span><span class="seconds-wrap">:<span class="seconds">--</span></span>
 	</div>
@@ -29,49 +49,52 @@ body {
 </div>
 <canvas id='icon-render'></canvas>
 <script>
-var clock_widget = function(){
-	var clock = {};
-	clock.el = document.querySelector('.clock');
+function clock_widget(){
+	const clock = {}
+	const clock_el = document.querySelector('.clock')
 
-	(['weekday','hours', 'minutes', 'seconds', 'date','numdate']).forEach(function(component){
-		clock[component] = clock.el.querySelector('.'+component);
+	;(['weekday','weekday_ja','hours', 'minutes', 'seconds', 'date','numdate']).forEach(function(component){
+		clock[component] = clock_el.querySelector('.'+component)
 	})
 
-	var locale = "en-us";
+	const locale = 'en-us'
 
-	function display(t){
-		var month_name = t.toLocaleString(locale, { month: 'long' });
-		var weekday_name = t.toLocaleString(locale, { weekday: 'long' });
-		const hours = clock.hours.innerHTML = zeropad( t.getHours(), 2 );
-		const minutes = clock.minutes.innerHTML = zeropad( t.getMinutes(), 2 );
-		clock.seconds.innerHTML = zeropad( t.getSeconds(), 2 );
-		clock.weekday.innerHTML = weekday_name;
-		const numdate = clock.numdate.innerHTML = t.getFullYear()+'-'+('0' + (t.getMonth()+1)).slice(-2)+'-'+('0' + t.getDate()).slice(-2);
-		const date = clock.date.innerHTML = month_name+' '+ t.getDate();
-		document.title = `${hours}:${minutes} ${date}, ${numdate}`
+	const display = function(t){
+		const hours = t.getHours()
+		const hours_fmt = clock.hours.innerHTML = pad2(hours)
+		const minutes = t.getMinutes()
+		const minutes_fmt = clock.minutes.innerHTML = pad2(minutes)
+		const month_name = t.toLocaleString(locale, {month:'long'})
+		clock.seconds.innerHTML = pad2(t.getSeconds())
+		clock.weekday.innerHTML = t.toLocaleString(locale, {weekday:'long'})
+		clock.weekday_ja.innerHTML = t.toLocaleString('ja-JP', {weekday:'short'})
+		clock.weekday_ja.setAttribute('day', t.getDay())
+		const numdate = clock.numdate.innerHTML = t.getFullYear()+'-'+('0' + (t.getMonth()+1)).slice(-2)+'-'+('0' + t.getDate()).slice(-2)
+		const date = clock.date.innerHTML = month_name+' '+ t.getDate()
+		document.title = `${hours_fmt}:${minutes} ${date}, ${numdate}`
 		const emoji = String.fromCodePoint(
-			((t.getHours() % 12) || 12) + 0x1F54F
-			+ (t.getMinutes() < 30 ? 0 : 12)
+			((hours % 12) || 12) + 0x1F54F
+			+ (minutes < 30 ? 0 : 12)
 		)
 		ic.fillText(emoji, icon_center, icon_center + 2.5)
 		favicon.href = icon.toDataURL('image/png')
 	}
 
 	// display at the start of each second
-	function synchronize(){
-		var t = new Date();
-		display(t);
-		window.setTimeout(synchronize, 1000 - (t % 1000));
+	const synchronize = function(){
+		var t = new Date()
+		display(t)
+		window.setTimeout(synchronize, 1000 - (t % 1000))
 	}
 
-	synchronize();
+	synchronize()
 
 	// seconds toggle
-	clock.el.querySelector('.time').addEventListener('click', function(){
-		var sec_style = clock.el.querySelector('.seconds-wrap').style;
-		sec_style.display = sec_style.display !== 'none' ? 'none' : 'inline';
-	});
-};
+	clock_el.querySelector('.time').addEventListener('click', function(){
+		const sec_style = clock_el.querySelector('.seconds-wrap').style
+		sec_style.display = sec_style.display !== 'none' ? 'none' : 'inline'
+	})
+}
 
 // icon
 const icon_size = 32
@@ -88,11 +111,9 @@ ic.font = '32px sans-serif'
 ic.textAlign = 'center'
 ic.textBaseline = 'middle'
 
-clock_widget();
+clock_widget()
 
-function zeropad(s, l){
-	s += '';
-	while(s.length < l) s = '0'+s;
-	return s;
+function pad2(n){
+	return (n < 10) ? ('0' + n) : n
 }
 </script>
