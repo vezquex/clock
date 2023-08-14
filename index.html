@@ -15,7 +15,7 @@ body {
 	margin:0 auto;
 	padding:0.5em;
 }
-.time {font-size:3.5em; color:#3C3; cursor:pointer; clear:left;}
+.time {font-size:3.5em; cursor:pointer; clear:left;}
 .seconds-wrap {font-size:.5em;}
 .numdate {float:left;}
 .weekday_ja {
@@ -28,18 +28,25 @@ body {
 	text-align:center;
 	width:1.5rem;
 }
-.weekday_ja[day='0'] {color:#E0E000;background:#202000;}
-.weekday_ja[day='1'] {color:#E0E0E0;background:#202020;}
-.weekday_ja[day='2'] {color:#C02000;background:#200000;}
-.weekday_ja[day='3'] {color:#0060C0;background:#001020;}
-.weekday_ja[day='4'] {color:#008020;background:#001000;}
-.weekday_ja[day='5'] {color:#E8D880;background:#201A08;}
-.weekday_ja[day='6'] {color:#803000;background:#180900;}
+[day='0'] .day-color {color:#E0E000;}
+[day='1'] .day-color {color:#E0D0E0;}
+[day='2'] .day-color {color:#C02000;}
+[day='3'] .day-color {color:#3060C0;}
+[day='4'] .day-color {color:#30C030;}
+[day='5'] .day-color {color:#E8D880;}
+[day='6'] .day-color {color:#A05030;}
+[day='0'] .day-bg {background:#202000;}
+[day='1'] .day-bg {background:#201820;}
+[day='2'] .day-bg {background:#200000;}
+[day='3'] .day-bg {background:#001020;}
+[day='4'] .day-bg {background:#001000;}
+[day='5'] .day-bg {background:#201A08;}
+[day='6'] .day-bg {background:#180900;}
 </style>
 <div class="clock">
 	<div class="numdate">&nbsp;</div>
-	<div class="weekday_ja">&nbsp;</div>
-	<div class="time">
+	<div class="weekday_ja day-bg day-color">&nbsp;</div>
+	<div class="time day-color">
 		<span class="hours">--</span>:<span class="minutes">--</span><span class="seconds-wrap">:<span class="seconds">--</span></span>
 	</div>
 	<div>
@@ -68,7 +75,7 @@ function clock_widget(){
 		clock.seconds.innerHTML = pad2(t.getSeconds())
 		clock.weekday.innerHTML = t.toLocaleString(locale, {weekday:'long'})
 		clock.weekday_ja.innerHTML = t.toLocaleString('ja-JP', {weekday:'short'})
-		clock.weekday_ja.setAttribute('day', t.getDay())
+		clock_el.setAttribute('day', t.getDay())
 		const numdate = clock.numdate.innerHTML = t.getFullYear()+'-'+('0' + (t.getMonth()+1)).slice(-2)+'-'+('0' + t.getDate()).slice(-2)
 		const date = clock.date.innerHTML = month_name+' '+ t.getDate()
 		document.title = `${hours_fmt}:${minutes} ${date}, ${numdate}`
@@ -82,7 +89,7 @@ function clock_widget(){
 
 	// display at the start of each second
 	const synchronize = function(){
-		var t = new Date()
+		const t = new Date()
 		display(t)
 		window.setTimeout(synchronize, 1000 - (t % 1000))
 	}
