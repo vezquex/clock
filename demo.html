@@ -1,11 +1,11 @@
 <!doctype html>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width" />
+<meta charset='utf-8'/>
+<meta name='viewport' content='width=device-width' />
 <link id='favicon' rel='shortcut icon'>
 <title>
 	Pixel Fonts Demo
 </title>
-<style type="text/css">
+<style type='text/css'>
 	:root {color-scheme: dark;}
 	body, input, select {
 		background: #000;
@@ -28,15 +28,15 @@
 	}
 </style>
 
-<input id="offset" title="Demo Offset" value="0" type="range" max="86400000" step="100000" onChange="synchronize()">
+<input id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
 <label>
 	<span class='label'>Theme</span>
-	<select id="theme" title="Theme" onChange="setTheme(this.value)"></select>
+	<select id='theme' title='Theme' onChange='setTheme(this.value)'></select>
 </label>
-<div><canvas id="face"></canvas></div>
-<canvas id="icon"></canvas>
+<div><canvas id='face'></canvas></div>
+<canvas id='icon'></canvas>
 
-<script type="text/javascript">
+<script type='text/javascript'>
 
 let font = 'jag'
 let palettes
@@ -81,7 +81,7 @@ const color_palettes = {
 		2: '#7FBFFF',
 	},
 	blue: {
-		1: '#4747CF',
+		1: '#3737CF',
 	},
 	indigo: {
 		1: '#4F279F',
@@ -94,10 +94,13 @@ const color_palettes = {
 		1: '#7FCFFF',
 	},
 	yellow: {
-		1: '#7F7F3F',
+		1: '#8F8F3F',
 		2: '#BFBF7F',
 	},
 }
+color_palettes.weather_FOG = color_palettes.indigo
+color_palettes.weather_RAIN = color_palettes.blue
+color_palettes.weather_SNOW = color_palettes.white
 const themes = {
 	Dark: {
 		background: color_palettes.black[1],
@@ -108,6 +111,9 @@ const themes = {
 		batt_lo: color_palettes.red,
 		bluetooth_0: color_palettes.pink,
 		bluetooth_1: color_palettes.sky,
+		weather_CLOUD: color_palettes.gray,
+		weather_FAIR: color_palettes.sky,
+		weather_SUNNY: color_palettes.yellow,
 	},
 	Light: {
 		background: color_palettes.sky[1],
@@ -118,6 +124,9 @@ const themes = {
 		batt_lo: color_palettes.red,
 		bluetooth_0: color_palettes.red,
 		bluetooth_1: color_palettes.blue,
+		weather_CLOUD: color_palettes.gray_dark,
+		weather_FAIR: color_palettes.green,
+		weather_SUNNY: color_palettes.orange,
 	},
 }
 for(k in themes){
@@ -126,7 +135,7 @@ for(k in themes){
 document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
 
 
-const locale = "en-us"
+const locale = 'en-us'
 const months = ['JAN.', 'FEB.', 'MAR.', 'APR.', 'MAY', 'JUNE', 'JULY', 'AUG.', 'SEPT', 'OCT.', 'NOV.', 'DEC.']
 
 const _ = void 0
@@ -530,6 +539,13 @@ let fonts = {
 			0,0,1,1,0,
 			0,1,1,0,1,
 			1,0,1,1
+		],
+		'🔋': [
+			0,1,1,1,0,
+			1,1,1,1,1,
+			1,0,0,0,1,
+			1,0,0,0,1,
+			1,1,1,1,1,
 		],
 	},
 	block: {
@@ -1437,7 +1453,7 @@ function display(t){
 	const battery = 100 - Math.floor((t % 864e5) / 864e3)
 	const batt_s = `🔋${(' '+battery).slice(-2)}%`
 	const batt_c = 'batt_' + ['lo', 'mid', 'hi'][Math.floor(battery * .0299)]
-	str(batt_s, 0, y, 2, batt_c, 'block')
+	str(batt_s, 0, y, 2, batt_c, 'jag')
 	x = batt_s.length
 
 	const bluetooth = Math.floor(hours / 12)
@@ -1477,20 +1493,17 @@ function display(t){
 	const ms_day = 864e5
 	const ms_centiday = 864e3
 	const weathers = ['CLOUD', 'SNOW', 'FOG', 'RAIN', 'FAIR', 'SUNNY']
-	const weather_colors = ['gray', 'white', 'indigo', 'blue', 'sky', 'yellow']
 	const temperature = (t % ms_day) / ms_centiday
 	const weather = weathers[Math.floor(temperature / 100 * weathers.length)]
-	const weather_color = weather_colors[Math.floor(temperature / 100 * weather_colors.length)]
 	// const s = Math.round(temperature + 1) +'°F'
 	const s = Math.round((temperature-32)/1.8)+'°C'
-	str(s.slice(0, 4) + ' ' + weather, 0, y+=3, 2, weather_color)
+	str(s.slice(0, 4) + ' ' + weather, 0, y+=3, 2, 'weather_'+weather)
 	y += 3
 	for(var i=1; i < 7; ++i){
 		const temperature = i*100/6-.01
 		const s = Math.round(temperature + 1) +'°F'
 		const weather = weathers[Math.floor(temperature / 100 * weathers.length)]
-		const weather_color = weather_colors[Math.floor(temperature / 100 * weather_colors.length)]
-		str(s.slice(0, 4) + ' ' + weather, 0, y+=4, 2, weather_color)
+		str(s.slice(0, 4) + ' ' + weather, 0, y+=4, 2, 'weather_'+weather)
 	}
 
 	ic.clearRect(0, 0, icon_size, icon_size)
