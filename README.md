@@ -12,14 +12,16 @@ The Pebble Time was the 2nd and final iteration of a smart-watch from a startup 
 
 The Pebble Time had an always-on LCD display with a similar resolution to a Game Boy, but in portrait and with 64 colors. My demo does not take advantage of the full resolution, opting for pixel doubling to ensure legibility, and resulting in a blockier aesthetic.
 
-The Pebble SDK isn't very useful unless you have the corresponding hardware, so this watch face demonstration uses HTML canvas. The web platform is more useful to the general public. Since it simply uses arrays of numbers associated with palette colors, it could be ported to a smart-watch easily enough.
+A 5x5 pixel font is sometimes referred to as _Bagua_, Chinese for "trigrams", as 5 rows and columns is just enough resolution to display a trigram. The font was chosen for this watch face because it can act much like a 7-segment display, plus a much better approach for rendering the Roman alphabet and other symbols, typically in the ASCII character set.
+
+The Pebble SDK isn't very useful unless you have the corresponding hardware, so this watch face demonstration uses HTML canvas. The web platform is more useful to the general public. Since it simply uses arrays of numbers associated with palette colors, it could theoretically be ported to a smart-watch.
 
 # [Pixel Font Demo](https://vezquex.github.io/clock/demo.html)
 
 Supplementary content designed for the Pebble Time watch face page.
 
 - Time offset slider
-- Theme picker
+- Theme switcher
 - Pixel font printouts
 - Text colors
 - Weather, color-coded
