@@ -116,9 +116,9 @@ function encode_font(font){
 	])))
 }
 function fold_font(font){
-	const five = /(.{5})/
+	const width = new RegExp(`(.{${sym_w}})`)
 	return Object.fromEntries(Object.entries(font).map(([k,v])=>([k,
-		v.join('').padEnd(sym_a, '0').split(five).slice(1,-1).join('\n')
+		v.join('').padEnd(sym_a, '0').split(width).slice(1,-1).join('\n')
 	])))
 }
 const fonts_decode = {}
