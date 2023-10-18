@@ -6,7 +6,7 @@
 - Standard date format
 - Day of the week and month spelled out in full
 
-# (Pebble Time watch face)[https://vezquex.github.io/clock/watch-canvas.html]
+# [Pebble Time watch face](https://vezquex.github.io/clock/watch-canvas.html)
 
 The Pebble Time was the 2nd and final iteration of a smart-watch from a startup that was later acquired by Fitbit, which was later acquired by Google.
 
