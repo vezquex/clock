@@ -20,6 +20,7 @@ The Pebble SDK isn't very useful unless you have the corresponding hardware, so 
 
 Supplementary content designed for the Pebble Time watch face page.
 
+- Favicon clock
 - Time offset slider
 - Theme switcher
 - Pixel font printouts
