@@ -1,0 +1,666 @@
+<!doctype html>
+<meta charset='utf-8'/>
+<meta name='viewport' content='width=device-width' />
+<title>
+	MIP
+</title>
+<style type='text/css'>
+	:root {color-scheme: dark;}
+	body, input, select {
+		background: #000;
+		color: #FFF;
+		display: flex;
+		flex-direction: column;
+		font-family: sans-serif;
+		font-size: 1em;
+		margin: 0;
+	}
+	label {
+		display: flex;
+	}
+	input, select, .label {
+		border: 0;
+		padding: .5em;
+	}
+	select {
+		flex-grow: 1;
+	}
+</style>
+
+<input id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
+<label>
+	<span class='label'>Theme</span>
+	<select id='theme' title='Theme' onChange='setTheme(this.value)'></select>
+</label>
+<div><canvas id='face'></canvas></div>
+
+<script type='text/javascript'>
+
+let font = 'mip_8'
+let palettes
+
+const color_palettes = {
+	'black': {
+		1: '#000000',
+	},
+	'gray_1_3': {
+		1: '#555555',
+	},
+	'gray_2_3': {
+		1: '#AAAAAA',
+	},
+	'white': {
+		1: '#FFFFFF',
+	},
+}
+const four_negative = ['black', 'gray_1_3', 'gray_2_3', 'white']
+const four_positive = [...four_negative].reverse()
+const themes = {
+	Dark: {
+		_scale: four_negative,
+		_body: '3',
+		background: color_palettes.black[1],
+	},
+	Light: {
+		_scale: four_positive,
+		_body: '3',
+		background: color_palettes.white[1],
+	},
+}
+for(k in themes){
+	const theme = themes[k]
+	;(theme._scale ?? []).forEach((color, i)=>theme[i] = color_palettes[color])
+	Object.assign(theme, color_palettes)
+}
+document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
+
+
+const locale = 'en-us'
+const months = ['JAN.', 'FEB.', 'MAR.', 'APR.', 'MAY', 'JUNE', 'JULY', 'AUG.', 'SEPT', 'OCT.', 'NOV.', 'DEC.']
+
+const _ = void 0
+
+const can = document.getElementById('face')
+const c = can.getContext('2d')
+
+const height = 300
+const width = 306
+const pad_horizon = 0
+const pad_vertical = 0
+
+// zoom dev
+const z = 3
+can.height = height * z
+can.width = width * z
+c.setTransform(z, 0, 0, z, 0, 0)
+
+const offset_el = document.getElementById('offset')
+
+const sym_h = 23
+const sym_w = 16
+const sym_area = sym_h * sym_w
+const grid_h = sym_h + 2
+const grid_w = sym_w + 2
+const tiles_h = Math.ceil(width / grid_w)
+const tiles_v = Math.ceil(height / grid_h)
+const slots_h = Math.floor((width - pad_horizon) / grid_w)
+
+const decode_font = (area) => (s) => s.replace(/\s/g, '').padEnd(area, '0').split('').map(s=>parseInt(s))
+const fonts_decode = {}
+const fonts_dimension = {}
+const fonts = {}
+
+function hw_area(o){ return o.h * o.w }
+fonts_dimension.glyph = {h:23, w:16, pad: 2}
+fonts_decode.glyph = decode_font(hw_area(fonts_dimension.glyph))
+fonts.glyph = {
+	"`":`
+		1111111111111111
+		0000000000000000
+		1111111111111111
+		0000000000000000
+		1111111111111111
+		0000000000000000
+		1111111111111111
+		0000000000000000
+		1111111111111111
+		0000000000000000
+		1111111111111111
+		0000000000000000
+		1111111111111111
+		0000000000000000
+		1111111111111111
+		0000000000000000
+		1111111111111111
+		0000000000000000
+		1111111111111111
+		0000000000000000
+		1111111111111111
+		0000000000000000
+		1111111111111111
+	`,
+	'missing':`
+		1111000011110000
+		1111000011110000
+		1111000011110000
+		1111000011110000
+		0000111100001111
+		0000111100001111
+		0000111100001111
+		0000111100001111
+		1111000011110000
+		1111000011110000
+		1111000011110000
+		1111000011110000
+		0000111100001111
+		0000111100001111
+		0000111100001111
+		0000111100001111
+		1111000011110000
+		1111000011110000
+		1111000011110000
+		1111000011110000
+		0000111100001111
+		0000111100001111
+		0000111100001111
+		0000111100001111
+	`,
+}
+
+fonts_dimension.mip_8 = {h:10, w:8}
+fonts_decode.mip_8 = decode_font(hw_area(fonts_dimension.mip_8))
+fonts.mip_8 = {
+	"missing":`
+		11001100
+		11001100
+		00110011
+		00110011
+		11001100
+		11001100
+		00110011
+		00110011
+		11001100
+		11001100
+	`,
+	"p":`
+		11111110
+		11111111
+		11000011
+		11000011
+		11111111
+		11111110
+		11000000
+		11000000
+		11000000
+	`,
+	"/":`
+		00000011
+		00000110
+		00001100
+		00011000
+		00110000
+		01100000
+		11000000
+	`,
+}
+
+fonts_dimension.mip_16 = {h:23, w:16, pad: 2}
+fonts_decode.mip_16 = decode_font(hw_area(fonts_dimension.mip_16))
+fonts.mip_16 = {
+	"0": `
+		0011111111111100
+		0111111111111110
+		1111111111111111
+		1111111111111111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111111111111111
+		1111111111111111
+		0111111111111110
+		0011111111111100
+	`,
+	"1": `
+		0000000000011111
+		0000000000111111
+		0000000001111111
+		0000000001111111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+		0000000000001111
+	`,
+	"2": `
+		0011111111111100
+		0111111111111110
+		1111111111111111
+		1111111111111111
+		1111100000011111
+		1111100000011111
+		0000000000011111
+		0000000000011111
+		0000000000011111
+		0011111111111111
+		0111111111111111
+		1111111111111111
+		1111111111111110
+		1111100000000000
+		1111100000000000
+		1111100000000000
+		1111100000000000
+		1111100000000000
+		1111100000000000
+		1111111111111111
+		1111111111111111
+		1111111111111111
+		1111111111111111
+	`,
+	"3": `
+		0011111111111100
+		0111111111111110
+		1111111111111111
+		1111111111111111
+		1111100000011111
+		1111100000011111
+		0000000000011111
+		0000000000011111
+		0000000000011111
+		0001111111111111
+		0001111111111110
+		0001111111111110
+		0001111111111111
+		0000000000011111
+		0000000000011111
+		0000000000011111
+		0000000000011111
+		0000000000011111
+		1111100000011111
+		1111111111111111
+		1111111111111111
+		0111111111111110
+		0011111111111100
+	`,
+	"4": `
+		0000001111111100
+		0000011111111100
+		0000011111111100
+		0000111111111100
+		0000111111111100
+		0001111101111100
+		0001111001111100
+		0011111001111100
+		0011110001111100
+		0111110001111100
+		0111100001111100
+		1111100001111100
+		1111000001111100
+		1111000001111100
+		1111000001111100
+		1111111111111111
+		1111111111111111
+		1111111111111111
+		0000000001111100
+		0000000001111100
+		0000000001111100
+		0000000001111100
+		0000000001111100
+	`,
+		"5": `
+		1111111111111111
+		1111111111111111
+		1111111111111111
+		1111111111111111
+		1111100000000000
+		1111100000000000
+		1111100000000000
+		1111100000000000
+		1111111111111111
+		1111111111111111
+		1111111111111111
+		1111111111111111
+		1111100000011111
+		0000000000011111
+		0000000000011111
+		0000000000011111
+		0000000000011111
+		1111100000011111
+		1111100000011111
+		1111111111111111
+		1111111111111111
+		0111111111111110
+		0011111111111100
+	`,
+	"6": `
+		0011111111111100
+		0111111111111110
+		1111111111111111
+		1111111111111111
+		1111100000011111
+		1111100000011111
+		1111100000000000
+		1111100000000000
+		1111100000000000
+		1111111111111111
+		1111111111111111
+		1111111111111111
+		1111111111111111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111111111111111
+		1111111111111111
+		0111111111111110
+		0011111111111100
+	`,
+	"7": `
+		1111111111111111
+		1111111111111111
+		1111111111111111
+		1111100000011111
+		1111100000011111
+		0000000000011111
+		0000000000011111
+		0000000000011111
+		0000000000111110
+		0000000000111110
+		0000000001111100
+		0000000001111100
+		0000000011111000
+		0000000011111000
+		0000000111110000
+		0000000111110000
+		0000001111100000
+		0000001111100000
+		0000001111100000
+		0000001111100000
+		0000001111100000
+		0000001111100000
+		0000001111100000
+	`,
+		"8": `
+		0011111111111100
+		0111111111111110
+		1111111111111111
+		1111111111111111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111111111111111
+		0111111111111110
+		0111111111111110
+		1111111111111111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111111111111111
+		1111111111111111
+		0111111111111110
+		0011111111111100
+	`,
+	"9": `
+		0011111111111100
+		0111111111111110
+		1111111111111111
+		1111111111111111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111100000011111
+		1111111111111111
+		1111111111111111
+		1111111111111111
+		1111111111111111
+		0000000000011111
+		0000000000011111
+		0000000000011111
+		0000000000011111
+		1111100000011111
+		1111100000011111
+		1111111111111111
+		1111111111111111
+		0111111111111110
+		0011111111111100
+	`,
+	"missing": `
+		0111111111111110
+		1111111111111111
+		0111111111111110
+		0011111111111100
+		0111111111111110
+		1111111111111111
+		0111111111111110
+		0011111111111100
+		0111111111111110
+		1111111111111111
+		0111111111111110
+		0011111111111100
+		0111111111111110
+		1111111111111111
+		0111111111111110
+		0011111111111100
+		0111111111111110
+		1111111111111111
+		0111111111111110
+		0011111111111100
+		0111111111111110
+		1111111111111111
+		0111111111111110
+	`,
+	" ": ``,
+	":":`
+		0000000000000000
+		0000000000000000
+		0000000110000000
+		0000001111000000
+		0000001111000000
+		0000001111000000
+		0000001111000000
+		0000000110000000
+		0000000000000000
+		0000000000000000
+		0000000000000000
+		0000000000000000
+		0000000000000000
+		0000000000000000
+		0000000000000000
+		0000000110000000
+		0000001111000000
+		0000001111000000
+		0000001111000000
+		0000001111000000
+		0000000110000000
+	`,
+}
+
+for(f in fonts){
+	const decode = fonts_decode[f]
+	if(!decode) continue
+	const font = fonts[f]
+	for(char in font){
+		font[char] = decode(font[char])
+	}
+}
+
+function setTheme(theme){
+	palettes = themes[theme]
+	document.getElementById('face').style.backgroundColor = palettes.background
+	document.querySelector(`#theme [value=${theme}]`).selected = true
+	synchronize()
+}
+
+function str(s, x = 0, y = 0, m = 1, p = palettes._body, f = font, ctx = c){
+	s = [...s] // unicode
+	for(var i = 0; i < s.length; ++i){
+		symbol(
+			s[i],
+			x + i,
+			y, m, p, f, ctx
+		)
+	}
+}
+
+function symbol(s, x, y, m, p, f, c = c){
+	const font = fonts[f]
+	const dim = fonts_dimension[f]
+	const w = dim.w
+	const cell = dim.w + (dim.pad ?? 1)
+	const bmp = font[s] ?? font.missing ?? fonts.block.missing
+	const l = bmp.length
+	for(var i = 0; i < l; ++i){
+		let b = bmp[i]
+		if(b === 0) continue
+		c.fillStyle = palettes[p][b]
+		c.fillRect(
+			m * (x * cell + (i % w)) + pad_horizon,
+			(y + m * Math.floor(i / w)) + pad_vertical,
+			m, m
+		)
+	}
+}
+
+// display at the start of each second
+function synchronize(){
+	window.clearTimeout(window.synchronizeTimeout)
+	const offset = Number(offset_el.value)
+	// const offset = 0
+	const t = new Date(Date.now() + offset)
+	// const t = new Date(offset)
+	display(t)
+	const r = 1000 - (t % 1000)
+	// window.synchronizeTimeout = window.setTimeout(synchronize, r)
+}
+
+function zeropad2(s){
+	return ('0' + s).slice(-2)
+}
+
+function display(t){
+	const month = months[t.getMonth()]
+	// const month = t.toLocaleString(locale, { month: 'short' }).toUpperCase()
+	const weekday = t.toLocaleString(locale, { weekday: 'long' }).toUpperCase()
+	const hours = t.getHours()
+	const minutes = t.getMinutes()
+	const time = zeropad2(hours) + ':' + zeropad2(minutes)
+	const seconds = zeropad2(t.getSeconds())
+	const numdate =
+		t.getFullYear()+
+		'-'+
+		zeropad2(t.getMonth() + 1)+
+		'-'+
+		zeropad2(t.getDate())
+
+	c.clearRect(0, 0, width, height)
+
+	const tiles = tiles_h * tiles_v
+	for(var i = 0; i < tiles; ++i){
+		c.fillStyle = `rgba(255, 255, 255, ${15/255})`
+		c.fillRect(
+			i % tiles_h * grid_w,
+			Math.floor(i / tiles_h) * grid_h,
+			sym_w, sym_h
+		)
+	}
+
+	let x = y = 0, m = 1
+
+	let chars
+
+	font = 'mip_16'
+	chars = Object.keys(fonts[font])
+	for(var i = 0; i < chars.length / slots_h; ++i){
+		str(
+			chars.slice(
+				i * slots_h,
+				(i+1) * slots_h
+			),
+			0,
+			y+i,
+			_,
+			_,
+			font
+		)
+	}
+	y += grid_h
+
+	font = 'glyph'
+	chars = Object.keys(fonts[font])
+	for(var i = 0; i < chars.length / slots_h; ++i){
+		str(
+			chars.slice(
+				i * slots_h,
+				(i+1) * slots_h
+			),
+			0,
+			y+i,
+			1,
+			1,
+			font
+		)
+	}
+	y += grid_h
+
+	font = 'mip_8'
+	chars = Object.keys(fonts[font])
+	for(var i = 0; i < chars.length / slots_h; ++i){
+		str(
+			chars.slice(
+				i * slots_h,
+				(i+1) * slots_h
+			),
+			0,
+			y+i,
+			1,
+			2,
+			font
+		)
+	}
+	y += grid_h
+
+	str(time, 1, y, 1, _, 'mip_16')
+	// str(month, 10, y)
+	// str(weekday.slice(0,3)+'.', 16, y)
+	// str(numdate, 0, y+=1, 2)
+	str(seconds, 12, y+11.5, 0.5, '1', 'mip_16')
+}
+
+setTheme('Dark')
+
+synchronize()
+
+</script>
