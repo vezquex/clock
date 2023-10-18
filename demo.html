@@ -144,9 +144,9 @@ const can = document.getElementById('face')
 const c = can.getContext('2d')
 
 const height = 400
-const width = 130
-const pad_h = 6
-const pad_v = 6
+const width = 230
+const pad_horizon = 7
+const pad_vertical = 7
 
 // zoom dev
 const z = 4
@@ -166,15 +166,14 @@ icon.height = icon.width = icon_size
 
 const offset_el = document.getElementById('offset')
 
+const sym_h = 5
 const sym_w = 5
-const sym_a = sym_w * sym_w
-const sym_w2 = sym_w * 2
-const g = sym_w + 1
-const g2 = g * 2
-const tiles_h = Math.ceil(width / g * .5)
-const tiles_v = Math.ceil(height / g * .5) - 1
-const slots_h = Math.floor((width - pad_h) / g)
-// const slots_v = Math.floor((height - pad_v) / g)
+const sym_a = sym_h * sym_w
+const grid_h = sym_h + 2
+const grid_w = sym_w + 2
+const tiles_h = Math.ceil(width / grid_w)
+const tiles_v = Math.ceil(height / grid_h)
+const slots_horizon = Math.floor((width - pad_horizon) / grid_w)
 
 // base-2 for single color pixel font
 // base-3 for 1 extra color, and so forth
@@ -185,9 +184,9 @@ function encode_font(font){
 	])))
 }
 function fold_font(font){
-	const five = /(.{5})/
+	const width = new RegExp(`(.{${sym_w}})`)
 	return Object.fromEntries(Object.entries(font).map(([k,v])=>([k,
-		v.join('').padEnd(sym_a, '0').split(five).slice(1,-1).join('\n')
+		v.join('').padEnd(sym_a, '0').split(width).slice(1,-1).join('\n')
 	])))
 }
 const fonts_decode = {}
@@ -1061,13 +1060,7 @@ let fonts = {
 20222
 22222
 `,
-  " ": `
-00000
-00000
-00000
-00000
-00000
-`,
+  " ": `0`,
   "A": `
 11111
 10001
@@ -1330,16 +1323,16 @@ function str(s, x, y, m = 1, p = 'body', f = font, ctx = c){
 
 function symbol(s, x, y, m, p, f, c = c){
 	const font = fonts[f]
-	const bmp = font[s] || font.missing || fonts.block.missing
+	const bmp = font[s] ?? font.missing ?? fonts.block.missing
 	const l = bmp.length
-	// palettes[p] || console.log('p', p, Object.keys(palettes).join())
+	// palettes[p] ?? console.log('p', p, Object.keys(palettes).join())
 	for(var i = 0; i < l; ++i){
 		let b = bmp[i]
 		if(b === 0) continue
 		c.fillStyle = palettes[p][b]
 		c.fillRect(
-			m * (x * g + (i % sym_w)) + pad_h,
-			(y * g + m * Math.floor(i / sym_w)) + pad_v,
+			m * (x * grid_w + (i % sym_w)) + pad_horizon,
+			(y * grid_h + m * Math.floor(i / sym_w)) + pad_vertical,
 			m, m
 		)
 	}
@@ -1380,15 +1373,11 @@ function display(t){
 
 	const tiles = tiles_h * tiles_v
 	for(var i = 0; i < tiles; ++i){
-		c.fillStyle = 'rgba('+
-			Array(3).fill(
-				((i+1) % 2) * Math.floor(Math.random() * 256)
-			).concat(.1).join()
-			+')'
+		c.fillStyle = `rgba(255, 255, 255, ${15/255})`
 		c.fillRect(
-			i % tiles_h * g2,
-			Math.floor(i / tiles_h) * g2,
-			sym_w2, sym_w2
+			i % tiles_h * grid_w,
+			Math.floor(i / tiles_h) * grid_h,
+			sym_w, sym_h
 		)
 	}
 
@@ -1397,11 +1386,11 @@ function display(t){
 
 	let chars
 	chars = Object.keys(fonts.jag)
-	for(var i = 0; i < chars.length / slots_h; ++i){
+	for(var i = 0; i < chars.length / slots_horizon; ++i){
 		str(
 			chars.slice(
-				i * slots_h,
-				(i+1) * slots_h
+				i * slots_horizon,
+				(i+1) * slots_horizon
 			),
 			0,
 			y+i
@@ -1410,11 +1399,11 @@ function display(t){
 	y += 3
 	
 	chars = Object.keys(fonts.block)
-	for(var i = 0; i < chars.length / slots_h; ++i){
+	for(var i = 0; i < chars.length / slots_horizon; ++i){
 		str(
 			chars.slice(
-				i * slots_h,
-				(i+1) * slots_h
+				i * slots_horizon,
+				(i+1) * slots_horizon
 			),
 			0,
 			y+i,
