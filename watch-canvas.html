@@ -123,12 +123,10 @@ icon.height = icon.width = icon_size
 function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(document.getElementById('offset').value)
-	// console.log(offset)
 	const t = new Date(Date.now() + offset)
 	display(t)
 	const r = 1000 - (t % 1000)
 	window.synchronizeTimeout = window.setTimeout(synchronize, r)
-	// console.log(r)
 }
 
 const fonts = {
@@ -830,7 +828,6 @@ function symbol(s, x, y, m, p, f, c = c){
 	const font = fonts[f]
 	const bmp = font[s] || font.missing
 	const l = bmp.length
-	// palettes[p] || console.log('p', p, Object.keys(palettes).join())
 	for(var i = 0; i < l; ++i){
 		let b = bmp[i]
 		if(b === 0) continue
@@ -854,11 +851,8 @@ function str(s, x, y, m = 1, p = 'body', f = font, ctx = c){
 	}
 }
 
-// const ss = Object.keys(fonts.jag)
-
 function display(t){
 	const month = months[t.getMonth()]
-	// const month = t.toLocaleString(locale, { month: 'short' }).toUpperCase()
 	const weekday = t.toLocaleString(locale, { weekday: 'long' }).toUpperCase()
 	const hours = t.getHours()
 	const minutes = t.getMinutes()
@@ -889,7 +883,6 @@ function display(t){
 
 	let x = y = 0, m = 1
 
-	// str(s, x, y, m, p, f)
 	str(month, 10, y-.2)
 	str(weekday.slice(0,3)+'.', 16, y-.2)
 	str(numdate, 0, y+=1, 2)
@@ -901,9 +894,7 @@ function display(t){
 	const weathers = ['CLOUD', 'SNOW', 'FOG', 'RAIN', 'FAIR', 'SUNNY']
 	const temperature = (t % 864e5) / 864e3
 	const weather = weathers[Math.floor(temperature / 100 * weathers.length)]
-	// const s = Math.round(temperature + 1) +'°F'
 	const s = Math.round((temperature-32)/1.8)+'°C'
-	// str(s.slice(0, 4) + ' ' + weather, 0, y+=2, 2, 'weather')
 
 	const battery = 100 - Math.floor((t % 864e5) / 864e3)
 	const batt_s = (' ' + battery).slice(-2)
