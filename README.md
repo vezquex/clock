@@ -33,3 +33,6 @@ Similar to other pages, sans many features.
 
 # [More Pixel Fonts](https://vezquex.github.io/clock/mip.html)
 Modified to support more than one size of pixel font. Fonts comparable to some Japanese fitness watches, with desired adjustments.
+
+# [World Time](https://vezquex.github.io/clock/world.html)
+Scroll through time zones.
