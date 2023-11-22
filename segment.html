@@ -1,0 +1,204 @@
+<!doctype html>
+<meta charset='utf-8'/>
+<meta name='viewport' content='width=device-width' />
+<title>
+	Segmented
+</title>
+<style type='text/css'>
+	:root {color-scheme: dark;}
+	body, input, select {
+		background: #000;
+		color: #FFF;
+		display: flex;
+		flex-direction: column;
+		font-family: sans-serif;
+		font-size: 1em;
+		margin: 0;
+	}
+	label {
+		display: flex;
+	}
+	input, select, .label {
+		border: 0;
+		padding: .5em;
+	}
+	select {
+		flex-grow: 1;
+	}
+	#offset {
+		display: none;
+	}
+</style>
+
+<input id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
+<label>
+	<span class='label'>Theme</span>
+	<select id='theme' title='Theme' onChange='setTheme(this.value)'></select>
+</label>
+<div><canvas id='face'></canvas></div>
+
+<script type='text/javascript'>
+
+let palettes
+const color_palettes = {
+	'black': '#242224',
+	'blue': '#0080DB',
+	'green': '#00ED00',
+	'red': '#F10000',
+	'white': '#F1EDDB',
+}
+const themes = {
+	Dark: {
+		background: color_palettes.black,
+		color: color_palettes.white,
+	},
+	Light: {
+		background: color_palettes.white,
+		color: color_palettes.black,
+	},
+	Blue: {
+		background: color_palettes.black,
+		color: color_palettes.blue,
+	},
+	Green: {
+		background: color_palettes.black,
+		color: color_palettes.green,
+	},
+	Red: {
+		background: color_palettes.black,
+		color: color_palettes.red,
+	},
+}
+for(k in themes){
+	const theme = themes[k]
+	;(theme._scale||[]).forEach((color, i)=>theme[i] = color_palettes[color])
+	Object.assign(theme, color_palettes)
+}
+document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
+
+
+const dcale = 'en-us'
+
+const _ = void 0
+
+const can = document.getElementById('face')
+const c = can.getContext('2d')
+
+const height = 24
+const width = 280
+const pad_h = 11
+const pad_v = 19
+
+// zoom
+const z = 3
+can.height = height * z
+can.width = width * z
+
+const offset_el = document.getElementById('offset')
+
+function setTheme(theme){
+	palettes = themes[theme]
+	can.style.backgroundColor = palettes.background
+	document.querySelector(`#theme [value=${theme}]`).selected = true
+	synchronize()
+}
+
+// display at the start of each second
+function synchronize(){
+	window.clearTimeout(window.synchronizeTimeout)
+	const offset = Number(offset_el.value)
+	// const offset = 0
+	const t = new Date(Date.now() + offset)
+	// const t = new Date(offset)
+	display(t)
+	const r = 1000 - (t % 1000)
+	// window.synchronizeTimeout = window.setTimeout(synchronize, r)
+}
+
+function zeropad2(s){
+	return ('0' + s).slice(-2)
+}
+
+function shape(path, [x, y]){
+	c.beginPath()
+	c.moveTo((path[0][0] + x)*z, (path[0][1] + y)*z)
+	for(i=1; i<path.length; ++i){
+		c.lineTo((path[i][0] + x)*z, (path[i][1] + y)*z)
+	}
+	c.fill()
+}
+
+// 10 x 14
+const mc = [[0, 7], [2,6], [8,6], [10, 7], [8,8], [2,8]]
+const dc = [[0,14], [10,14], [8,12], [2,12]]
+const dl = [[0,8], [2,9], [2,11], [0,13]]
+const dr = [[10,8], [8,9], [8,11], [10,13]]
+const uc = [[0,0], [10,0], [8,2], [2,2]]
+const ul = [[0,1], [2,3], [2,5], [0,6]]
+const ur = [[10,1], [8,3], [8,5], [10,6]]
+const ub = [[4,3], [6,3], [6,5], [5,5.5], [4,5]]
+const db = [[4,11], [6,11], [6,9], [5,8.5], [4,9]]
+const lt = [[0,0], [-2,0], [-2,2], [0,2]]
+
+const segs = [ur, ul, uc, dr, dl, dc, mc, ub, db, lt]
+const char_masks = {
+	'0': 0b0111111,
+	'1': 0b0001001,
+	'2': 0b1110101,
+	'3': 0b1101101,
+	'4': 0b1001011,
+	'5': 0b1101110,
+	'6': 0b1111110,
+	'7': 0b0001101,
+	'8': 0b1111111,
+	'9': 0b1101111,
+	'A': 0b1011111,
+	'E': 0b1110110,
+	'F': 0b1010110,
+	'H': 0b1011011,
+	'L': 0b0110010,
+	'M': 0b110011111,
+	'O': 0b0111111,
+	'R': 0b1001011111,
+	'S': 0b1101110,
+	'T': 0b110000100,
+	'U': 0b0111011,
+	'W': 0b100111011,
+	'all': 0b111111111,
+}
+
+function mask_segs(mask){
+	let s = []
+	let i = 0
+	let i_mask = 1
+	while(i_mask < mask){
+		if(mask & i_mask){
+			s.push(segs[i])
+		}
+		++i
+		i_mask = i_mask << 1
+	}
+	return s
+}
+
+const segments = [
+	// [mc, [0,0]],
+]
+
+let x = 4, y = 4
+Object.keys(char_masks).forEach((k, i) => {
+	const digit_segs = mask_segs(char_masks[k])
+	digit_segs.forEach(seg => segments.push([seg, [i*12 + x, y]]))
+})
+
+function display(t){
+	c.clearRect(0, 0, width, height)
+	c.fillStyle = palettes.color
+	segments.map(segment => shape(...segment))
+}
+
+setTheme('Green')
+
+synchronize()
+
+</script>
