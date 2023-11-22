@@ -2,7 +2,7 @@
 <meta charset='utf-8'/>
 <meta name='viewport' content='width=device-width' />
 <title>
-	Segmented
+	Segmented Clock
 </title>
 <style type='text/css'>
 	:root {color-scheme: dark;}
@@ -208,8 +208,7 @@ function display(t){
 	const month = t.getMonth() + 1
 	const weekday = t.toLocaleString(locale, { weekday: 'short' }).toUpperCase().slice(0,2)
 	const hours = t.getHours()
-	const minutes = t.getMinutes()
-	const time = zeropad2(hours) + ':' + zeropad2(minutes)
+	const minutes = zeropad2(t.getMinutes())
 	const seconds = zeropad2(t.getSeconds())
 	const day_of_month = t.getDate()
 
