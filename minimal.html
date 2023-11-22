@@ -43,10 +43,10 @@ const color_palettes = {
 		1: '#000000',
 	},
 	'gray_1_3': {
-		1: '#F55555',
+		1: '#F85030',
 	},
 	'gray_2_3': {
-		1: '#AAFAAA',
+		1: '#60F858',
 	},
 	'white': {
 		1: '#FFFFFF',
@@ -455,7 +455,7 @@ for(f in fonts){
 
 function setTheme(theme){
 	palettes = themes[theme]
-	document.getElementById('face').style.backgroundColor = palettes.background
+	can.style.backgroundColor = palettes.background
 	document.querySelector(`#theme [value=${theme}]`).selected = true
 	synchronize()
 }
