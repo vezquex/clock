@@ -205,7 +205,7 @@ function draw_str(str, x, y){
 }
 
 function display(t){
-	const month = t.getMonth() + 1
+	const month = ((t.getMonth() + 1)+'').padStart(2)
 	const weekday = t.toLocaleString(locale, { weekday: 'short' }).toUpperCase().slice(0,2)
 	const hours = t.getHours()
 	const minutes = zeropad2(t.getMinutes())
