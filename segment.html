@@ -25,9 +25,6 @@
 	select {
 		flex-grow: 1;
 	}
-	#offset {
-		display: none;
-	}
 </style>
 
 <input id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
@@ -84,13 +81,17 @@ const _ = void 0
 const can = document.getElementById('face')
 const c = can.getContext('2d')
 
-const height = 24
-const width = 280
-const pad_h = 11
-const pad_v = 19
+const height = 40
+const width = 100
+const pad_h = 4
+const pad_v = 4
+const char_height = 10
+const char_width = 14
+const grid_w = char_width + 2
+const grid_w2 = grid_w * 2
 
 // zoom
-const z = 3
+const z = 5
 can.height = height * z
 can.width = width * z
 
@@ -107,19 +108,17 @@ function setTheme(theme){
 function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(offset_el.value)
-	// const offset = 0
 	const t = new Date(Date.now() + offset)
-	// const t = new Date(offset)
 	display(t)
 	const r = 1000 - (t % 1000)
-	// window.synchronizeTimeout = window.setTimeout(synchronize, r)
+	window.synchronizeTimeout = window.setTimeout(synchronize, r)
 }
 
 function zeropad2(s){
 	return ('0' + s).slice(-2)
 }
 
-function shape(path, [x, y]){
+function shape(path, x, y){
 	c.beginPath()
 	c.moveTo((path[0][0] + x)*z, (path[0][1] + y)*z)
 	for(i=1; i<path.length; ++i){
@@ -128,7 +127,6 @@ function shape(path, [x, y]){
 	c.fill()
 }
 
-// 10 x 14
 const mc = [[0, 7], [2,6], [8,6], [10, 7], [8,8], [2,8]]
 const dc = [[0,14], [10,14], [8,12], [2,12]]
 const dl = [[0,8], [2,9], [2,11], [0,13]]
@@ -152,6 +150,9 @@ const char_masks = {
 	'7': 0b0001101,
 	'8': 0b1111111,
 	'9': 0b1101111,
+	' ': 0,
+	'-': 0b100000000,
+	':': 0b110000000,
 	'A': 0b1011111,
 	'E': 0b1110110,
 	'F': 0b1010110,
@@ -164,14 +165,14 @@ const char_masks = {
 	'T': 0b110000100,
 	'U': 0b0111011,
 	'W': 0b100111011,
-	'all': 0b111111111,
+	'all': 0b1111111111,
 }
 
 function mask_segs(mask){
 	let s = []
 	let i = 0
 	let i_mask = 1
-	while(i_mask < mask){
+	while(i_mask <= mask){
 		if(mask & i_mask){
 			s.push(segs[i])
 		}
@@ -181,23 +182,54 @@ function mask_segs(mask){
 	return s
 }
 
-const segments = [
-	// [mc, [0,0]],
-]
+const paths = []
 
-let x = 4, y = 4
-Object.keys(char_masks).forEach((k, i) => {
-	const digit_segs = mask_segs(char_masks[k])
-	digit_segs.forEach(seg => segments.push([seg, [i*12 + x, y]]))
-})
+const char_paths = Object.fromEntries(
+	Object.entries(char_masks).map(
+		([k, mask], i) => [k, mask_segs(mask)]
+	)
+)
 
-function display(t){
-	c.clearRect(0, 0, width, height)
-	c.fillStyle = palettes.color
-	segments.map(segment => shape(...segment))
+const locale = 'en-us'
+
+function draw_char(s, x, y){
+	char_paths[s].forEach(
+			path => shape(path, x, y)
+		)
 }
 
-setTheme('Green')
+function draw_str(str, x, y){
+	(str+'').split('').forEach((s, i) => {
+		draw_char(s, x + i * grid_w, y)
+	})
+}
+
+function display(t){
+	const month = t.getMonth() + 1
+	const weekday = t.toLocaleString(locale, { weekday: 'short' }).toUpperCase().slice(0,2)
+	const hours = t.getHours()
+	const minutes = t.getMinutes()
+	const time = zeropad2(hours) + ':' + zeropad2(minutes)
+	const seconds = zeropad2(t.getSeconds())
+	const day_of_month = t.getDate()
+
+	c.fillStyle = palettes.color
+	c.clearRect(0, 0, width*z, height*z)
+	let x = pad_h, y = pad_v
+	draw_str(weekday, x, y)
+	draw_str(month, x+=grid_w2, y)
+	draw_char('-', x+24, y)
+	draw_str(day_of_month, x+=grid_w2, y)
+	x = pad_h
+	y += 18
+	draw_str(hours, x, y)
+	draw_char(':', x+24, y)
+	draw_str(minutes, x+=grid_w2, y)
+	draw_char(':', x+24, y)
+	draw_str(seconds, x+=grid_w2, y)
+}
+
+setTheme('Light')
 
 synchronize()
 
