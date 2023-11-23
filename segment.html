@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset='utf-8'/>
-<meta name='viewport' content='width=device-width' />
+<meta name='viewport' content='width=device-width, initial-scale=1'/>
 <title>
 	Segmented Clock
 </title>
@@ -91,7 +91,7 @@ const grid_w = char_width + 2
 const grid_w2 = grid_w * 2
 
 // zoom
-const z = 6
+const z = 8
 can.height = height * z
 can.width = width * z
 
@@ -127,16 +127,16 @@ function shape(path, x, y){
 	c.fill()
 }
 
-const mc = [[0, 7], [2,6], [8,6], [10, 7], [8,8], [2,8]]
-const dc = [[0,14], [10,14], [8,12], [2,12]]
-const dl = [[0,8], [2,9], [2,11], [0,13]]
-const dr = [[10,8], [8,9], [8,11], [10,13]]
-const uc = [[0,0], [10,0], [8,2], [2,2]]
-const ul = [[0,1], [2,3], [2,5], [0,6]]
-const ur = [[10,1], [8,3], [8,5], [10,6]]
-const ub = [[4,3], [6,3], [6,5], [5,5.5], [4,5]]
-const db = [[4,11], [6,11], [6,9], [5,8.5], [4,9]]
-const lt = [[0,0], [-2,0], [-2,2], [0,2]]
+const db = [[4,11.5], [6,11.5], [6,9], [5,8.25], [4,9]]
+const dc = [[.5,14], [9.5,14], [8,12], [2,12]]
+const dl = [[0,7.25], [2,9], [2,11.5], [0,13.5]]
+const dr = [[10,7.25], [8,9], [8,11.5], [10,13.5]]
+const lt = [[-.25,.25], [-2,0], [-2,2], [-.25,2]]
+const mc = [[.5, 7], [2,6], [8,6], [9.5, 7], [8,8], [2,8]]
+const ub = [[4,2.5], [6,2.5], [6,5], [5,5.75], [4,5]]
+const uc = [[.5,0], [9.5,0], [8,2], [2,2]]
+const ul = [[0,.5], [2,2.5], [2,5], [0,6.75]]
+const ur = [[10,.5], [8,2.5], [8,5], [10,6.75]]
 
 const segs = [ur, ul, uc, dr, dl, dc, mc, ub, db, lt]
 const char_masks = {
@@ -166,7 +166,7 @@ const char_masks = {
 	'T2': 0b1000010110,
 	'U': 0b111011,
 	'W': 0b100111011,
-	'all': 0b1111111111,
+	'?': 0b1111111111,
 }
 
 function mask_segs(mask){
