@@ -91,9 +91,18 @@ const grid_w = char_width + 2
 const grid_w2 = grid_w * 2
 
 // zoom
-const z = 4
-can.height = height * z
-can.width = width * z
+let z = 1
+
+function resize(){
+	z = Math.min(
+		Math.floor(window.innerWidth / width),
+		Math.floor(window.innerHeight / height),
+	)	
+	can.height = height * z
+	can.width = width * z
+}
+resize()
+window.addEventListener('resize', resize)
 
 const offset_el = document.getElementById('offset')
 
@@ -127,16 +136,27 @@ function shape(path, x, y){
 	c.fill()
 }
 
+const tau = 2 * Math.PI
+function circle(r, x, y){
+	c.beginPath()
+	c.arc(x*z, y*z, r*z, 0, tau)
+	c.fill()
+}
+function colon(x, y){
+	circle(1, x, y+5)
+	circle(1, x, y+9)
+}
+
 const db = [[4,11.5], [6,11.5], [6,9], [5,8.25], [4,9]]
-const dc = [[.25,14], [9.75,14], [8,12], [2,12]]
-const dl = [[0,7.25], [2,8.5], [2,11.5], [0,13.5]]
-const dr = [[10,7.25], [8,8.5], [8,11.5], [10,13.5]]
+const dc = [[.25,14], [9.75,14], [7.75,12], [2.25,12]]
+const dl = [[0,7.25], [2,8.25], [2,11.75], [0,13.75]]
+const dr = [[10,7.25], [8,8.25], [8,11.75], [10,13.75]]
 const lt = [[-.25,.25], [-2,0], [-2,2], [-.25,2]]
-const mc = [[.5, 7], [2,6], [8,6], [9.5, 7], [8,8], [2,8]]
+const mc = [[.25, 7], [2.25,6], [7.75,6], [9.75, 7], [7.75,8], [2.25,8]]
 const ub = [[4,2.5], [6,2.5], [6,5], [5,5.75], [4,5]]
-const uc = [[.25,0], [9.75,0], [8,2], [2,2]]
-const ul = [[0,.5], [2,2.5], [2,5.5], [0,6.75]]
-const ur = [[10,.5], [8,2.5], [8,5.5], [10,6.75]]
+const uc = [[.25,0], [9.75,0], [7.75,2], [2.25,2]]
+const ul = [[0,.25], [2,2.25], [2,5.75], [0,6.75]]
+const ur = [[10,.25], [8,2.25], [8,5.75], [10,6.75]]
 
 const segs = [ur, ul, uc, dr, dl, dc, mc, ub, db, lt]
 const char_masks = {
@@ -218,18 +238,19 @@ function display(t){
 	let x = pad_h, y = pad_v
 	draw_str(weekday, x, y)
 	draw_str(month, x+=grid_w2, y)
-	draw_char('-', x+24, y)
+	// draw_char('-', x+24, y)
+	c.fillRect((x+27.5)*z, (y+6)*z, 3*z, 2*z)
 	draw_str(day_of_month, x+=grid_w2, y)
 	x = pad_h
 	y += 18
 	draw_str(hours, x, y)
-	draw_char(':', x+24, y)
+	colon(x+29, y)
 	draw_str(minutes, x+=grid_w2, y)
-	draw_char(':', x+24, y)
+	colon(x+29, y)
 	draw_str(seconds, x+=grid_w2, y)
 }
 
-setTheme('Light')
+setTheme('Dark')
 
 synchronize()
 
