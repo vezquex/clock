@@ -38,6 +38,7 @@
 
 let palettes
 const color_palettes = {
+	'amber': '#E2A71E',
 	'black': '#000000',
 	'blue': '#0080DB',
 	'green': '#00ED00',
@@ -52,6 +53,10 @@ const themes = {
 	Light: {
 		background: color_palettes.white,
 		color: color_palettes.black,
+	},
+	Amber: {
+		background: color_palettes.black,
+		color: color_palettes.amber,
 	},
 	Blue: {
 		background: color_palettes.black,
@@ -151,7 +156,7 @@ const db = [[4,11.5], [6,11.5], [6,9], [5,8.25], [4,9]]
 const dc = [[.25,14], [9.75,14], [7.75,12], [2.25,12]]
 const dl = [[0,13.75], [2,11.75], [2,8.25], [1,7.25], [0,8.25]]
 const dr = [[10,13.75], [8,11.75], [8,8.25], [9,7.25], [10,8.25]]
-const lt = [[-.25,.25], [-3,0], [-3,2], [-.25,2]]
+const lt = [[-.375,.25], [-3,0], [-3,2], [-.375,2]]
 const mc = [[1.25, 7], [2.25,6], [7.75,6], [8.75, 7], [7.75,8], [2.25,8]]
 const ub = [[4,2.5], [6,2.5], [6,5], [5,5.75], [4,5]]
 const uc = [[.25,0], [9.75,0], [7.75,2], [2.25,2]]
@@ -250,7 +255,7 @@ function display(t){
 	draw_str(seconds, x+=grid_w2, y)
 }
 
-setTheme('Dark')
+setTheme('Amber')
 
 synchronize()
 
