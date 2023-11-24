@@ -152,13 +152,13 @@ function colon(x, y){
 	circle(1, x, y+9)
 }
 
-const db = [[4,11.5], [6,11.5], [6,9], [5,8.25], [4,9]]
+const db = [[4,11.625], [6,11.625], [6,9], [5,8.25], [4,9]]
 const dc = [[.25,14], [9.75,14], [7.75,12], [2.25,12]]
 const dl = [[0,13.75], [2,11.75], [2,8.25], [1,7.25], [0,8.25]]
 const dr = [[10,13.75], [8,11.75], [8,8.25], [9,7.25], [10,8.25]]
-const lt = [[-.375,.25], [-3,0], [-3,2], [-.375,2]]
+const lt = [[-.375,0], [-4,0], [-3,2], [-.375,2]]
 const mc = [[1.25, 7], [2.25,6], [7.75,6], [8.75, 7], [7.75,8], [2.25,8]]
-const ub = [[4,2.5], [6,2.5], [6,5], [5,5.75], [4,5]]
+const ub = [[4,2.375], [6,2.375], [6,5], [5,5.75], [4,5]]
 const uc = [[.25,0], [9.75,0], [7.75,2], [2.25,2]]
 const ul = [[0,.25], [2,2.25], [2,5.75], [1,6.75], [0,5.75]]
 const ur = [[10,.25], [8,2.25], [8,5.75], [9,6.75], [10,5.75]]
@@ -224,8 +224,11 @@ function draw_char(s, x, y){
 		)
 }
 
-function draw_str(str, x, y){
-	(str+'').split('').forEach((s, i) => {
+function draw_str(chars, x, y){
+	if(!(chars instanceof Array)){
+		chars = (chars+'').split('')
+	}
+	chars.forEach((s, i) => {
 		draw_char(s, x + i * grid_w, y)
 	})
 }
@@ -243,7 +246,6 @@ function display(t){
 	let x = pad_h, y = pad_v
 	draw_str(weekday, x, y)
 	draw_str(month, x+=grid_w2, y)
-	// draw_char('-', x+24, y)
 	c.fillRect((x+27.5)*z, (y+6)*z, 3*z, 2*z)
 	draw_str(day_of_month, x+=grid_w2, y)
 	x = pad_h
