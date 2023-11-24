@@ -5,7 +5,11 @@
 	Segmented Clock
 </title>
 <style type='text/css'>
-	:root {color-scheme: dark;}
+	:root {
+		--accent: #808080;
+		accent-color: var(--accent);
+		color-scheme: dark;
+	}
 	body, input, select {
 		background: #000;
 		color: #FFF;
@@ -115,6 +119,7 @@ function setTheme(theme){
 	palettes = themes[theme]
 	can.style.backgroundColor = palettes.background
 	document.querySelector(`#theme [value=${theme}]`).selected = true
+	document.documentElement.style.setProperty('--accent', palettes.color)
 	synchronize()
 }
 
