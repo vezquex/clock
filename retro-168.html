@@ -76,16 +76,11 @@
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
 <svg version="1.1" viewBox="0 0 3200 3200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class='svg'>
 <filter id='inset-shadow'>
-	<!-- Shadow offset -->
-	<feOffset dx='-50' dy='50'/>
-	<!-- Shadow blur -->
+	<feOffset dx='-20' dy='20'/>
 	<feGaussianBlur stdDeviation='10' result='offset-blur'/>
-	<!-- Invert drop shadow to make an inset shadow -->
-	<feComposite operator='out' in='SourceGraphic' in2='offset-blur' result='inverse'/>
-	<!-- Cut color inside shadow -->
+	<feComposite result='inverse' operator='out' in='SourceGraphic' in2='offset-blur'/>
 	<feFlood flood-color='#000' flood-opacity='.95' result='color'/>
-	<feComposite operator='in' in='color' in2='inverse' result='shadow'/>
-	<!-- Placing shadow over element -->
+	<feComposite result='shadow' operator='in' in='color' in2='inverse'/>
 	<feComposite operator='over' in='shadow' in2='SourceGraphic'/>
 </filter>
 <g id="Vectors">
@@ -211,7 +206,6 @@ const offset_el = document.getElementById('offset')
 
 function setTheme(theme){
 	palettes = themes[theme]
-	// can.style.backgroundColor = palettes.background
 	const lcd_el = document.getElementById('LCD')
 	lcd_el.style.fill = palettes.background
 	document.querySelector(`#theme [value=${theme}]`).selected = true
@@ -223,9 +217,7 @@ function setTheme(theme){
 function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(offset_el.value)
-	let t
-	t = new Date(Date.now() + offset)
-	t = new Date(2020,9,25,20,19,10)
+	const t = new Date(Date.now() + offset)
 	display(t)
 	const r = 1000 - (t % 1000)
 	window.synchronizeTimeout = window.setTimeout(synchronize, r)
@@ -351,12 +343,12 @@ function draw_char(s, x, y, m = 1, paths = char_paths){
 	)
 }
 
-function draw_str(chars, x, y, m = 1){
+function draw_str(chars, x, y, m = 1, paths = char_paths, grid = grid_w){
 	if(!(chars instanceof Array)){
 		chars = (chars+'').split('')
 	}
 	chars.forEach((s, i) => {
-		draw_char(s, x + i * grid_w, y, m)
+		draw_char(s, x + i * grid, y, m, paths)
 	})
 }
 
@@ -376,18 +368,17 @@ function display(t){
 	draw_str(weekday, x, y, m)
 	draw_str(day_of_month, x+=38, y, m)
 	m = 1.5
-	x = 0
+	x = 2
 	y += 8
-	draw_char(hours[0], x+2, y, m, char_paths_narrow)
-	draw_char(hours[1], x+grid_w, y, m)
-	colon(x+29, y, m)
-	draw_str(minutes, x+=grid_w2, y, m)
+	;(hours[0] !== '0') && draw_char(hours[0], x, y, m, char_paths_narrow)
+	draw_char(hours[1], x+=grid_w-3, y, m, char_paths_narrow)
+	colon(x+=grid_w-3, y, m)
+	draw_str(minutes, x+=3, y, m, char_paths_narrow, grid_w-3)
 	m = m*0.67
-	draw_str(seconds, x+45, y+15, m)
+	draw_str(seconds, x+45, y+15, m, char_paths_narrow, grid_w-3)
 }
 
 setTheme('Light')
-
 resize()
 
 </script>
