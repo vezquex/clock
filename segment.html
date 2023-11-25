@@ -137,11 +137,12 @@ function zeropad2(s){
 	return ('0' + s).slice(-2)
 }
 
-function shape(path, x, y){
+function shape(path, x, y, m = 1){
+	m = m*z
 	c.beginPath()
-	c.moveTo((path[0][0] + x)*z, (path[0][1] + y)*z)
+	c.moveTo((path[0][0] + x)*m, (path[0][1] + y)*m)
 	for(i=1; i<path.length; ++i){
-		c.lineTo((path[i][0] + x)*z, (path[i][1] + y)*z)
+		c.lineTo((path[i][0] + x)*m, (path[i][1] + y)*m)
 	}
 	c.fill()
 }
@@ -223,18 +224,18 @@ const char_paths = Object.fromEntries(
 
 const locale = 'en-us'
 
-function draw_char(s, x, y){
+function draw_char(s, x, y, m = 1){
 	char_paths[s].forEach(
-			path => shape(path, x, y)
-		)
+		path => shape(path, x, y, m)
+	)
 }
 
-function draw_str(chars, x, y){
+function draw_str(chars, x, y, m = 1){
 	if(!(chars instanceof Array)){
 		chars = (chars+'').split('')
 	}
 	chars.forEach((s, i) => {
-		draw_char(s, x + i * grid_w, y)
+		draw_char(s, x + i * grid_w, y, m)
 	})
 }
 
@@ -248,7 +249,7 @@ function display(t){
 
 	c.fillStyle = palettes.color
 	c.clearRect(0, 0, width*z, height*z)
-	let x = pad_h, y = pad_v
+	let x = pad_h, y = pad_v, m = 1
 	draw_str(weekday, x, y)
 	draw_str(month, x+=grid_w2, y)
 	c.fillRect((x+27.5)*z, (y+6)*z, 3*z, 2*z)
@@ -258,8 +259,8 @@ function display(t){
 	draw_str(hours, x, y)
 	colon(x+29, y)
 	draw_str(minutes, x+=grid_w2, y)
-	colon(x+29, y)
-	draw_str(seconds, x+=grid_w2, y)
+	m = 0.75
+	draw_str(seconds, (x+grid_w2)/m, y/m+4.5, m)
 }
 
 setTheme('Amber')
