@@ -74,7 +74,7 @@
 	<feComposite operator='over' in='shadow' in2='SourceGraphic'/>
 </filter>
 <g id="Vectors">
-<path id="Outer_Ring" d="m654 84c-107.9 0-125.6 10.86-178 42-99.24 58.97-169.5 160.3-231 258-55.99 88.89-97.35 188.6-121 291-47.44 205.3-38 631-38 631s-15.02 543.3 33.83 771.4c23.81 111.2 51.72 164.5 68.18 192.3 81.62 137.7 135.8 290.9 288 384.3 5.375 3.302 62.14 42 178 42h1892c115.9 0 172.6-38.7 178-42 152.1-93.45 206.4-246.6 288-384.3 16.46-27.77 44.37-81.13 68.18-192.3 48.85-228.1 33.83-771.4 33.83-771.4s9.444-425.7-38-631c-23.65-102.4-65.01-202.1-121-291-61.53-97.67-131.8-199-231-258-52.41-31.14-70.14-42-178-42h-946z" style="fill:var(--bg);stroke:var(--outer_ring);" stroke-width="48"/>
+<path id="Outer_Ring" style="fill:var(--bg);stroke:var(--outer_ring);" stroke-width="48" d="m654 84c-107.9 0-125.6 10.86-178 42-99.24 58.97-169.5 160.3-231 258-55.99 88.89-97.35 188.6-121 291-47.44 205.3-38 631-38 631s-15.02 543.3 33.83 771.4c23.81 111.2 51.72 164.5 68.18 192.3 81.62 137.7 135.8 290.9 288 384.3 5.375 3.302 62.14 42 178 42h1892c115.9 0 172.6-38.7 178-42 152.1-93.45 206.4-246.6 288-384.3 16.46-27.77 44.37-81.13 68.18-192.3 48.85-228.1 33.83-771.4 33.83-771.4s9.444-425.7-38-631c-23.65-102.4-65.01-202.1-121-291-61.53-97.67-131.8-199-231-258-52.41-31.14-70.14-42-178-42h-946z"/>
 <path id="Inner_Ring" style="stroke:var(--gray);" transform="matrix(.9553 0 0 .9553 71.58 62.19)" d="m654 84c-107.9 0-125.6 10.86-178 42-99.24 58.97-169.5 160.3-231 258-55.99 88.89-97.35 188.6-121 291-47.44 205.3-38 631-38 631s-15.02 543.3 33.83 771.4c23.81 111.2 51.72 164.5 68.18 192.3 81.62 137.7 135.8 290.9 288 384.3 5.375 3.302 62.14 42 178 42h1892c115.9 0 172.6-38.7 178-42 152.1-93.45 206.4-246.6 288-384.3 16.46-27.77 44.37-81.13 68.18-192.3 48.85-228.1 33.83-771.4 33.83-771.4s9.444-425.7-38-631c-23.65-102.4-65.01-202.1-121-291-61.53-97.67-131.8-199-231-258-52.41-31.14-70.14-42-178-42h-946z" fill="none" stroke-width="24"/>
 <path id="Banner" d="m610 520h2074v226h-2074l-134-113z" style="fill:var(--banner);"/>
 <rect id="LCD" style="filter:url(#inset-shadow);" x="540" y="850" width="2130" height="1050" rx="100"/>
@@ -133,6 +133,7 @@
 
 let palettes
 const color_palettes = {
+	blue: '#034A82',
 	dark_label: '#868EA1',
 	negative: '#242224',
 	positive: '#BFD4D5',
@@ -161,11 +162,12 @@ const themes = {
 	Light: {
 		accent: color_palettes.negative,
 		background: color_palettes.positive,
-		banner: '#034A82',
+		banner: color_palettes.blue,
 		bg: '#000',
 		gold: '#8E7853',
 		gray: '#B0B0B0',
 		orange: '#C6311B',
+		outer_ring: color_palettes.blue,
 	},
 }
 for(k in themes){
@@ -211,7 +213,7 @@ window.addEventListener('resize', resize)
 
 const offset_el = document.getElementById('offset')
 
-const colors = ['accent', 'banner', 'bg', 'gold', 'gray',	'orange']
+const colors = ['accent', 'banner', 'bg', 'gold', 'gray',	'orange', 'outer_ring']
 function setTheme(theme){
 	palettes = themes[theme]
 	const lcd_el = document.getElementById('LCD')
