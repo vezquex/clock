@@ -74,11 +74,11 @@
 </filter>
 <g id="Vectors">
 <path id="Outer_Ring" style="fill:var(--bg);stroke:var(--outer_ring);" stroke-width="48" d="m654 84c-107.9 0-125.6 10.86-178 42-99.24 58.97-169.5 160.3-231 258-55.99 88.89-97.35 188.6-121 291-47.44 205.3-38 631-38 631s-15.02 543.3 33.83 771.4c23.81 111.2 51.72 164.5 68.18 192.3 81.62 137.7 135.8 290.9 288 384.3 5.375 3.302 62.14 42 178 42h1892c115.9 0 172.6-38.7 178-42 152.1-93.45 206.4-246.6 288-384.3 16.46-27.77 44.37-81.13 68.18-192.3 48.85-228.1 33.83-771.4 33.83-771.4s9.444-425.7-38-631c-23.65-102.4-65.01-202.1-121-291-61.53-97.67-131.8-199-231-258-52.41-31.14-70.14-42-178-42h-946z"/>
-<path id="Inner_Ring" style="stroke:var(--gray);" transform="matrix(.9553 0 0 .9553 71.58 62.19)" d="m654 84c-107.9 0-125.6 10.86-178 42-99.24 58.97-169.5 160.3-231 258-55.99 88.89-97.35 188.6-121 291-47.44 205.3-38 631-38 631s-15.02 543.3 33.83 771.4c23.81 111.2 51.72 164.5 68.18 192.3 81.62 137.7 135.8 290.9 288 384.3 5.375 3.302 62.14 42 178 42h1892c115.9 0 172.6-38.7 178-42 152.1-93.45 206.4-246.6 288-384.3 16.46-27.77 44.37-81.13 68.18-192.3 48.85-228.1 33.83-771.4 33.83-771.4s9.444-425.7-38-631c-23.65-102.4-65.01-202.1-121-291-61.53-97.67-131.8-199-231-258-52.41-31.14-70.14-42-178-42h-946z" fill="none" stroke-width="24"/>
+<path id="Inner_Ring" style="stroke:var(--inner_ring);" transform="matrix(.9553 0 0 .9553 71.58 62.19)" d="m654 84c-107.9 0-125.6 10.86-178 42-99.24 58.97-169.5 160.3-231 258-55.99 88.89-97.35 188.6-121 291-47.44 205.3-38 631-38 631s-15.02 543.3 33.83 771.4c23.81 111.2 51.72 164.5 68.18 192.3 81.62 137.7 135.8 290.9 288 384.3 5.375 3.302 62.14 42 178 42h1892c115.9 0 172.6-38.7 178-42 152.1-93.45 206.4-246.6 288-384.3 16.46-27.77 44.37-81.13 68.18-192.3 48.85-228.1 33.83-771.4 33.83-771.4s9.444-425.7-38-631c-23.65-102.4-65.01-202.1-121-291-61.53-97.67-131.8-199-231-258-52.41-31.14-70.14-42-178-42h-946z" fill="none" stroke-width="24"/>
 <path id="Banner" d="m610 520h2074v226h-2074l-134-113z" style="fill:var(--banner);"/>
 <rect id="LCD" style="filter:url(#inset-shadow);" x="540" y="850" width="2130" height="1050" rx="100"/>
 <path id="Rule" d="m420 2250h2366l-24 34h-2314z" style="fill:var(--gray);"/>
-<g style="fill:var(--orange);">
+<g style="fill:var(--highlight);">
 <path id="RPoint" d="m2439 2128-129 32 20-114 117 40z"/>
 <path id="LPoint" d="m774 2078 129-32-20 114-117-40z"/>
 <circle id="ULCircle" cx="370" cy="754" r="50"/>
@@ -86,10 +86,10 @@
 <circle id="DLCircle" cx="370" cy="2050" r="50"/>
 </g>
 </g>
-<text x="620" y="440" style="fill:var(--gray);font-size:200px;font-weight:700;letter-spacing:45px;">
+<text x="620" y="440" style="fill:var(--brand);font-size:200px;font-weight:700;letter-spacing:45px;">
 	OASIS
 </text>
-<text x="1540" y="420" style="fill:var(--gold);font-size:110px;font-weight:700;letter-spacing:23px;">
+<text x="1540" y="420" style="fill:var(--alchro);font-size:110px;font-weight:700;letter-spacing:23px;">
 	ALARM CHRONO
 </text>
 <text x="650" y="680" style="fill:var(--gray);font-size:150px;letter-spacing:21px;font-style:italic; font-variant:small-caps;">
@@ -101,10 +101,10 @@
 <text style="fill:var(--gray);transform: translate(300px, 1530px) rotate(90deg);" class="button-label">
 	MODE
 </text>
-<text x="916" y="2168" style="fill:var(--orange);font-size:180px;letter-spacing:25px;font-style:italic;font-weight:700;">
+<text x="916" y="2168" style="fill:var(--highlight);font-size:180px;letter-spacing:25px;font-style:italic;font-weight:700;">
 	ILLUMINATED
 </text>
-<text x="850" y="2476" style="fill:var(--gold);font-size:150px;letter-spacing: 46px;font-weight:700;">
+<text x="850" y="2476" style="fill:var(--water);font-size:150px;letter-spacing: 46px;font-weight:700;">
 	WATER RESIST
 </text>
 <text style="fill:var(--gray);transform: translate(2900px, 1922px) rotate(-90deg);font-size:140px;letter-spacing:16px;" class="button-label">
@@ -129,57 +129,73 @@
 </div>
 
 <script type='text/javascript'>
+const _ = void 0
 
 let palettes
 const color_palettes = {
-	blue: '#034A82',
+	accent: '#242224',
+	alchro: '#8E7853',
+	background: '#BFD4D5',
+	banner: '#034A82',
+	bg: '#000',
+	brand: '#B0B0B0',
 	dark_label: '#868EA1',
-	negative: '#242224',
-	positive: '#BFD4D5',
+	brand: '#B0B0B0',
+	gray: '#B0B0B0',
+	highlight: '#C6311B',
+	inner_ring: '#B0B0B0',
+	outer_ring: '#034A82',
+	water: '#8E7853',
 }
 const themes = {
-	Dark: {
+	'Blue_and_Yellow': {
+		alchro: '#E1DB72',
+		banner: '#314254',
+		brand: '#E1DB72',
+		highlight: '#E1DB72',
+		inner_ring: color_palettes.gray,
+		outer_ring: '#314254',
+		water: color_palettes.gray,
+	},
+	'Dark': {
+		alchro: color_palettes.gray,
+		banner: '#2F383F',
+		highlight: color_palettes.gray,
+		outer_ring: 'none',
+		water: color_palettes.gray,
+	},
+	'Dark_Negative': {
 		accent: '#98A29A',
+		alchro: color_palettes.dark_label,
 		background: '#2D2C31',
 		banner: '#000',
-		bg: '#000',
-		gold: color_palettes.dark_label,
+		brand: '#E0E0E0',
 		gray: color_palettes.dark_label,
-		orange: color_palettes.dark_label,
+		highlight: color_palettes.dark_label,
+		inner_ring: color_palettes.dark_label,
 		outer_ring: 'none',
+		water: color_palettes.dark_label,
 	},
-	Gold: {
-		accent: color_palettes.negative,
-		background: color_palettes.positive,
+	'Gold': {
+		alchro: '#000',
 		banner: 'rgba(0,0,0,.2)',
 		bg: '#A89C60',
-		gold: '#000',
+		brand: '#000',
 		gray: '#000',
-		orange: '#000',
+		highlight: '#000',
+		inner_ring: '#000',
 		outer_ring: 'none',
+		water: '#000',
 	},
-	Light: {
-		accent: color_palettes.negative,
-		background: color_palettes.positive,
-		banner: color_palettes.blue,
-		bg: '#000',
-		gold: '#8E7853',
-		gray: '#B0B0B0',
-		orange: '#C6311B',
-		outer_ring: color_palettes.blue,
+	'Light': {
 	},
 }
 for(k in themes){
-	const theme = themes[k]
-	;(theme._scale||[]).forEach((color, i)=>theme[i] = color_palettes[color])
-	Object.assign(theme, color_palettes)
+	themes[k] = Object.assign({}, color_palettes, themes[k])
 }
-document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
+const colors = Object.keys(color_palettes)
+document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t.replaceAll('_',' ')}</option>`).join('')
 
-
-const dcale = 'en-us'
-
-const _ = void 0
 
 const can = document.getElementById('face')
 const c = can.getContext('2d')
@@ -212,8 +228,8 @@ window.addEventListener('resize', resize)
 
 const offset_el = document.getElementById('offset')
 
-const colors = ['accent', 'banner', 'bg', 'gold', 'gray',	'orange', 'outer_ring']
 function setTheme(theme){
+	console.log(Object.keys(themes), theme)
 	palettes = themes[theme]
 	const lcd_el = document.getElementById('LCD')
 	lcd_el.style.fill = palettes.background
@@ -368,7 +384,7 @@ function display(t){
 	const hours = zeropad2(t.getHours()+'')
 	const minutes = zeropad2(t.getMinutes())
 	const seconds = zeropad2(t.getSeconds())
-	const day_of_month = t.getDate()
+	const day_of_month = (t.getDate()+'').padStart(2)
 
 	c.fillStyle = palettes.accent
 	c.clearRect(0, 0, width*z, height*z)
@@ -385,8 +401,8 @@ function display(t){
 	draw_char(hours[1], x+=grid_w-3, y, m, char_paths_narrow)
 	colon(x+=grid_w-3, y, m)
 	draw_str(minutes, x+=3, y, m, char_paths_narrow, grid_w-3)
-	m = m*0.67
-	draw_str(seconds, x+45, y+14.5, m, char_paths_narrow, grid_w-3)
+	m = m*0.75
+	draw_str(seconds, x+39, y+9.5, m, char_paths_narrow, grid_w-4)
 }
 
 setTheme('Light')
