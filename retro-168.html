@@ -58,16 +58,6 @@
 	.bold {
 		font-weight:700;
 	}
-	.accent-color {
-		fill: var(--accent);
-		/* fill: #F0F; */
-	}
-	.gold {
-		fill:#8E7853;
-	}
-	.gray {
-		fill: #b0b0b0;
-	}
 	.button-label {
 		font-size:140px;
 		letter-spacing:10;
@@ -84,44 +74,44 @@
 	<feComposite operator='over' in='shadow' in2='SourceGraphic'/>
 </filter>
 <g id="Vectors">
-<path id="Rule" d="m420 2250h2366l-24 34h-2314z" fill="#b0b0b0"/>
-<g fill="#c6311b">
+<path id="Rule" d="m420 2250h2366l-24 34h-2314z" style="fill:var(--gray);"/>
+<g style="fill:var(--orange);">
 <path id="RPoint" d="m2439 2128-129 32 20-114 117 40z"/>
 <path id="LPoint" d="m774 2078 129-32-20 114-117-40z"/>
 <circle id="ULCircle" cx="370" cy="754" r="50"/>
 <circle id="DRCircle" cx="2850" cy="2050" r="50"/>
 <circle id="DLCircle" cx="370" cy="2050" r="50"/>
 </g>
-<path id="Banner" d="m610 520h2074v226h-2074l-134-113z" fill="#034a82"/>
-<path id="Outer_Ring" d="m654 84c-107.9 0-125.6 10.86-178 42-99.24 58.97-169.5 160.3-231 258-55.99 88.89-97.35 188.6-121 291-47.44 205.3-38 631-38 631s-15.02 543.3 33.83 771.4c23.81 111.2 51.72 164.5 68.18 192.3 81.62 137.7 135.8 290.9 288 384.3 5.375 3.302 62.14 42 178 42h1892c115.9 0 172.6-38.7 178-42 152.1-93.45 206.4-246.6 288-384.3 16.46-27.77 44.37-81.13 68.18-192.3 48.85-228.1 33.83-771.4 33.83-771.4s9.444-425.7-38-631c-23.65-102.4-65.01-202.1-121-291-61.53-97.67-131.8-199-231-258-52.41-31.14-70.14-42-178-42h-946z" fill="none" stroke="#034a82" stroke-width="48"/>
-<path id="Inner_Ring" transform="matrix(.9553 0 0 .9553 71.58 62.19)" d="m654 84c-107.9 0-125.6 10.86-178 42-99.24 58.97-169.5 160.3-231 258-55.99 88.89-97.35 188.6-121 291-47.44 205.3-38 631-38 631s-15.02 543.3 33.83 771.4c23.81 111.2 51.72 164.5 68.18 192.3 81.62 137.7 135.8 290.9 288 384.3 5.375 3.302 62.14 42 178 42h1892c115.9 0 172.6-38.7 178-42 152.1-93.45 206.4-246.6 288-384.3 16.46-27.77 44.37-81.13 68.18-192.3 48.85-228.1 33.83-771.4 33.83-771.4s9.444-425.7-38-631c-23.65-102.4-65.01-202.1-121-291-61.53-97.67-131.8-199-231-258-52.41-31.14-70.14-42-178-42h-946z" fill="none" stroke="#b0b0b0" stroke-width="24"/>
-<rect id="LCD" style="fill:#F1EDDB; filter:url(#inset-shadow);" x="540" y="850" width="2130" height="1050" rx="100"/>
+<path id="Outer_Ring" d="m654 84c-107.9 0-125.6 10.86-178 42-99.24 58.97-169.5 160.3-231 258-55.99 88.89-97.35 188.6-121 291-47.44 205.3-38 631-38 631s-15.02 543.3 33.83 771.4c23.81 111.2 51.72 164.5 68.18 192.3 81.62 137.7 135.8 290.9 288 384.3 5.375 3.302 62.14 42 178 42h1892c115.9 0 172.6-38.7 178-42 152.1-93.45 206.4-246.6 288-384.3 16.46-27.77 44.37-81.13 68.18-192.3 48.85-228.1 33.83-771.4 33.83-771.4s9.444-425.7-38-631c-23.65-102.4-65.01-202.1-121-291-61.53-97.67-131.8-199-231-258-52.41-31.14-70.14-42-178-42h-946z" style="fill:var(--bg);stroke:var(--outer_ring);" stroke-width="48"/>
+<path id="Inner_Ring" style="stroke:var(--gray);" transform="matrix(.9553 0 0 .9553 71.58 62.19)" d="m654 84c-107.9 0-125.6 10.86-178 42-99.24 58.97-169.5 160.3-231 258-55.99 88.89-97.35 188.6-121 291-47.44 205.3-38 631-38 631s-15.02 543.3 33.83 771.4c23.81 111.2 51.72 164.5 68.18 192.3 81.62 137.7 135.8 290.9 288 384.3 5.375 3.302 62.14 42 178 42h1892c115.9 0 172.6-38.7 178-42 152.1-93.45 206.4-246.6 288-384.3 16.46-27.77 44.37-81.13 68.18-192.3 48.85-228.1 33.83-771.4 33.83-771.4s9.444-425.7-38-631c-23.65-102.4-65.01-202.1-121-291-61.53-97.67-131.8-199-231-258-52.41-31.14-70.14-42-178-42h-946z" fill="none" stroke-width="24"/>
+<path id="Banner" d="m610 520h2074v226h-2074l-134-113z" style="fill:var(--banner);"/>
+<rect id="LCD" style="filter:url(#inset-shadow);" x="540" y="850" width="2130" height="1050" rx="100"/>
 </g>
-<text x="620" y="440" style="font-size:200px;font-weight:700;letter-spacing:45px;" class="gray">
+<text x="620" y="440" style="fill:var(--gray);font-size:200px;font-weight:700;letter-spacing:45px;">
 	OASIS
 </text>
-<text x="1540" y="420" style="font-size:110px;font-weight:700;letter-spacing:23px;" class="gold">
+<text x="1540" y="420" style="fill:var(--gold);font-size:110px;font-weight:700;letter-spacing:23px;">
 	ALARM CHRONO
 </text>
-<text x="650" y="680" style="font-size:150px;letter-spacing:21px;font-style:italic; font-variant:small-caps;" class="gray">
+<text x="650" y="680" style="fill:var(--gray);font-size:150px;letter-spacing:21px;font-style:italic; font-variant:small-caps;">
 	<tspan class='bold'>E</tspan>lectro<tspan class='bold'>L</tspan>uminescence
 </text>
-<text style="transform: translate(300px, 860px) rotate(90deg);" class="gray button-label">
+<text style="fill:var(--gray);transform: translate(300px, 860px) rotate(90deg);" class="button-label">
 	LIGHT
 </text>
-<text style="transform: translate(300px, 1530px) rotate(90deg);" class="gray button-label">
+<text style="fill:var(--gray);transform: translate(300px, 1530px) rotate(90deg);" class="button-label">
 	MODE
 </text>
-<text x="916" y="2168" style="fill:#c6311b;font-size:180px;letter-spacing:25px;font-style:italic;font-weight:700;">
+<text x="916" y="2168" style="fill:var(--orange);font-size:180px;letter-spacing:25px;font-style:italic;font-weight:700;">
 	ILLUMINATED
 </text>
-<text x="850" y="2476" style="font-size:150px;letter-spacing: 46px;font-weight:700;" class="gold">
+<text x="850" y="2476" style="fill:var(--gold);font-size:150px;letter-spacing: 46px;font-weight:700;">
 	WATER RESIST
 </text>
-<text style="transform: translate(2900px, 1922px) rotate(-90deg);font-size:140px;letter-spacing:16px;" class="gray button-label">
+<text style="fill:var(--gray);transform: translate(2900px, 1922px) rotate(-90deg);font-size:140px;letter-spacing:16px;" class="button-label">
 	START/STOP
 </text>
-<text x="920" y="1186" style="font-size:120px;font-weight:700;letter-spacing:8px;" class="accent-color">
+<text x="920" y="1186" style="fill:var(--accent);font-size:120px;font-weight:700;letter-spacing:8px;">
 	24H
 </text>
 </svg>
@@ -143,23 +133,39 @@
 
 let palettes
 const color_palettes = {
-	'amber': '#E2A71E',
-	'black': '#242224',
-	'lcd': '#BFD4D5',
-	'white': '#F1EDDB',
+	dark_label: '#868EA1',
+	negative: '#242224',
+	positive: '#BFD4D5',
 }
 const themes = {
 	Dark: {
-		background: color_palettes.black,
-		color: color_palettes.white,
+		accent: '#98A29A',
+		background: '#2D2C31',
+		banner: '#000',
+		bg: '#000',
+		gold: color_palettes.dark_label,
+		gray: color_palettes.dark_label,
+		orange: color_palettes.dark_label,
+		outer_ring: 'none',
+	},
+	Gold: {
+		accent: color_palettes.negative,
+		background: color_palettes.positive,
+		banner: 'rgba(0,0,0,.2)',
+		bg: '#A89C60',
+		gold: '#000',
+		gray: '#000',
+		orange: '#000',
+		outer_ring: 'none',
 	},
 	Light: {
-		background: color_palettes.lcd,
-		color: color_palettes.black,
-	},
-	Amber: {
-		background: color_palettes.black,
-		color: color_palettes.amber,
+		accent: color_palettes.negative,
+		background: color_palettes.positive,
+		banner: '#034A82',
+		bg: '#000',
+		gold: '#8E7853',
+		gray: '#B0B0B0',
+		orange: '#C6311B',
 	},
 }
 for(k in themes){
@@ -205,12 +211,15 @@ window.addEventListener('resize', resize)
 
 const offset_el = document.getElementById('offset')
 
+const colors = ['accent', 'banner', 'bg', 'gold', 'gray',	'orange']
 function setTheme(theme){
 	palettes = themes[theme]
 	const lcd_el = document.getElementById('LCD')
 	lcd_el.style.fill = palettes.background
 	document.querySelector(`#theme [value=${theme}]`).selected = true
-	document.documentElement.style.setProperty('--accent', palettes.color)
+	colors.forEach(color => {
+		document.documentElement.style.setProperty('--'+color, palettes[color])
+	})
 	synchronize()
 }
 
@@ -360,7 +369,7 @@ function display(t){
 	const seconds = zeropad2(t.getSeconds())
 	const day_of_month = t.getDate()
 
-	c.fillStyle = palettes.color
+	c.fillStyle = palettes.accent
 	c.clearRect(0, 0, width*z, height*z)
 	let x, y, m
 	m = 0.75
