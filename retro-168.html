@@ -148,20 +148,20 @@ const color_palettes = {
 	water: '#8E7853',
 }
 const themes = {
-	'Blue_and_Yellow': {
+	'Dark': {
+		alchro: color_palettes.gray,
+		banner: '#2F383F',
+		highlight: color_palettes.gray,
+		outer_ring: 'none',
+		water: color_palettes.gray,
+	},
+	'Dark_Accents': {
 		alchro: '#E1DB72',
 		banner: '#314254',
 		brand: '#E1DB72',
 		highlight: '#E1DB72',
 		inner_ring: color_palettes.gray,
 		outer_ring: '#314254',
-		water: color_palettes.gray,
-	},
-	'Dark': {
-		alchro: color_palettes.gray,
-		banner: '#2F383F',
-		highlight: color_palettes.gray,
-		outer_ring: 'none',
 		water: color_palettes.gray,
 	},
 	'Dark_Negative': {
@@ -187,7 +187,18 @@ const themes = {
 		outer_ring: 'none',
 		water: '#000',
 	},
-	'Light': {
+	'Gray': {
+		alchro: '#3E4449',
+		banner: 'rgba(0,0,0,.2)',
+		bg: '#B9BFC4',
+		brand: '#3E4449',
+		gray: '#3E4449',
+		highlight: '#3E4449',
+		inner_ring: '#3E4449',
+		outer_ring: 'none',
+		water: '#3E4449',
+	},
+	'Standard': {
 	},
 }
 for(k in themes){
@@ -244,7 +255,8 @@ function setTheme(theme){
 function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(offset_el.value)
-	const t = new Date(Date.now() + offset)
+	let t = new Date(Date.now() + offset)
+	// t = new Date(2020,9,25,10,19,10)
 	display(t)
 	const r = 1000 - (t % 1000)
 	window.synchronizeTimeout = window.setTimeout(synchronize, r)
@@ -405,7 +417,7 @@ function display(t){
 	draw_str(seconds, x+39, y+9.5, m, char_paths_narrow, grid_w-4)
 }
 
-setTheme('Light')
+setTheme('Standard')
 resize()
 
 </script>
