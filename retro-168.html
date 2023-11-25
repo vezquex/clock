@@ -200,6 +200,9 @@ const themes = {
 	},
 	'Standard': {
 	},
+	'Standard_Light': {
+		background: '#05B3E6',
+	},
 }
 for(k in themes){
 	themes[k] = Object.assign({}, color_palettes, themes[k])
@@ -417,7 +420,7 @@ function display(t){
 	draw_str(seconds, x+39, y+9.5, m, char_paths_narrow, grid_w-4)
 }
 
-setTheme('Standard')
+setTheme('Standard_Light')
 resize()
 
 </script>
