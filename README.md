@@ -37,5 +37,8 @@ Modified to support more than one size of pixel font. Fonts comparable to some J
 # [Segmented Display](https://vezquex.github.io/clock/segment.html)
 7-segment display.
 
+# [Retro Watch](https://vezquex.github.io/clock/retro-168.html)
+Example of SVG decorations and finer adjustments.
+
 # [World Time](https://vezquex.github.io/clock/world.html)
 Scroll through time zones.
