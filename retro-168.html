@@ -6,7 +6,6 @@
 </title>
 <style type='text/css'>
 	:root {
-		--accent: #808080;
 		accent-color: var(--accent);
 	}
 	body, option {
@@ -387,7 +386,7 @@ function display(t){
 	colon(x+=grid_w-3, y, m)
 	draw_str(minutes, x+=3, y, m, char_paths_narrow, grid_w-3)
 	m = m*0.67
-	draw_str(seconds, x+45, y+15, m, char_paths_narrow, grid_w-3)
+	draw_str(seconds, x+45, y+14.5, m, char_paths_narrow, grid_w-3)
 }
 
 setTheme('Light')
