@@ -238,15 +238,17 @@ let z = 1
 function resize(){
 	const lcd_el = document.getElementById('LCD')
 	const rect = lcd_el.getBoundingClientRect()
+	const scale = window.devicePixelRatio || 1
 	z = Math.min(
 		(rect.width / width),
 		(rect.height / height),
-	)
-	can.height = height * z
-	can.width = width * z
+	) / scale
+	can.height = height * z * scale
+	can.width = width * z * scale
 	can.style.left = rect.x + 'px'
 	can.style.top = rect.y + 'px'
-	can.style.borderRadius = z*5 + 'px'
+	can.style.borderRadius = z*10 + 'px'
+	c.scale(scale, scale)
 	synchronize()
 }
 window.addEventListener('resize', resize)
@@ -406,7 +408,7 @@ function draw_str(chars, x, y, m = 1, paths = char_paths, grid = grid_w){
 }
 
 function display(t){
-	const weekday = t.toLocaleString(locale, { weekday: 'short' }).toUpperCase().slice(0,2)
+	const weekday = t.toLocaleString(locale, {weekday:'short'}).toUpperCase().slice(0,2)
 	const hours = zeropad2(t.getHours()+'')
 	const minutes = zeropad2(t.getMinutes())
 	const seconds = zeropad2(t.getSeconds())
