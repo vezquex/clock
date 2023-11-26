@@ -240,14 +240,16 @@ function resize(){
 	const rect = lcd_el.getBoundingClientRect()
 	const scale = window.devicePixelRatio || 1
 	z = Math.min(
-		(rect.width / width),
 		(rect.height / height),
-	) / scale
-	can.height = height * z * scale
-	can.width = width * z * scale
+		(rect.width / width),
+	)
+	can.height = height * scale * z
+	can.width = width * scale * z
 	can.style.left = rect.x + 'px'
 	can.style.top = rect.y + 'px'
-	can.style.borderRadius = z*10 + 'px'
+	can.style.height = rect.height+'px'
+	can.style.width = rect.width+'px'
+	can.style.borderRadius = z*5 + 'px'
 	c.scale(scale, scale)
 	synchronize()
 }
@@ -256,7 +258,6 @@ window.addEventListener('resize', resize)
 const offset_el = document.getElementById('offset')
 
 function setTheme(theme){
-	console.log(Object.keys(themes), theme)
 	palettes = themes[theme]
 	const lcd_el = document.getElementById('LCD')
 	lcd_el.style.fill = palettes.background
