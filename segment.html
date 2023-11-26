@@ -39,6 +39,7 @@
 <div><canvas id='face'></canvas></div>
 
 <script type='text/javascript'>
+const locale = 'en-us'
 
 let palettes
 const color_palettes = {
@@ -77,7 +78,6 @@ const themes = {
 }
 for(k in themes){
 	const theme = themes[k]
-	;(theme._scale||[]).forEach((color, i)=>theme[i] = color_palettes[color])
 	Object.assign(theme, color_palettes)
 }
 document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
@@ -102,18 +102,23 @@ const grid_w2 = grid_w * 2
 // zoom
 let z = 1
 
-function resize(){
-	z = Math.min(
-		Math.floor(window.innerWidth / width),
-		Math.floor(window.innerHeight / height),
-	)	
-	can.height = height * z
-	can.width = width * z
-}
-resize()
-window.addEventListener('resize', resize)
-
 const offset_el = document.getElementById('offset')
+
+function resize(){
+	const scale = window.devicePixelRatio || 1
+	z = Math.floor(Math.min(
+		window.innerWidth / width,
+		window.innerHeight / height,
+	))
+	can.height = height * scale * z
+	can.width = width * scale * z
+	can.style.height = (height*z)+'px'
+	can.style.width = (width*z)+'px'
+	c.scale(scale, scale)
+	synchronize()
+}
+
+window.addEventListener('resize', resize)
 
 function setTheme(theme){
 	palettes = themes[theme]
@@ -222,8 +227,6 @@ const char_paths = Object.fromEntries(
 	)
 )
 
-const locale = 'en-us'
-
 function draw_char(s, x, y, m = 1){
 	char_paths[s].forEach(
 		path => shape(path, x, y, m)
@@ -265,6 +268,6 @@ function display(t){
 
 setTheme('Amber')
 
-synchronize()
+resize()
 
 </script>
