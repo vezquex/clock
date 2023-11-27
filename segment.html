@@ -133,7 +133,6 @@ function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(offset_el.value)
 	const t = new Date(Date.now() + offset)
-	// const t = new Date(2001,9,1,23,59,47)
 	display(t)
 	const r = 1000 - (t % 1000)
 	window.synchronizeTimeout = window.setTimeout(synchronize, r)
@@ -268,7 +267,7 @@ function display(t){
 	colon(x+29.5, y)
 	draw_str(minutes, x+=grid_w2+7, y)
 	m = 0.75
-	draw_str(seconds, (x+grid_w2)/m, y/m+4.5, m)
+	draw_str(seconds, (x+grid_w2)/m, (y+3.5)/m, m)
 }
 
 setTheme('Amber')
