@@ -10,31 +10,29 @@
 		accent-color: var(--accent);
 		color-scheme: dark;
 	}
-	body, input, select {
+	body, button, input, select {
 		background: #000;
 		color: #FFF;
 		display: flex;
 		flex-direction: column;
-		font-family: sans-serif;
+		font-family: monospace;
 		font-size: 1em;
 		margin: 0;
 	}
-	label {
-		display: flex;
-	}
-	input, select, .label {
-		border: 0;
+	button, select {
+		border-style: outset;
+		border-width: 1px;
+		cursor: pointer;
+		flex-grow: 1;
 		opacity: 0.5;
 		padding: .5em;
 	}
-	button, label, select {
-		flex-grow: 1;
-	}
-	button, select {
-		cursor: pointer;
-	}
 	button {
-		border-radius: 0;
+		align-items: center;
+		justify-content: center;
+	}
+	select {
+		flex-grow: 1;
 	}
 	.flex {
 		display: flex;
@@ -44,17 +42,19 @@
 		width: 100vw;
 		bottom: 0;
 	}
+	@media(hover: none){
+		button, select {
+			font-size: 2rem;
+		}
+	}
 </style>
 
 <div><canvas id='face'></canvas></div>
 <input id='offset' style='display:none;' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
 <div class='flex bottom'>
-	<label>
-		<span class='label'>Theme</span>
-		<select id='theme' title='Theme' onChange='setTheme(this.value)'></select>
-	</label>
-	<button id='zone_dec' onMouseDown='zone_dec()'>Z-</button>
-	<button id='zone_inc' onMouseDown='zone_inc()'>Z+</button>
+	<select id='theme' title='Theme' onChange='setTheme(this.value)'></select>
+	<button id='zone_dec'><span>-</span></button>
+	<button id='zone_inc'><span>+</span></button>
 </div>
 
 <script type='text/javascript'>
@@ -173,6 +173,57 @@ function setTheme(theme){
 	document.documentElement.style.setProperty('--accent', palettes.color)
 	synchronize()
 }
+
+function on_button(event, callback){
+	// left mouse button or touch event
+	if (!(event.which === 1 || event.type === 'touchstart')){
+		return
+	}
+	const self = this
+	let interval = null
+	let timeout = null
+
+	// click
+	callback()
+
+	// cancel interval and timeout; unbind listeners
+	function cancel(event){
+		window.clearInterval(interval)
+		window.clearTimeout(timeout)
+		// self.blur()
+		self.removeEventListener('mouseout', cancel)
+		self.removeEventListener('mouseup', cancel)
+		self.removeEventListener('mouseup', cancel)
+		event.preventDefault()
+	}
+	self.addEventListener('mouseout', cancel)
+	self.addEventListener('mouseup', cancel)
+	self.addEventListener('touchend', cancel)
+
+	// long press: repeat
+	timeout = window.setTimeout(function(){
+		interval = window.setInterval(callback, 100)
+	}, 300)
+}
+
+function bind_on_button(el, cb){
+	el.addEventListener('mousedown', function(event){
+		on_button.call(this, event, cb)
+	})
+	el.addEventListener('touchstart', function(event){
+		on_button.call(this, event, cb)
+		event.preventDefault()
+	})
+}
+
+bind_on_button(
+	document.getElementById('zone_dec'),
+	zone_dec
+)
+bind_on_button(
+	document.getElementById('zone_inc'),
+	zone_inc
+)
 
 function zone_dec(){
 	mem_zone -= 1
