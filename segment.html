@@ -90,13 +90,13 @@ const _ = void 0
 const can = document.getElementById('face')
 const c = can.getContext('2d')
 
-const height = 40
-const width = 100
-const pad_h = 4
-const pad_v = 4
+const height = 24
+const width = 83
+const pad_h = 2
+const pad_v = 0
 const char_height = 10
 const char_width = 14
-const grid_w = char_width + 2
+const grid_w = char_width + 0
 const grid_w2 = grid_w * 2
 
 // zoom
@@ -133,6 +133,7 @@ function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(offset_el.value)
 	const t = new Date(Date.now() + offset)
+	// const t = new Date(2001,9,1,23,59,47)
 	display(t)
 	const r = 1000 - (t % 1000)
 	window.synchronizeTimeout = window.setTimeout(synchronize, r)
@@ -166,15 +167,16 @@ function colon(x, y){
 const db = [[4,11.625], [6,11.625], [6,9], [5,8.25], [4,9]]
 const dc = [[.25,14], [9.75,14], [7.75,12], [2.25,12]]
 const dl = [[0,13.75], [2,11.75], [2,8.25], [1,7.25], [0,8.25]]
+const dlt = [[-.375,14], [-4,14], [-3,12], [-.375,12]]
 const dr = [[10,13.75], [8,11.75], [8,8.25], [9,7.25], [10,8.25]]
-const lt = [[-.375,0], [-4,0], [-3,2], [-.375,2]]
+const ult = [[-.375,0], [-4,0], [-3,2], [-.375,2]]
 const mc = [[1.25, 7], [2.25,6], [7.75,6], [8.75, 7], [7.75,8], [2.25,8]]
 const ub = [[4,2.375], [6,2.375], [6,5], [5,5.75], [4,5]]
 const uc = [[.25,0], [9.75,0], [7.75,2], [2.25,2]]
 const ul = [[0,.25], [2,2.25], [2,5.75], [1,6.75], [0,5.75]]
 const ur = [[10,.25], [8,2.25], [8,5.75], [9,6.75], [10,5.75]]
 
-const segs = [ur, ul, uc, dr, dl, dc, mc, ub, db, lt]
+const segs = [ur, ul, uc, dr, dl, dc, mc, ub, db, ult, dlt]
 const char_masks = {
 	'0': 0b111111,
 	'1': 0b1001,
@@ -190,11 +192,14 @@ const char_masks = {
 	'-': 0b100000000,
 	':': 0b110000000,
 	'A': 0b1011111,
+	'D': 0b11000111111,
 	'E': 0b1110110,
 	'F': 0b1010110,
 	'H': 0b1011011,
+	'I': 0b110100100,
 	'L': 0b0110010,
 	'M': 0b110011111,
+	'N': 0b0000011111,
 	'O': 0b111111,
 	'R': 0b1001011111,
 	'S': 0b1101110,
@@ -228,7 +233,7 @@ const char_paths = Object.fromEntries(
 )
 
 function draw_char(s, x, y, m = 1){
-	char_paths[s].forEach(
+	(char_paths[s] || char_paths['?']).forEach(
 		path => shape(path, x, y, m)
 	)
 }
@@ -244,24 +249,24 @@ function draw_str(chars, x, y, m = 1){
 
 function display(t){
 	const month = ((t.getMonth() + 1)+'').padStart(2)
-	const weekday = t.toLocaleString(locale, { weekday: 'short' }).toUpperCase().slice(0,2)
-	const hours = (t.getHours()+'').padStart(2)
+	let weekday = t.toLocaleString(locale, { weekday: 'short' }).toUpperCase().slice(0,3)
+	const hours = zeropad2(t.getHours())
 	const minutes = zeropad2(t.getMinutes())
 	const seconds = zeropad2(t.getSeconds())
-	const day_of_month = t.getDate()
+	const day_of_month = zeropad2(t.getDate())
 
 	c.fillStyle = palettes.color
 	c.clearRect(0, 0, width*z, height*z)
-	let x = pad_h, y = pad_v, m = 1
-	draw_str(weekday, x, y)
-	draw_str(month, x+=grid_w2, y)
-	c.fillRect((x+27.5)*z, (y+6)*z, 3*z, 2*z)
-	draw_str(day_of_month, x+=grid_w2, y)
+	let x = pad_h, y = pad_v, m = .5
+	draw_str(weekday, x = pad_h/m + 10, y, m)
+	draw_str(month, x+=grid_w*3+6, y, m)
+	c.fillRect((x+grid_w2)*z*m, (y+6)*z*m, 4*z*m, 2*z*m)
+	draw_str(day_of_month, x+=grid_w*2+8, y, m)
 	x = pad_h
-	y += 18
+	y += 10
 	draw_str(hours, x, y)
-	colon(x+29, y)
-	draw_str(minutes, x+=grid_w2, y)
+	colon(x+29.5, y)
+	draw_str(minutes, x+=grid_w2+7, y)
 	m = 0.75
 	draw_str(seconds, (x+grid_w2)/m, y/m+4.5, m)
 }
