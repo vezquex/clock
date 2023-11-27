@@ -566,7 +566,6 @@ function symbol(s, x, y, m, p, f, c = c){
 
 let mem_zone = 0
 
-
 function zone_dec(){
 	mem_zone -= 1
 	if(mem_zone < -11){
@@ -597,19 +596,20 @@ function zeropad2(s){
 	return ("0" + s).slice(-2)
 }
 
+const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 function display(t){
-	const month = months[t.getMonth()]
-	const weekday = t.toLocaleString(locale, { weekday: "long" }).toUpperCase()
-	const hours = t.getHours()
-	const minutes = t.getMinutes()
+	const month = months[t.getUTCMonth()]
+	const weekday = weekdays[t.getUTCDay()]
+	const hours = t.getUTCHours()
+	const minutes = t.getUTCMinutes()
 	const time = zeropad2(hours) + ":" + zeropad2(minutes)
-	const seconds = zeropad2(t.getSeconds())
+	const seconds = zeropad2(t.getUTCSeconds())
 	const numdate =
-		t.getFullYear()+
+		t.getUTCFullYear()+
 		"-"+
-		zeropad2(t.getMonth() + 1)+
+		zeropad2(t.getUTCMonth() + 1)+
 		"-"+
-		zeropad2(t.getDate())
+		zeropad2(t.getUTCDate())
 
 	c.clearRect(0, 0, width, height)
 
