@@ -99,8 +99,6 @@ for(k in themes){
 document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
 
 
-const dcale = 'en-us'
-
 const _ = void 0
 
 const can = document.getElementById('face')
@@ -261,8 +259,6 @@ function mask_segs(mask){
 	}
 	return s
 }
-
-const paths = []
 
 const char_paths = Object.fromEntries(
 	Object.entries(char_masks).map(
