@@ -41,83 +41,83 @@
 	<span class='label'>Theme</span>
 	<select id='theme' title='Theme' onChange='setTheme(this.value)'></select>
 </label>
-<div class="flex">
-	<button id="zone_dec" onMouseDown="zone_dec()">Z-</button>
-	<button id="zone_inc" onMouseDown="zone_inc()">Z+</button>
+<div class='flex'>
+	<button id='zone_dec' onMouseDown='zone_dec()'>Z-</button>
+	<button id='zone_inc' onMouseDown='zone_inc()'>Z+</button>
 </div>
 <div><canvas id='face'></canvas></div>
 
-<script type="text/javascript">
-const months = ["JAN.", "FEB.", "MAR.", "APR.", "MAY", "JUNE", "JULY", "AUG.", "SEPT", "OCT.", "NOV.", "DEC."]
+<script type='text/javascript'>
+const months = ['JAN.', 'FEB.', 'MAR.', 'APR.', 'MAY', 'JUNE', 'JULY', 'AUG.', 'SEPT', 'OCT.', 'NOV.', 'DEC.']
+const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
 const city_info = [
-	[-11, "PPG", "Pago Pago"],
-	[-10, "HNL", "Honolulu"],
-	[-9, "ANC", "Anchorage"],
-	[-8, "LAX", "Los Angeles"],
-	[-8, "YVR", "Vancouver"],
-	[-7, "DEN", "Denver"],
-	[-7, "YEA", "Edmonton"],
-	[-6, "CHI", "Chicago"],
-	[-6, "MEX", "Mexico City"],
-	[-5, "NYC", "New York City"],
-	[-5, "YTO", "Toronto"],
-	[-4, "SCL", "Santiago"],
-	[-3.5 , "YYT", "St. John\'s"],
-	[-3, "RIO", "Rio de Janeiro"],
-	[-2, "FEN", "Fernando de Noronha"],
-	[-1, "RAI", "Praia"],
-	[0, "UTC", "Universal Coordinated Time"],
-	[0, "LIS", "Lisbon"],
-	[0, "LON", "London"],
-	[1, "MAD", "Madrid"],
-	[1, "PAR", "Paris"],
-	[1, "ROM", "Rome"],
-	[2, "ANK", "Ankara"],
-	[2, "ATH", "Athens"],
-	[2, "CAI", "Cairo"],
-	[2, "HEL", "Helsinki"],
-	[3, "BGW", "Baghdad"],
-	[3.5, "THR", "Tehran"],
-	[4, "DXB", "Dubai"],
-	[4.5, "KBL", "Kabul"],
-	[5, "KHI", "Karachi"],
-	[5.5, "DEL", "Delhi"],
-	[5.75, "KTM", "Kathmandu"],
-	[6, "DAC", "Dhaka"],
-	[6.5, "RGN", "Yangon"],
-	[7, "BKK", "Bangkok"],
-	[8, "KUL", "Kuala Lumpur"],
-	[8, "SIN", "Singapore"],
-	[8, "TPE", "Taipei"],
-	[9, "TYO", "Tokyo"],
-	[9.5, "ADL", "Adelaide"],
-	[10, "SYD", "Sydney"],
-	[11, "NOU", "Noumea"],
-	[12, "WLG", "Wellington"],
+	[-11, 'PPG', 'Pago Pago'],
+	[-10, 'HNL', 'Honolulu'],
+	[-9, 'ANC', 'Anchorage'],
+	[-8, 'LAX', 'Los Angeles'],
+	[-8, 'YVR', 'Vancouver'],
+	[-7, 'DEN', 'Denver'],
+	[-7, 'YEA', 'Edmonton'],
+	[-6, 'CHI', 'Chicago'],
+	[-6, 'MEX', 'Mexico City'],
+	[-5, 'NYC', 'New York City'],
+	[-5, 'YTO', 'Toronto'],
+	[-4, 'SCL', 'Santiago'],
+	[-3.5 , 'YYT', 'St. John\'s'],
+	[-3, 'RIO', 'Rio de Janeiro'],
+	[-2, 'FEN', 'Fernando de Noronha'],
+	[-1, 'RAI', 'Praia'],
+	[0, 'UTC', 'Universal Coordinated Time'],
+	[0, 'LIS', 'Lisbon'],
+	[0, 'LON', 'London'],
+	[1, 'MAD', 'Madrid'],
+	[1, 'PAR', 'Paris'],
+	[1, 'ROM', 'Rome'],
+	// [2, 'ANK', 'Ankara'], hide 4th to allow bigger size. 7-seg K looks bad
+	[2, 'ATH', 'Athens'],
+	[2, 'CAI', 'Cairo'],
+	[2, 'HEL', 'Helsinki'],
+	[3, 'BGW', 'Baghdad'],
+	[3.5, 'THR', 'Tehran'],
+	[4, 'DXB', 'Dubai'],
+	[4.5, 'KBL', 'Kabul'],
+	[5, 'KHI', 'Karachi'],
+	[5.5, 'DEL', 'Delhi'],
+	[5.75, 'KTM', 'Kathmandu'],
+	[6, 'DAC', 'Dhaka'],
+	[6.5, 'RGN', 'Yangon'],
+	[7, 'BKK', 'Bangkok'],
+	[8, 'KUL', 'Kuala Lumpur'],
+	[8, 'SIN', 'Singapore'],
+	[8, 'TPE', 'Taipei'],
+	[9, 'TYO', 'Tokyo'],
+	[9.5, 'ADL', 'Adelaide'],
+	[10, 'SYD', 'Sydney'],
+	[11, 'NOU', 'Noumea'],
+	[12, 'WLG', 'Wellington'],
 ]
 
-let font = "block_world"
 let palettes
 const color_palettes = {
-	"black": "#000000",
-	"gray_1_3": "#555555",
-	"gray_2_3": "#AAFAAA",
+	'black': '#000000',
+	'gray_1_3': '#804040',
+	'gray_2_3': '#5555A5',
 	'white': '#F1EDDB',
 }
 
-const four_negative = ["black", "gray_1_3", "gray_2_3", "white"]
+const four_negative = ['black', 'gray_1_3', 'gray_2_3', 'white']
 const four_positive = [...four_negative].reverse()
 const themes = {
 	Dark: {
 		_scale: four_negative,
-		_body: "3",
+		_body: '3',
 		background: color_palettes.black,
 		color: color_palettes.white,
 	},
 	Light: {
 		_scale: four_positive,
-		_body: "3",
+		_body: '3',
 		background: color_palettes.white,
 		color: color_palettes.black,
 	},
@@ -127,21 +127,21 @@ for(k in themes){
 	;(theme._scale||[]).forEach((color, i)=>theme[i] = color_palettes[color])
 	Object.assign(theme, color_palettes)
 }
-document.getElementById("theme").innerHTML = Object.keys(themes).map(t => `<option value="${t}">${t}</option>`).join("")
+document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
 
 
-const char_height = 10
 const char_width = 14
+const grid_h = char_width + 1
 const grid_w = char_width + 0
 const grid_w2 = grid_w * 2
 
 const _ = void 0
 
-const can = document.getElementById("face")
-const c = can.getContext("2d")
+const can = document.getElementById('face')
+const c = can.getContext('2d')
 
 const height = 80
-const width = 160
+const width = 89
 const pad_h = 2
 const pad_v = 4
 
@@ -152,424 +152,14 @@ can.height = height * z
 can.width = width * z
 c.setTransform(z, 0, 0, z, 0, 0)
 
-const offset_el = document.getElementById("offset")
+const offset_el = document.getElementById('offset')
 
-const sym_w = 5
-const sym_a = sym_w * sym_w
-// const sym_w2 = sym_w * 2
-const g = sym_w + 1
-
-// base-2 for single color pixel font
-// base-3 for 1 extra color, and so forth
-// base-36 for text storage
-function encode_font(font){
-	return Object.fromEntries(Object.entries(font).map(([k,v])=>([k,
-		parseInt(v.join("").padEnd(sym_a, "0"), 3).toString(36)
-	])))
-}
-function fold_font(font){
-	const width = new RegExp(`(.{${sym_w}})`)
-	return Object.fromEntries(Object.entries(font).map(([k,v])=>([k,
-		v.join("").padEnd(sym_a, "0").split(width).slice(1,-1).join("\n")
-	])))
-}
-const fonts_decode = {}
-fonts_decode.block36 = (s)=>parseInt(s, 36).toString(3).padStart(sym_a, "0").split("").map(s=>parseInt(s))
-fonts_decode.block_world = (s)=>s.replace(/\s/g, "").padEnd(sym_a, "0").split("").map(s=>parseInt(s))
-// const block36 = encode_font(fonts.block)
-let fonts = {
-	block_world: {
-  "0": `
-11111
-10001
-10201
-10001
-11111
-`,
-  "1": `
-01100
-00100
-00100
-00100
-00100
-`,
-  "2": `
-11111
-00001
-11111
-10000
-11111
-`,
-  "3": `
-11111
-00001
-01111
-00001
-11111
-`,
-  "4": `
-10001
-10001
-11111
-00001
-00001
-`,
-  "5": `
-11111
-10000
-11111
-00001
-11111
-`,
-  "6": `
-11111
-10000
-11111
-10001
-11111
-`,
-  "7": `
-11111
-00001
-00001
-00001
-00001
-`,
-  "8": `
-11111
-10001
-11111
-10001
-11111
-`,
-  "9": `
-11111
-10001
-11111
-00001
-00001
-`,
-  "missing": `
-22222
-22202
-20202
-20222
-22222
-`,
-  " ": `
-00000
-00000
-00000
-00000
-00000
-`,
-  "A": `
-11111
-10001
-11111
-10001
-10001
-`,
-  "B": `
-11110
-10010
-11111
-10001
-11111
-`,
-  "C": `
-11111
-10001
-10000
-10001
-11111
-`,
-  "D": `
-11110
-10011
-10001
-10011
-11110
-`,
-  "E": `
-11111
-10000
-11110
-10000
-11111
-`,
-  "F": `
-11111
-10000
-11110
-10000
-10000
-`,
-  "G": `
-11111
-10000
-10111
-10001
-11111
-`,
-  "H": `
-10001
-10001
-11111
-10001
-10001
-`,
-  "I": `
-11111
-00100
-00100
-00100
-11111
-`,
-  "J": `
-00001
-00001
-00001
-10001
-11111
-`,
-  "K": `
-10010
-10010
-11111
-10001
-10001
-`,
-  "L": `
-10000
-10000
-10000
-10000
-11111
-`,
-  "M": `
-11111
-10101
-10101
-10101
-10101
-`,
-  "N": `
-11111
-10001
-10001
-10001
-10001
-`,
-  "O": `
-11111
-10001
-10001
-10001
-11111
-`,
-  "P": `
-11111
-10001
-11111
-10000
-10000
-`,
-  "Q": `
-11110
-10010
-10010
-10010
-11111
-`,
-  "R": `
-11111
-10001
-11111
-10010
-10011
-`,
-  "S": `
-11111
-10000
-11111
-00001
-11111
-`,
-  "T": `
-11111
-00100
-00100
-00100
-00100
-`,
-  "U": `
-10001
-10001
-10001
-10001
-11111
-`,
-  "V": `
-10001
-10001
-11011
-01010
-01110
-`,
-  "W": `
-10101
-10101
-10101
-10101
-11111
-`,
-  "X": `
-10001
-11011
-01110
-11011
-10001
-`,
-  "Y": `
-10001
-10001
-11111
-00100
-00100
-`,
-  "Z": `
-11111
-00011
-01110
-11000
-11111
-`,
-  "%": `
-10001
-00010
-00100
-01000
-10001
-`,
-  "-": `
-00000
-00000
-01110
-00000
-00000
-`,
-	"+": `
-00000
-00100
-01110
-00100
-00000
-`,
-".": `
-00000
-00000
-00000
-00000
-10000
-`,
-  ":": `
-00000
-00100
-00000
-00100
-00000
-`,
-  "_": `
-00000
-00000
-00000
-00000
-11111
-`,
-"/": `
-00001
-00010
-00100
-01000
-10000
-`,
-  "🔋": `
-01110
-11111
-10001
-10001
-11111
-`,
-  "█": `
-11111
-11111
-11111
-11111
-11111`
-},
-}
-
-for(f in fonts){
-	const decode = fonts_decode[f]
-	if(!decode) continue
-	const font = fonts[f]
-	for(char in font){
-		font[char] = decode(font[char])
-	}
-}
-
-function setTheme(theme){
-	palettes = themes[theme]
-	document.getElementById("face").style.backgroundColor = palettes.background
-	document.querySelector(`#theme [value=${theme}]`).selected = true
-	synchronize()
-}
 function setTheme(theme){
 	palettes = themes[theme]
 	can.style.backgroundColor = palettes.background
 	document.querySelector(`#theme [value=${theme}]`).selected = true
 	document.documentElement.style.setProperty('--accent', palettes.color)
 	synchronize()
-}
-
-function str(s, x, y, m = 1, p = palettes._body, f = font, ctx = c){
-	s = [...s] // unicode
-	for(var i = 0; i < s.length; ++i){
-		symbol(
-			s[i],
-			x + i,
-			y, m, p, f, ctx
-		)
-	}
-}
-
-function strv(s, x, y, m = 1, p = palettes._body, f = font, ctx = c){
-	s = [...s] // unicode
-	for(var i = 0; i < s.length; ++i){
-		symbol(
-			s[i],
-			x,
-			y + i*z,
-			m, p, f, ctx
-		)
-	}
-}
-
-function symbol(s, x, y, m, p, f, c = c){
-	const font = fonts[f]
-	const bmp = font[s] || font.missing || fonts.block.missing
-	const l = bmp.length
-	for(var i = 0; i < l; ++i){
-		let b = bmp[i]
-		if(b === 0) continue
-		c.fillStyle = palettes[p]
-		c.fillRect(
-			(m * (x * g + (i % sym_w)) + pad_h),
-			((y * g + m * Math.floor(i / sym_w)) + pad_v),
-			m, m
-		)
-	}
 }
 
 let mem_zone = 0
@@ -590,8 +180,8 @@ function zone_inc(){
 }
 
 function zone_desc(zone){
-	const prefix = (zone > 0) ? "+" : (zone < 0) ? "-" : ""
-	return `${prefix}${(((Math.abs(zone))||"UTC")+"").padStart(2, "0")}`
+	const prefix = (zone > 0) ? '+' : (zone < 0) ? '-' : ''
+	return `${prefix}${(((Math.abs(zone))||'UTC')+'').padStart(2, '0')}`
 }
 
 function synchronize(){
@@ -621,6 +211,7 @@ const char_masks = {
 	' ': 0,
 	'.': 0b100000000,
 	'-': 0b1000000,
+	'+': 0b111000000,
 	':': 0b110000000,
 	'A': 0b1011111,
 	'B': 0b1000000110101101,
@@ -728,7 +319,26 @@ function colon(x, y){
 	shape(colon_shape, x, y+9)
 }
 
-const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+function resize(){
+	const scale = window.devicePixelRatio || 1
+	z = Math.floor(Math.min(
+		window.innerWidth / width,
+		window.innerHeight / height,
+	))
+	can.height = height * scale * z
+	can.width = width * scale * z
+	can.style.height = (height*z)+'px'
+	can.style.width = (width*z)+'px'
+	c.scale(scale, scale)
+	synchronize()
+}
+
+window.addEventListener('resize', resize)
+
+setTheme('Dark')
+
+resize()
+
 function display(t){
 	const day_of_month = zeropad2(t.getUTCDate())
 	const month = zeropad2(t.getUTCMonth()+1)
@@ -754,50 +364,33 @@ function display(t){
 	m = 0.75
 	draw_str(seconds, (x + grid_w2)/m, (y+3.5)/m, m)
 
-	y += 12
+	y += 16
+	m = .25
 	const tiles = 24
+	c.fillStyle = palettes[1]
 	for(var i = 0; i < tiles; ++i){
 		let zone = i - 11
 		let lit = zone === mem_zone
 		c.fillStyle = palettes[lit ? 2 : 1]
 		c.fillRect(
-			i * g * z,
-			y * g,
-			sym_w * z,
-			g*3 * z,
+			i * grid_w * m * z,
+			y * z,
+			char_width*m*z,
+			3*grid_h*m*z,
 		)
-		strv(
-			zone_desc(zone),
-			i,
-			y,
-			z,
-			lit ? 1 : 3
-		)
+		c.fillStyle = palettes[3]
+		zone_desc(zone).split('').forEach((char, j) => draw_char(
+			char,
+			i * grid_w,
+			y/m + (j*grid_h),
+			m,
+		))
 	}
-	y += 4
+	y += 13
+	m = 0.5
 	const city_codes = city_info.filter(a => a[0] === mem_zone)
 	.map(info => info[1])
-	str(city_codes.join("/"), 0, y+=12, z)
+	draw_str(city_codes.join('.'), pad_h/m, y/m, m)
 }
-
-function resize(){
-	const scale = window.devicePixelRatio || 1
-	z = Math.floor(Math.min(
-		window.innerWidth / width,
-		window.innerHeight / height,
-	))
-	can.height = height * scale * z
-	can.width = width * scale * z
-	can.style.height = (height*z)+'px'
-	can.style.width = (width*z)+'px'
-	c.scale(scale, scale)
-	synchronize()
-}
-
-window.addEventListener('resize', resize)
-
-setTheme('Dark')
-
-resize()
 
 </script>
