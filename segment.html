@@ -159,14 +159,14 @@ function circle(r, x, y){
 	c.fill()
 }
 const colon_sides = 6
-const colon_radius = 1.25
-const gon = Array(colon_sides).fill().map((_,i)=>([
+const colon_radius = 1.16
+const colon_shape = Array(colon_sides).fill().map((_,i)=>([
 	colon_radius * Math.cos(i * tau / colon_sides),
 	colon_radius * Math.sin(i * tau / colon_sides),
 ]))
 function colon(x, y){
-	shape(gon, x, y+5)
-	shape(gon, x, y+9)
+	shape(colon_shape, x, y+5)
+	shape(colon_shape, x, y+9)
 }
 
 const db = [[4,11.625], [6,11.625], [6,9], [5,8.25], [4,9]]
