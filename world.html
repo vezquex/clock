@@ -363,18 +363,17 @@ function display(t){
 
 	m = .1
 	const tiles = 24
-	c.fillStyle = palettes[1]
 	for(var i = 0; i < tiles; ++i){
 		let zone = i - 11
 		let lit = zone === mem_zone
-		c.fillStyle = palettes[lit ? 2 : 1]
+		c.fillStyle = palettes[lit ? 1 : 0]
 		shape(
 			[[0,0],[3*grid_w,0],[3*grid_w,char_height],[0,char_height]],
 			(width-4)/m,
 			1/m + i * grid_h,
 			m,
 		)
-		c.fillStyle = palettes[3]
+		c.fillStyle = palettes[lit ? 3 : 2]
 		draw_str(zone_desc(zone),
 			(width-4)/m,
 			1/m + i * grid_h,
@@ -383,6 +382,7 @@ function display(t){
 	}
 	y += 16
 	m = 0.5
+	c.fillStyle = palettes[1]
 	const city_codes = city_info.filter(a => a[0] === mem_zone)
 	if(city_codes.length > 1){
 		draw_str(city_codes.map(a => a[1]).join('.'), pad_h/m, y/m, m)
