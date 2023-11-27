@@ -56,28 +56,28 @@ const city_info = [
 	[-10, 'HNL', 'Honolulu'],
 	[-9, 'ANC', 'Anchorage'],
 	[-8, 'LAX', 'Los Angeles'],
-	[-8, 'YVR', 'Vancouver'],
+	// [-8, 'YVR', 'Vancouver'],
 	[-7, 'DEN', 'Denver'],
-	[-7, 'YEA', 'Edmonton'],
-	[-6, 'CHI', 'Chicago'],
+	// [-7, 'YEA', 'Edmonton'],
+	// [-6, 'CHI', 'Chicago'],
 	[-6, 'MEX', 'Mexico City'],
-	[-5, 'NYC', 'New York City'],
-	[-5, 'YTO', 'Toronto'],
+	[-5, 'NYC', 'New York'],
+	// [-5, 'YTO', 'Toronto'],
 	[-4, 'SCL', 'Santiago'],
 	[-3.5 , 'YYT', 'St. John\'s'],
-	[-3, 'RIO', 'Rio de Janeiro'],
-	[-2, 'FEN', 'Fernando de Noronha'],
+	[-3, 'RIO', 'Rio_Janeiro'],//Rio de Janeiro
+	[-2, 'FEN', 'Fern_Noronha'],//Fernando de Noronha
 	[-1, 'RAI', 'Praia'],
-	[0, 'UTC', 'Universal Coordinated Time'],
-	[0, 'LIS', 'Lisbon'],
-	[0, 'LON', 'London'],
-	[1, 'MAD', 'Madrid'],
+	[0, 'UTC', 'Universal'], // Universal Coordinated Time
+	// [0, 'LIS', 'Lisbon'],
+	// [0, 'LON', 'London'],
+	// [1, 'MAD', 'Madrid'],
 	[1, 'PAR', 'Paris'],
-	[1, 'ROM', 'Rome'],
-	// [2, 'ANK', 'Ankara'], hide 4th to allow bigger size. 7-seg K looks bad
+	// [1, 'ROM', 'Rome'],
+	// [2, 'ANK', 'Ankara']
 	[2, 'ATH', 'Athens'],
-	[2, 'CAI', 'Cairo'],
-	[2, 'HEL', 'Helsinki'],
+	// [2, 'CAI', 'Cairo'],
+	// [2, 'HEL', 'Helsinki'],
 	[3, 'BGW', 'Baghdad'],
 	[3.5, 'THR', 'Tehran'],
 	[4, 'DXB', 'Dubai'],
@@ -88,9 +88,9 @@ const city_info = [
 	[6, 'DAC', 'Dhaka'],
 	[6.5, 'RGN', 'Yangon'],
 	[7, 'BKK', 'Bangkok'],
-	[8, 'KUL', 'Kuala Lumpur'],
+	// [8, 'KUL', 'Kuala Lumpur'],
 	[8, 'SIN', 'Singapore'],
-	[8, 'TPE', 'Taipei'],
+	// [8, 'TPE', 'Taipei'],
 	[9, 'TYO', 'Tokyo'],
 	[9.5, 'ADL', 'Adelaide'],
 	[10, 'SYD', 'Sydney'],
@@ -98,6 +98,7 @@ const city_info = [
 	[12, 'WLG', 'Wellington'],
 ]
 
+let mem_zone = 0
 let palettes
 const color_palettes = {
 	'black': '#000000',
@@ -130,9 +131,10 @@ for(k in themes){
 document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
 
 
-const char_width = 14
-const grid_h = char_width + 1
-const grid_w = char_width + 0
+const char_height = 14
+const char_width = 10
+const grid_h = char_height + 1
+const grid_w = char_width + 4
 const grid_w2 = grid_w * 2
 
 const _ = void 0
@@ -140,7 +142,7 @@ const _ = void 0
 const can = document.getElementById('face')
 const c = can.getContext('2d')
 
-const height = 60
+const height = 44
 const width = 89
 const pad_h = 2
 const pad_v = 4
@@ -161,8 +163,6 @@ function setTheme(theme){
 	document.documentElement.style.setProperty('--accent', palettes.color)
 	synchronize()
 }
-
-let mem_zone = 0
 
 function zone_dec(){
 	mem_zone -= 1
@@ -211,6 +211,7 @@ const char_masks = {
 	' ': 0,
 	'.': 0b100000000,
 	'-': 0b1000000,
+	'_': 0b100000,
 	'+': 0b111000000,
 	':': 0b110000000,
 	'A': 0b1011111,
@@ -360,33 +361,35 @@ function display(t){
 	m = 0.75
 	draw_str(seconds, (x + grid_w2)/m, (y+3.5)/m, m)
 
-	y += 16
-	m = .25
+	m = .1
 	const tiles = 24
 	c.fillStyle = palettes[1]
 	for(var i = 0; i < tiles; ++i){
 		let zone = i - 11
 		let lit = zone === mem_zone
 		c.fillStyle = palettes[lit ? 2 : 1]
-		c.fillRect(
-			i * grid_w * m * z,
-			y * z,
-			char_width*m*z,
-			3*grid_h*m*z,
+		shape(
+			[[0,0],[3*grid_w,0],[3*grid_w,char_height],[0,char_height]],
+			(width-4)/m,
+			1/m + i * grid_h,
+			m,
 		)
 		c.fillStyle = palettes[3]
-		zone_desc(zone).split('').forEach((char, j) => draw_char(
-			char,
-			i * grid_w,
-			y/m + (j*grid_h),
+		draw_str(zone_desc(zone),
+			(width-4)/m,
+			1/m + i * grid_h,
 			m,
-		))
+		)
 	}
-	y += 13
+	y += 16
 	m = 0.5
 	const city_codes = city_info.filter(a => a[0] === mem_zone)
-	.map(info => info[1])
-	draw_str(city_codes.join('.'), pad_h/m, y/m, m)
+	if(city_codes.length > 1){
+		draw_str(city_codes.map(a => a[1]).join('.'), pad_h/m, y/m, m)
+	}
+	if(city_codes.length === 1){
+		draw_str(city_codes[0][2].toUpperCase().slice(0,12), pad_h/m, y/m, m)
+	}
 }
 
 setTheme('Dark')
