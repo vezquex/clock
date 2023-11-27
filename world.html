@@ -346,12 +346,14 @@ function resize(){
 
 window.addEventListener('resize', resize)
 
+const dash = [[2.25, 7], [3.25,6], [6.75,6], [7.75, 7], [6.75,8], [3.25,8]]
+const zone_bg_shape = [[0,0],[3*grid_w,0],[3*grid_w,char_height],[0,char_height]]
+
 function display(t){
 	const day_of_month = zeropad2(t.getUTCDate())
 	const month = zeropad2(t.getUTCMonth()+1)
 	const month_name = months[t.getUTCMonth()]
 	const year = t.getUTCFullYear()
-	const numdate = `${year}-${month}-${day_of_month}`
 	const weekday = weekdays[t.getUTCDay()]
 	const hours = zeropad2(t.getUTCHours())
 	const minutes = zeropad2(t.getUTCMinutes())
@@ -359,11 +361,16 @@ function display(t){
 
 	c.fillStyle = palettes.color
 	c.clearRect(0, 0, width*z, height*z)
-	x = pad_h, y = pad_v, m = .25
-	draw_str(month_name+' '+weekday, x = (pad_h + grid_w*2.75)/m, y/m, m)
+	y = pad_v, m = .25
+	draw_str(month_name, x = (pad_h + grid_w*2.375)/m, y/m, m)
+	draw_str(weekday, x = (pad_h + grid_w*3.75)/m, y/m, m)
 	y += 6
 	m = .5
-	draw_str(numdate, x = pad_h/m, y/m, m)
+	draw_str(year, x = pad_h/m, y/m, m)
+	draw_str(month, x += 4.75*grid_w, y/m, m)
+	draw_str(day_of_month, x += 2.75*grid_w, y/m, m)
+	shape(dash,	pad_h + 4*grid_w, y + grid_h - 5, m)
+	shape(dash,	pad_h + 6.75*grid_w, y + grid_h - 5, m)
 	y += 10
 	draw_str(hours, x = pad_h, y)
 	colon(x+29.5, y)
@@ -376,9 +383,9 @@ function display(t){
 	for(var i = 0; i < tiles; ++i){
 		let zone = i - 11
 		let lit = zone === mem_zone
-		c.fillStyle = palettes[lit ? 1 : 0]
-		shape(
-			[[0,0],[3*grid_w,0],[3*grid_w,char_height],[0,char_height]],
+		c.fillStyle = palettes[1]
+		lit && shape(
+			zone_bg_shape,
 			(width-4)/m,
 			1/m + i * grid_h,
 			m,
