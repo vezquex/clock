@@ -47,8 +47,11 @@ const color_palettes = {
 	'amber': '#E2A71E',
 	'black': '#000000',
 	'blue': '#0080DB',
+	'cyan': '#00F0F0',
 	'green': '#00ED00',
+	'magenta': '#F000F0',
 	'red': '#F10000',
+	'yellow': '#F0F000',
 	'white': '#F1EDDB',
 }
 const themes = {
@@ -68,13 +71,25 @@ const themes = {
 		background: color_palettes.black,
 		color: color_palettes.blue,
 	},
+	Cyan: {
+		background: color_palettes.black,
+		color: color_palettes.cyan,
+	},
 	Green: {
 		background: color_palettes.black,
 		color: color_palettes.green,
 	},
+	Magenta: {
+		background: color_palettes.black,
+		color: color_palettes.magenta,
+	},
 	Red: {
 		background: color_palettes.black,
 		color: color_palettes.red,
+	},
+	Yellow: {
+		background: color_palettes.black,
+		color: color_palettes.yellow,
 	},
 }
 for(k in themes){
@@ -179,6 +194,7 @@ const dr = [[10,13.75], [8,11.75], [8,8.25], [9,7.25], [10,8.25]]
 const ult = [[-.375,0], [-4,0], [-3,2], [-.375,2]]
 const urt = [[10.375,0], [14,0], [13,2], [10.375,2]]
 const mc = [[1.25, 7], [2.25,6], [7.75,6], [8.75, 7], [7.75,8], [2.25,8]]
+const mr = [[5,6], [7.75,6], [8.75, 7], [7.75,8], [5,8]]
 const mlt = [[-4, 7], [-3,6], [-.25,6], [.75, 7], [-.25,8], [-3,8]]
 const mrt = [[14, 7], [13,6], [10.25,6], [9.25, 7], [10.25,8], [13.25,8]]
 const ub = [[4,2.375], [6,2.375], [6,5], [5,5.75], [4,5]]
@@ -186,7 +202,7 @@ const uc = [[.25,0], [9.75,0], [7.75,2], [2.25,2]]
 const ul = [[0,.25], [2,2.25], [2,5.75], [1,6.75], [0,5.75]]
 const ur = [[10,.25], [8,2.25], [8,5.75], [9,6.75], [10,5.75]]
 
-const segs = [ur, ul, uc, dr, dl, dc, mc, ub, db, ult, dlt, urt, drt, mlt, mrt]
+const segs = [ur, ul, uc, dr, dl, dc, mc, ub, db, ult, dlt, urt, drt, mlt, mrt, mr]
 const char_masks = {
 	'0': 0b111111,
 	'1': 0b1001,
@@ -202,22 +218,33 @@ const char_masks = {
 	'-': 0b1000000,
 	':': 0b110000000,
 	'A': 0b1011111,
+	'B': 0b111101101,
+	'C': 0b110110,
 	'D': 0b110101101,
 	'E': 0b1110110,
 	'F': 0b1010110,
+	'G': 0b1000000000111110,
 	'H': 0b1011011,
 	'I': 0b110100100,
+	'J': 0b111001,
+	'K': 0b1100001011011,
 	'L': 0b110010,
 	'M': 0b110011111,
 	'N': 0b0000011111,
 	'O': 0b111111,
+	'P': 0b1010111,
+	'Q': 0b1000000111111,
 	'R': 0b1001011111,
 	'S': 0b1101110,
 	'T': 0b110000100,
 	'T2': 0b1000010110,
 	'T3': 0b100000001101,
 	'U': 0b111011,
+	'V': 0b100010011,
 	'W': 0b100111011,
+	'X': 0b1111001011011,
+	'Y': 0b101000011,
+	'Z': 0b1110101,
 	'?': 0b11111111111,
 }
 
