@@ -52,7 +52,7 @@
 
 <div class='full-height column'>
 	<input id='offset' style='display:none;' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
-	<div class='grow'><canvas id='face'></canvas></div>
+	<div id='face_box' class='grow'><canvas id='face'></canvas></div>
 	<div class='row'>
 		<select id='theme' class='grow' title='Theme' onChange='setTheme(this.value)'></select>
 		<button id='zone_dec'><span>-</span></button>
@@ -390,11 +390,12 @@ function colon(x, y){
 	shape(colon_shape, x, y+9)
 }
 
+const face_box = document.getElementById('face_box')
 function resize(){
 	const scale = window.devicePixelRatio || 1
 	z = Math.floor(Math.min(
 		window.innerWidth / width,
-		window.innerHeight / height,
+		face_box.offsetHeight / height,
 	))
 	can.height = height * scale * z
 	can.width = width * scale * z
