@@ -13,8 +13,6 @@
 	body, button, input, select {
 		background: #000;
 		color: #FFF;
-		display: flex;
-		flex-direction: column;
 		font-family: monospace;
 		font-size: 1em;
 		margin: 0;
@@ -23,25 +21,25 @@
 		border-style: outset;
 		border-width: 1px;
 		cursor: pointer;
-		flex-grow: 1;
 		opacity: 0.5;
 		padding: .5em;
 	}
 	button {
 		align-items: center;
 		justify-content: center;
+		flex-grow: 2;
 	}
 	select {
 		flex-grow: 1;
-	}
-	.flex {
-		display: flex;
 	}
 	.bottom {
 		bottom: 0;
 		overflow: hidden;
 		position: absolute;
 		width: 100vw;
+	}
+	.flex {
+		display: flex;
 	}
 	@media(hover: none){
 		button, select {
