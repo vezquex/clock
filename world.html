@@ -19,9 +19,6 @@
 		font-size: 1em;
 		margin: 0;
 	}
-	body {
-		overflow: hidden;
-	}
 	button, select {
 		border-style: outset;
 		border-width: 1px;
@@ -41,9 +38,10 @@
 		display: flex;
 	}
 	.bottom {
+		bottom: 0;
+		overflow: hidden;
 		position: absolute;
 		width: 100vw;
-		bottom: 0;
 	}
 	@media(hover: none){
 		button, select {
