@@ -175,27 +175,31 @@ function setTheme(theme){
 }
 
 function on_button(event, callback){
-	// left mouse button or touch event
-	if (!(event.which === 1 || event.type === 'touchstart')){
+	// left mouse button, touch, enter, spacebar
+	if (!((event.which === 1) || (event.type === 'touchstart') || (event.keyCode === 13) || (event.keyCode === 32))){
 		return
 	}
 	const self = this
 	let interval = null
 	let timeout = null
 
-	// click
 	callback()
+	event.preventDefault()
 
 	// cancel interval and timeout; unbind listeners
 	function cancel(event){
 		window.clearInterval(interval)
 		window.clearTimeout(timeout)
 		// self.blur()
+		self.removeEventListener('keydown', cancel)
+		self.removeEventListener('keyup', cancel)
 		self.removeEventListener('mouseout', cancel)
 		self.removeEventListener('mouseup', cancel)
 		self.removeEventListener('mouseup', cancel)
 		event.preventDefault()
 	}
+	self.addEventListener('keydown', cancel)
+	self.addEventListener('keyup', cancel)
 	self.addEventListener('mouseout', cancel)
 	self.addEventListener('mouseup', cancel)
 	self.addEventListener('touchend', cancel)
@@ -207,12 +211,14 @@ function on_button(event, callback){
 }
 
 function bind_on_button(el, cb){
+	el.addEventListener('keydown', function(event){
+		on_button.call(this, event, cb)
+	})
 	el.addEventListener('mousedown', function(event){
 		on_button.call(this, event, cb)
 	})
 	el.addEventListener('touchstart', function(event){
 		on_button.call(this, event, cb)
-		event.preventDefault()
 	})
 }
 
