@@ -29,17 +29,19 @@
 		justify-content: center;
 		flex-grow: 2;
 	}
-	select {
+	.grow {
 		flex-grow: 1;
 	}
-	.bottom {
-		bottom: 0;
-		overflow: hidden;
-		position: absolute;
-		width: 100vw;
+	.full-height {
+		min-height: 100vh;
 	}
-	.flex {
+	.column {
 		display: flex;
+		flex-direction: column;
+	}
+	.row {
+		display: flex;
+		flex-direction: row;
 	}
 	@media(hover: none){
 		button, select {
@@ -48,12 +50,14 @@
 	}
 </style>
 
-<div><canvas id='face'></canvas></div>
-<input id='offset' style='display:none;' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
-<div class='flex bottom'>
-	<select id='theme' title='Theme' onChange='setTheme(this.value)'></select>
-	<button id='zone_dec'><span>-</span></button>
-	<button id='zone_inc'><span>+</span></button>
+<div class='full-height column'>
+	<input id='offset' style='display:none;' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
+	<div class='grow'><canvas id='face'></canvas></div>
+	<div class='row'>
+		<select id='theme' class='grow' title='Theme' onChange='setTheme(this.value)'></select>
+		<button id='zone_dec'><span>-</span></button>
+		<button id='zone_inc'><span>+</span></button>
+	</div>
 </div>
 
 <script type='text/javascript'>
