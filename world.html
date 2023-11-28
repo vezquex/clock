@@ -493,8 +493,8 @@ function display(t){
 	c.fillStyle = palettes.color
 	c.clearRect(0, 0, width*z, height*z)
 	let x = 0, y = pad_v, m = .25
-	draw_str(month_name, x = pad_h/m + grid_w*9.25, y/m, m)
-	draw_str(weekday, x += grid_w*6.5, y/m, m)
+	draw_str(month_name, x = pad_h/m + grid_w*9.25, y/m, m, char_paths_sixteen)
+	draw_str(weekday, x += grid_w*6.5, y/m, m, char_paths_sixteen)
 	y += 6
 	m = .5
 	draw_str(year, x = pad_h/m, y/m, m)
