@@ -41,4 +41,6 @@ Modified to support more than one size of pixel font. Fonts comparable to some J
 Example of SVG decorations and finer adjustments.
 
 # [World Time](https://vezquex.github.io/clock/world.html)
-Scroll through time zones.
+- Scroll through time zones.
+- 16-segment display for city names.
+- Responsive layout for mobile browsers.
