@@ -120,7 +120,7 @@
 		<input id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
 		<label>
 			<span class='label'>Theme</span>
-			<select id='theme' title='Theme' onChange='setTheme(this.value)'></select>
+			<select id='theme' onChange='setTheme(this.value)'></select>
 		</label>
 	</div>
 </div>
@@ -401,7 +401,7 @@ function draw_char(s, x, y, m = 1, paths = char_paths){
 	)
 }
 
-function draw_str(chars, x, y, m = 1, paths = char_paths, grid = grid_w){
+function draw_str(chars, x, y, m = 1, paths, grid = grid_w){
 	if(!(chars instanceof Array)){
 		chars = (chars+'').split('')
 	}
