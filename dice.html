@@ -1,0 +1,427 @@
+<!doctype html>
+<meta charset='utf-8'/>
+<meta name='viewport' content='width=device-width, initial-scale=1'/>
+<title>
+	Dice
+</title>
+<style type='text/css'>
+	:root {
+		--accent: #808080;
+		accent-color: var(--accent);
+		color-scheme: dark;
+	}
+	body, input, select {
+		background: #000;
+		color: #FFF;
+		display: flex;
+		flex-direction: column;
+		font-family: sans-serif;
+		font-size: 1em;
+		margin: 0;
+	}
+	body {
+		min-height: 100vh;
+	}
+	label {
+		display: flex;
+	}
+	input, select, .label {
+		padding: .5em;
+	}
+	input, select {
+		border: 0;
+	}
+	.flex {
+		display: flex;
+    justify-content: center;
+	}
+	.grow {
+		flex-grow: 1;
+	}
+	.center {
+		align-self: center;
+	}
+	.border {
+		border: #404040 solid;
+	}
+	.label {
+		border-width: 0 1px 0 0;
+	}
+	#field {
+		border-width: 1px;
+	}
+	#color-label {
+		border-width: 1px 1px 0;
+	}
+</style>
+<label id='color-label' class='center border'>
+	<span class='label border'>Color</span>
+	<select id='color' class='grow' onChange='setColor(this.value)'></select>
+</label>
+<canvas id='field' class='center border'></canvas>
+
+<script type='text/javascript'>
+const _ = void 0
+const {ceil, cos, floor, max, min, PI, random, sin, sqrt} = Math
+const phi = (1 + sqrt(5)) * .5
+const tau = 2 * Math.PI
+const tau_4 = tau / 4
+const tau_8 = tau / 8
+const rt3_2 = sqrt(3)/2
+
+const height = 180
+const width = 180
+const pad_h = 2
+const pad_v = 2
+const char_height = 3
+const char_width = 3
+const grid_w = char_width + 1
+const grid_w2 = grid_w * 2
+let z = 1 // zoom
+const ps = 30
+const dl = 16
+const pip_size = 2.75
+const g = dl+4
+
+let palettes
+const color_palettes = {
+	'black': '#000000',
+	'blue': '#0080DB',
+	'cyan': '#00F0F0',
+	'gray': '#808080',
+	'green': '#00ED00',
+	'magenta': '#F000F0',
+	'orange': '#F07020',
+	'red': '#E00000',
+	'yellow': '#F0F000',
+	'white': '#F1EDDB',
+}
+const obj_colors = {
+	die: 'gray',
+	pip: 'white',
+}
+const number_colors = {
+	1: 'gray',
+	2: 'blue',
+	3: 'green',
+	4: 'orange',
+	5: 'magenta',
+	6: 'yellow',
+	7: 'cyan',
+	8: 'red',
+	9: 'gray',
+	[ps]: 'white',
+}
+for(let i = 1; i<9; ++i){
+	number_colors[30+i] = number_colors[i]
+}
+const rots = {
+	3: tau_4,
+	4: tau_8,
+	5: tau_4,
+	6: 0,
+	7: tau_4,
+	8: tau/16,
+}
+const y_offsets = {
+	3: 4/3,
+}
+const themes = {
+	Dark: {
+		background: color_palettes.black,
+		color: color_palettes.white,
+	},
+}
+const polygons = []
+
+for(k in themes){
+	const theme = themes[k]
+	Object.assign(theme, color_palettes)
+}
+
+document.getElementById('color').innerHTML = Object.keys(color_palettes).map(
+	t => `<option value='${t}' ${t===obj_colors.die ? 'selected' : ''}>${capitalize(t)}</option>`
+	).join('')
+
+const can = document.getElementById('field')
+const c = can.getContext('2d')
+
+function capitalize(s) {
+	return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+function resize(){
+	const scale = window.devicePixelRatio || 1
+	z = floor(min(
+		window.innerWidth / width,
+		window.innerHeight / height,
+	))
+	can.height = height * scale * z
+	can.width = width * scale * z
+	can.style.height = (height*z)+'px'
+	can.style.width = document.getElementById('color-label').style.width = (width*z)+'px'
+	c.scale(scale, scale)
+	synchronize()
+}
+
+window.addEventListener('resize', resize)
+
+function setColor(color){
+	obj_colors.die = color
+	synchronize()
+}
+
+function setTheme(theme){
+	palettes = themes[theme]
+	can.style.backgroundColor = palettes.background
+}
+
+// display at the start of each second
+function synchronize(){
+	window.clearTimeout(window.synchronizeTimeout)
+	const offset = 0
+	const t = new Date(Date.now() + offset)
+	display(t)
+	const r = 1000 - (t % 1000)
+	// window.synchronizeTimeout = window.setTimeout(synchronize, r)
+}
+
+function zeropad2(s){
+	return ('0' + s).slice(-2)
+}
+
+function draw_shape(path, x, y, m = 1){
+	m = m*z
+	c.beginPath()
+	c.moveTo(x*z + (path[0][0])*m, y*z + (path[0][1])*m)
+	for(i=1; i<path.length; ++i){
+		c.lineTo(x*z + (path[i][0])*m, y*z + (path[i][1])*m)
+	}
+	c.fill()
+}
+
+function circle(r, x, y){
+	c.beginPath()
+	c.arc(x*z, y*z, r*z, 0, tau)
+	c.fill()
+}
+
+function polygon(sides, radius = 1, rot = tau_4){
+	return Array(sides).fill().map((_,i)=>([
+		radius * cos(i * tau / sides - rot),
+		radius * sin(i * tau / sides - rot),
+	]))
+}
+
+function polygram(sides, radius = 1, rot = 0, inner_radius = .5/phi){
+	return Array(sides*2).fill().map((_,i)=>([
+		(i%2 ? 1 : inner_radius) * radius * sin(i * tau / (2*sides) - rot),
+		(i%2 ? 1 : inner_radius) * radius * cos(i * tau / (2*sides) - rot),
+	]))
+}
+
+function draw_die(
+	pips,
+	x,
+	y,
+	color = obj_colors.die,
+	dimensions = [],
+){
+	let [columns, rows]	= dimensions
+	rows ??= columns ??= ceil(sqrt(pips.length))
+	const s = max(columns, rows)
+	const dgc = dl/(columns+1)
+	const dgr = dl/(rows+1)
+	const ar = 1
+	// console.log()
+	if(color){
+		const {globalAlpha} = c
+		const m = z
+		c.beginPath()
+		c.roundRect(x*m, y*m, dl*m*ar, dl*m, m*dl/8)
+		c.globalAlpha = 0.25 * globalAlpha
+		c.fillStyle = color_palettes[color]
+		c.fill()
+		c.globalAlpha = 0.2 * globalAlpha
+		c.strokeStyle = color_palettes[color]
+		c.stroke()
+		c.globalAlpha = globalAlpha
+	}
+	pips.forEach((pip, i)=>{
+		if(!pip){ return }
+		c.fillStyle = pip.color ?? color_palettes[number_colors[pip]] ?? obj_colors.pip
+		let poly = pip.shape ?? polygons[pip]
+		if(!poly){
+			const key = `pip=${pip},s=${s}`
+			poly = polygons[key] ??= polygon(pip, min(dgr,dgc)/pip_size, rots[pip])
+		}
+		draw_shape(
+			poly,
+			x + dgc*(1 + i % columns),
+			y + dgr*(1 + floor(i / columns)),
+		)
+	})
+}
+
+const star = {shape:polygram(5, dl/((3+1)*pip_size), _, (3-sqrt(5))*.5),color:'white'}
+const red_stripe = {shape:polygon(4, rt3_2, tau_8),color:'red'}
+const white_stripe = {shape:polygon(4, rt3_2, tau_8),color:'white'}
+const suits = [
+	{
+		name: 'spade',
+		color: 'cyan',
+		shape: [[0,50],[5,73],[25,85],[46,73],[25,100],[75,100],[52,73],[75,85],[95,73],[100,50],[50,0]],
+		ace_scale: 20,
+		pip_scale: 45,
+		radius: 50,
+	},
+	{
+		name: 'heart',
+		color: 'red',
+		shape:[[50,100],[0,35],[5,12],[25,0],[50,12],[75,0],[95,12],[100,35]],
+		ace_scale: 20,
+		pip_scale: 45,
+		radius: 50,
+	},
+	{
+		name: 'club',
+		color: 'cyan',
+		shape:[[50,0],[29,9],[25,35],[0,50],[5,73],[25,85],[45,75],[25,100],[75,100],[55,75],[75,85],[95,73],[100,50],[75,35],[71,9]],
+		ace_scale: 20,
+		pip_scale: 45,
+		radius: 50,
+	},
+	{
+		name: 'diamond',
+		color: 'red',
+		ace_scale: 20,
+	},
+]
+for(let i = 0; i <= 2; ++i){
+	const suit = suits[i]
+	const {ace_scale, color, pip_scale, radius, shape} = suit
+	suit.ace = {
+		color,
+		shape: shape.map(a=>[(a[0]-radius)/ace_scale, (a[1]-radius)/ace_scale])
+	}
+	suit.pip = {
+		color,
+		shape: shape.map(a=>[(a[0]-radius)/pip_scale, (a[1]-radius)/pip_scale])
+	}
+}
+suits[3].ace = {
+	color: suits[3].color,
+	shape: polygram(4, 50/suits[3].ace_scale, tau_8, sqrt(3)/3),
+}
+suits[3].pip = {
+	color: suits[3].color,
+	shape: polygram(4, dl/((4+1) * pip_size), tau_8, sqrt(3)/3),
+}
+function display(t){
+	c.clearRect(0, 0, width*z, height*z)
+	c.fillStyle = palettes.color
+
+	let x = pad_h - g, y = pad_v, m = 1, p = ps
+	draw_die([_,_,_,_,p], x += g, y)
+	draw_die([p,_,_,_,_,_,_,_,p], x += g, y)
+	draw_die([p,_,_,_,p,_,_,_,p], x += g, y)
+	draw_die([p,_,p,_,_,_,p,_,p], x += g, y)
+	draw_die([p,_,p,_,p,_,p,_,p], x += g, y)
+	draw_die([p,_,p,p,_,p,p,_,p], x += g, y)
+	draw_die([p,_,p,p,p,p,p,_,p], x += g, y)
+	draw_die([p,p,p,p,_,p,p,p,p], x += g, y)
+	draw_die(Array(9).fill(p), x += g, y)
+
+	x = pad_h - g, y += g
+	draw_die([], x += g, y)
+	draw_die([_,2+ps,_,_,_,_,_,2+ps], x += g, y, number_colors['2'])
+	draw_die([_,3,_,_,_,_,3,_,3], x += g, y, number_colors['3'])
+	draw_die([_,4,_,4,_,4,_,4], x += g, y, number_colors['4'])
+	draw_die([_,5,_,5,5,5,_,5], x += g, y, number_colors['5'])
+	draw_die([6,6,_,6,_,6,_,6,6], x += g, y, number_colors['6'])
+	draw_die([7,7,_,7,7,7,_,7,7], x += g, y, number_colors['7'])
+	draw_die([8,_,8,8,8,8,8,8,8], x += g, y, number_colors['8'])
+	draw_die([9,9,9,9,9,9,9,9,9], x += g, y, number_colors['9'])
+
+	x = pad_h - g, y += g
+	draw_die([_,5,5,_,5,_,5,5], x += g, y, number_colors['5'])
+	draw_die([5,5,5,_,5,_,_,5], x += g, y, number_colors['5'])
+	draw_die([_,6,_,6,6,6,6,_,6], x += g, y, number_colors['6'])
+	draw_die([_,6,_,6,6,6,6,6], x += g, y, number_colors['6'])
+	draw_die([_,7,_,7,7,7,7,7,7], x += g, y, number_colors['7'])
+	draw_die([7,_,7,7,_,7,7,7,7], x += g, y, number_colors['7'])
+	draw_die([8,_,8,_,_,8,_,8,8,_,8,_,_,8,_,8], x += g, y, number_colors['8'])
+	draw_die(
+		Array(25).fill().map((_, i) => i%2 ? _ : star),
+		x += g, y, 'blue'
+	)
+	draw_die(
+		Array(13**2).fill().map((_, i) => floor(i/13)%2 ? white_stripe : red_stripe),
+		x += g, y, 'black'
+	)
+
+	x = pad_h - g, y += g
+	for(let i = 1; i <= 10; ++i){
+		draw_die(Array(i**2).fill(ps), x += g, y)
+	}
+
+	x = pad_h - g, y += g
+	for(let i = 0; i <= 9; ++i){
+		draw_die(
+			Array(9).fill().map(x => {
+				const r = 2 + floor(9 * random())
+				if(r > 9) return _
+				if(r === 2) return ps
+				return r
+			}),
+			x += g,
+			y,
+			number_colors[1+floor(8 * random())]
+		)
+	}
+
+	let cw = [3,7], gc = dl+0, ace_pad = Array(10).fill()
+	suits.forEach(suit => {
+		x = pad_h - gc, y += g
+		draw_die([...ace_pad, suit.ace], x += gc, y, _, cw)
+		p = suit.pip
+		// /*2*/draw_die([_,p,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,p], x += gc, y, _, cw)
+		/*3*/draw_die([_,p,_,_,_,_,_,_,_,_,p,_,_,_,_,_,_,_,_,p], x += gc, y, _, cw)
+		// /*4*/draw_die([p,_,p,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw)
+		/*5*/draw_die([p,_,p,_,_,_,_,_,_,_,p,_,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw)
+		/*6*/draw_die([p,_,p,_,_,_,_,_,_,p,_,p,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw)
+		/*7*/draw_die([p,_,p,_,p,_,_,_,_,p,_,p,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw)
+		/*8*/draw_die([p,_,p,_,p,_,_,_,_,p,_,p,_,p,_,_,_,_,p,_,p], x += gc, y, _, cw)
+		/*9*/draw_die([p,_,p,_,_,_,p,_,p,_,p,_,p,_,p,_,_,_,p,_,p], x += gc, y, _, cw)
+		/*10*/draw_die([p,_,p,_,p,_,p,_,p,_,_,_,p,_,p,_,p,_,p,_,p], x += gc, y, _, cw)
+		/*J*/draw_die([
+		_,p,p,p,
+		_,_,_,p,
+		_,_,_,p,
+		p,_,_,p,
+		p,_,_,p,
+		_,p,p,_,
+		], x += gc, y, _, [4,6])
+		/*Q*/draw_die([
+		_,p,_,p,_,p,_,
+		_,_,_,_,_,_,_,
+		p,_,_,p,_,_,p,
+		_,_,_,_,p,_,_,
+		_,p,_,_,_,p,_,
+		_,_,_,_,_,_,p,
+		_,_,p,_,p,_,_,
+		], x += gc, y, _, [7])
+		/*K*/draw_die([
+		p,p,_,_,p,
+		_,p,_,p,_,
+		_,p,p,p,_,
+		_,p,_,p,_,
+		p,p,_,_,p,
+		], x += gc, y, _, [5,5])
+	})
+}
+
+setTheme('Dark')
+resize()
+
+</script>
