@@ -1,4 +1,4 @@
-# [Dice & Cards](https://vezquex.github.io/clock/dice.html)
+# [Dice, Cards, & Chess](https://vezquex.github.io/clock/dice.html)
 - Grids of arbitrary pips
 - Playing cards: ace through king
 - Chess FEN display
