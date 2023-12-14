@@ -83,15 +83,20 @@ let palettes
 const color_palettes = {
 	'black': '#000000',
 	'blue': '#0080DB',
+	'blue_dark': '#00406D',
+	'brown': '#783818',
 	'cyan': '#00F0F0',
 	'gray_1_5': '#333333',
 	'gray_1_3': '#555555',
 	'gray': '#808080',
 	'gray_2_3': '#AAAAAA',
 	'green': '#00ED00',
+	'green_dark': '#007600',
 	'magenta': '#F000F0',
 	'orange': '#F07020',
 	'red': '#E00000',
+	'red_dark': '#700000',
+	'tan': '#C0B090',
 	'yellow': '#F0F000',
 	'white': '#F1EDDB',
 }
@@ -384,7 +389,20 @@ const chess = {
 		shape: polygram(4, dl/((6+1) * pip_size), tau_8, sqrt(3)/6),
 	},
 }
-const chessboard = Array(8**2).fill().map((_, i) => (i+floor(i/8))%2 ? black_checker : white_checker)
+function chessboard(black, white){
+	const black_checker = {shape:polygon(4, 1.25, tau_8),color:color_palettes[black]}
+	const white_checker = {shape:polygon(4, 1.25, tau_8),color:color_palettes[white]}
+	return Array(8**2).fill().map((_, i) => (i+floor(i/8))%2 ? black_checker : white_checker)
+}
+const chessboards = [
+	chessboard('black', 'gray_1_5'),
+	chessboard('brown', 'tan'),
+	chessboard('red_dark', 'tan'),
+	chessboard('green_dark', 'tan'),
+	chessboard('blue_dark', 'tan'),
+	chessboard('gray_1_5', 'tan'),
+]
+
 let chess_positions = [
 	`rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1`,
 	`r2qk2r/pb1npp1p/2pp1npQ/1p6/3PP3/P1N2P2/1PP1N1PP/R3KB1R b KQkq - 0 10`,
@@ -476,26 +494,36 @@ function display(t){
 		)
 	}
 
+	let cb = chessboards[0]
 	x = pad_h - g, y += g
 	for(let i = 0; i < 7; ++i){
-		draw_die(chessboard, x += g, y, 'gray_1_3', _, .5)
-		draw_die(chess_positions[i], x, y, false, _, 0)
+		draw_die(cb, x += g, y, 'gray_1_3', _, .5)
+		draw_die(chess_positions[i], x, y, false)
 	}
-	x = pad_h + g * 0, y += g
-	draw_die(chessboard, x += g, y, 'blue', _, .5)
-	draw_die(chess_positions[7], x, y, false, _, 0)
+	draw_die(chessboards[1], x += g, y, false)
+	draw_die(chessboards[5], x += g, y, false)
 
-	draw_die(chessboard, x += g, y, 'blue', _, .5)
-	draw_die(chess_positions[8], x, y, false, _, 0)
+	x = pad_h + g * -1, y += g
+	draw_die(chessboards[0], x += g, y, false)
 
-	draw_die(chessboard, x += g, y, 'yellow', _, .5)
-	draw_die(chess_positions[9], x, y, false, _, 0)
+	draw_die(cb, x += g, y, 'blue', _, .5)
+	draw_die(chess_positions[7], x, y, false)
 
-	draw_die(chessboard, x += g, y, 'red', _, .5)
-	draw_die(chess_positions[10], x, y, false, _, 0)
+	draw_die(cb, x += g, y, 'blue', _, .5)
+	draw_die(chess_positions[8], x, y, false)
 
-	draw_die(chessboard, x += g, y, 'blue', _, .5)
-	draw_die(chess_positions[11], x, y, false, _, 0)
+	draw_die(cb, x += g, y, 'yellow', _, .5)
+	draw_die(chess_positions[9], x, y, false)
+
+	draw_die(cb, x += g, y, 'red', _, .5)
+	draw_die(chess_positions[10], x, y, false)
+
+	draw_die(cb, x += g, y, 'blue', _, .5)
+	draw_die(chess_positions[11], x, y, false)
+
+	draw_die(chessboards[2], x += g, y, false)
+	draw_die(chessboards[3], x += g, y, false)
+	draw_die(chessboards[4], x += g, y, false)
 
 	let cw = [3,7], gc = dl+1.7, ace_pad = Array(10).fill()
 	z = z*10/13
