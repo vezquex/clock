@@ -69,14 +69,10 @@ const tau_4 = tau / 4
 const tau_8 = tau / 8
 const rt3_2 = sqrt(3)/2
 
-const height = 180
+const height = 165
 const width = 180
 const pad_h = 2
 const pad_v = 2
-const char_height = 3
-const char_width = 3
-const grid_w = char_width + 1
-const grid_w2 = grid_w * 2
 let z = 1 // zoom
 const ps = 30
 const dl = 16
@@ -380,17 +376,20 @@ function display(t){
 		)
 	}
 
-	let cw = [3,7], gc = dl+0, ace_pad = Array(10).fill()
+	let cw = [3,7], gc = dl+1.7, ace_pad = Array(10).fill()
+	z = z*10/13
+	y = (y+5)*13/10
 	suits.forEach(suit => {
-		x = pad_h - gc, y += g
+		x = pad_h*13/9 - gc, y += g
 		draw_die([...ace_pad, suit.ace], x += gc, y, _, cw)
 		p = suit.pip
-		// /*2*/draw_die([_,p,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,p], x += gc, y, _, cw)
+		/*2*/draw_die([_,p,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,p], x += gc, y, _, cw)
 		/*3*/draw_die([_,p,_,_,_,_,_,_,_,_,p,_,_,_,_,_,_,_,_,p], x += gc, y, _, cw)
-		// /*4*/draw_die([p,_,p,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw)
+		/*4*/draw_die([p,_,p,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw)
 		/*5*/draw_die([p,_,p,_,_,_,_,_,_,_,p,_,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw)
 		/*6*/draw_die([p,_,p,_,_,_,_,_,_,p,_,p,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw)
 		/*7*/draw_die([p,_,p,_,p,_,_,_,_,p,_,p,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw)
+		// x = pad_h - gc, y += g
 		/*8*/draw_die([p,_,p,_,p,_,_,_,_,p,_,p,_,p,_,_,_,_,p,_,p], x += gc, y, _, cw)
 		/*9*/draw_die([p,_,p,_,_,_,p,_,p,_,p,_,p,_,p,_,_,_,p,_,p], x += gc, y, _, cw)
 		/*10*/draw_die([p,_,p,_,p,_,p,_,p,_,_,_,p,_,p,_,p,_,p,_,p], x += gc, y, _, cw)
