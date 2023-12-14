@@ -1,6 +1,7 @@
 # [Dice & Cards](https://vezquex.github.io/clock/dice.html)
 - Grids of arbitrary pips
 - Playing cards: ace through king
+- Chess FEN display
 
 # [Retro Watch](https://vezquex.github.io/clock/retro-168.html)
 Example of SVG decorations and finer adjustments
