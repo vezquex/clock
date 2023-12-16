@@ -29,12 +29,12 @@ body {
 	width:1.5rem;
 }
 [day='0'] .day-color {color:#E0E000;}
-[day='1'] .day-color {color:#E0D0E0;}
+[day='1'] .day-color {color:#9060FF;}
 [day='2'] .day-color {color:#C02000;}
 [day='3'] .day-color {color:#3060C0;}
 [day='4'] .day-color {color:#30C030;}
 [day='5'] .day-color {color:#E8D880;}
-[day='6'] .day-color {color:#A05030;}
+[day='6'] .day-color {color:#FFA040;}
 [day='0'] .day-bg {background:#202000;}
 [day='1'] .day-bg {background:#201820;}
 [day='2'] .day-bg {background:#200000;}
@@ -90,6 +90,7 @@ function clock_widget(){
 	// display at the start of each second
 	const synchronize = function(){
 		const t = new Date()
+		// const t = new Date(Date.now() + 2*864e5)
 		display(t)
 		window.setTimeout(synchronize, 1000 - (t % 1000))
 	}
