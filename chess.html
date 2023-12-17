@@ -284,7 +284,7 @@ const chess_shapes = {
 	b: {
 		name: 'bishop black',
 		color: 'red',
-		shape: polygram(4, dl/((5+1) * pip_size), 0, sqrt(3)/6),
+		shape: polygram(4, dl/((5+1) * pip_size), 0, 1/3),
 	},
 	k: {
 		name: 'king black',
@@ -306,7 +306,7 @@ const chess_shapes = {
 	q: {
 		name: 'queen black',
 		color: 'red',
-		shape: polygram(8, dl/((6+1) * pip_size), tau/16, sqrt(3)/6),
+		shape: polygram(8, dl/((6+1) * pip_size), tau/16, 2/3),
 	},
 	r: {
 		name: 'rook black',
@@ -317,7 +317,7 @@ const chess_shapes = {
 	B: {
 		name: 'bishop white',
 		color: 'cyan',
-		shape: polygram(4, dl/((5+1) * pip_size), 0, sqrt(3)/6),
+		shape: polygram(4, dl/((5+1) * pip_size), 0, 1/3),
 	},
 	K: {
 		name: 'king white',
@@ -339,7 +339,7 @@ const chess_shapes = {
 	Q: {
 		name: 'queen white',
 		color: 'cyan',
-		shape: polygram(8, dl/((6+1) * pip_size), tau/16, sqrt(3)/6),
+		shape: polygram(8, dl/((6+1) * pip_size), tau/16, 2/3),
 	},
 	R: {
 		name: 'rook white',
