@@ -300,7 +300,8 @@ const chess_shapes = {
 	p: {
 		name: 'pawn black',
 		color: 'red',
-		shape: polygon(4, dl/((6+1) * pip_size), tau_8),
+		shape: [[0,0],[3,0],[2,3],[1,3]]
+			.map(a=>[(a[0]-1.5)/3, (a[1]-1.5)/3]),
 	},
 	q: {
 		name: 'queen black',
@@ -332,7 +333,8 @@ const chess_shapes = {
 	P: {
 		name: 'pawn white',
 		color: 'cyan',
-		shape: polygon(4, dl/((6+1) * pip_size), tau_8),
+		shape: [[0,3],[3,3],[2,0],[1,0]]
+			.map(a=>[(a[0]-1.5)/3, (a[1]-1.5)/3]),
 	},
 	Q: {
 		name: 'queen white',
