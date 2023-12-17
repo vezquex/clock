@@ -1,0 +1,695 @@
+<!doctype html>
+<meta charset='utf-8'/>
+<meta name='viewport' content='width=device-width, initial-scale=1'/>
+<title>
+	Chess
+</title>
+<style type='text/css'>
+	:root {
+		--accent: #808080;
+		accent-color: var(--accent);
+		color-scheme: dark;
+	}
+	* {
+		box-sizing: border-box;
+	}
+	.border {
+		border-color: #404040;
+		border-style: solid;
+		border-width: 1px;
+	}
+	body, button, input {
+		background: #000;
+		color: #FFF;
+		font-family: monospace;
+		font-size: 1rem;
+		margin: 0;
+	}
+	body {
+		min-height: 100vh;
+		overflow-x: hidden;
+	}
+	button, input, .label {
+		align-items: center;
+		border-width: 1px;
+		cursor: pointer;
+		height: 2em;
+		justify-content: center;
+		line-height: 1.75;
+		padding: 0 .5em;
+	}
+	.label {
+		border-right-width: 0;
+		border-style: outset;
+	}
+	.combo-right {
+		border-left-width: 0;
+	}
+	.flex {
+		display: flex;
+    justify-content: center;
+	}
+	.grow {
+		flex-grow: 1;
+	}
+	.shrink {
+		flex-shrink: 1;
+	}
+	#face {
+		border-width: 1px;
+	}
+	.column {
+		display: flex;
+		flex-direction: column;
+	}
+	.row {
+		display: flex;
+		flex-direction: row;
+	}
+	#step {
+		width: 7ch;
+	}
+	@media(hover: none){
+		button, input {
+			font-size: 2rem;
+		}
+	}
+</style>
+
+<div class='column' style='min-height:100vh;'>
+	<div id='face_box' class='grow'><canvas id='face'></canvas></div>
+	<div id='button_box' class='row'>
+		<label class='row grow'>
+			<span class='label border shrink'>Step</span>
+			<input id='step' class='grow border combo-right' onChange='set_step(this.value)' value='0' min='0' type='number' autocomplete='off' autofocus/>
+		</label>
+	</div>
+</div>
+
+<script type='text/javascript'>
+const _ = void 0
+const {ceil, cos, floor, max, min, PI, random, sin, sqrt} = Math
+const phi = (1 + sqrt(5)) * .5
+const tau = 2 * Math.PI
+const tau_4 = tau / 4
+const tau_8 = tau / 8
+const rt3_2 = sqrt(3)/2
+
+const height = 17
+const width = 18
+const pad_h = 1
+const pad_v = 0
+let z = 1 // zoom
+let step = 0
+const ps = 30
+const dl = 16
+const pip_size = 2.75
+const g = dl+4
+
+const W = 8
+
+let palettes
+const color_palettes = {
+	'black': '#000000',
+	'blue': '#0080DB',
+	'blue_dark': '#00406D',
+	'brown': '#783818',
+	'cyan': '#00F0F0',
+	'gray_1_5': '#333333',
+	'gray_1_3': '#555555',
+	'gray': '#808080',
+	'gray_2_3': '#AAAAAA',
+	'green': '#00ED00',
+	'green_dark': '#007600',
+	'magenta': '#F000F0',
+	'orange': '#F07020',
+	'red': '#E00000',
+	'red_dark': '#700000',
+	'tan': '#C0B090',
+	'yellow': '#F0F000',
+	'white': '#F1EDDB',
+}
+const obj_colors = {
+	die: 'gray',
+	pip: 'white',
+}
+const number_colors = {
+	1: 'gray',
+	2: 'blue',
+	3: 'green',
+	4: 'orange',
+	5: 'magenta',
+	6: 'yellow',
+	7: 'cyan',
+	8: 'red',
+	9: 'gray',
+	[ps]: 'white',
+}
+for(let i = 1; i<9; ++i){
+	number_colors[30+i] = number_colors[i]
+}
+const rots = {
+	3: tau_4,
+	4: tau_8,
+	5: tau_4,
+	6: 0,
+	7: tau_4,
+	8: tau/16,
+}
+const y_offsets = {
+	3: 4/3,
+}
+const themes = {
+	Dark: {
+		background: color_palettes.black,
+		color: color_palettes.white,
+	},
+}
+const polygons = []
+
+for(k in themes){
+	const theme = themes[k]
+	Object.assign(theme, color_palettes)
+}
+
+const can = document.getElementById('face')
+const c = can.getContext('2d')
+
+function capitalize(s) {
+	return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+const button_box = document.getElementById('button_box')
+const face_box = document.getElementById('face_box')
+function resize(event){
+	const scale = window.devicePixelRatio || 1
+	const face_box_height = Math.floor(window.innerHeight  - button_box.offsetHeight) - 1
+	z = Math.floor(Math.min(
+		window.innerWidth / width,
+		face_box_height / height,
+	))
+	face_box.style.height = face_box_height + 'px'
+	button_box.style.width = window.innerWidth + 'px'
+	can.height = height * scale * z
+	can.width = width * scale * z
+	can.style.height = (height*z)+'px'
+	can.style.width = (width*z)+'px'
+	c.scale(scale, scale)
+	display()
+}
+
+window.addEventListener('resize', resize)
+
+function set_step(n){
+	step = parseInt(n)
+	display()
+}
+
+function setTheme(theme){
+	palettes = themes[theme]
+	can.style.backgroundColor = palettes.background
+}
+
+function draw_shape(path, x, y, m = 1){
+	m = m*z
+	c.beginPath()
+	c.moveTo(x*z + (path[0][0])*m, y*z + (path[0][1])*m)
+	for(i=1; i<path.length; ++i){
+		c.lineTo(x*z + (path[i][0])*m, y*z + (path[i][1])*m)
+	}
+	c.fill()
+}
+
+function polygon(sides, radius = 1, rot = tau_4){
+	return Array(sides).fill().map((_,i)=>([
+		radius * cos(i * tau / sides - rot),
+		radius * sin(i * tau / sides - rot),
+	]))
+}
+
+function polygram(sides, radius = 1, rot = 0, inner_radius = .5/phi){
+	return Array(sides*2).fill().map((_,i)=>([
+		(i%2 ? 1 : inner_radius) * radius * sin(i * tau / (2*sides) - rot),
+		(i%2 ? 1 : inner_radius) * radius * cos(i * tau / (2*sides) - rot),
+	]))
+}
+
+function draw_die(
+	pips,
+	x,
+	y,
+	color = obj_colors.die,
+	dimensions = [],
+	round = dl/8
+){
+	let [columns, rows]	= dimensions
+	rows ??= columns ??= ceil(sqrt(pips.length))
+	const s = max(columns, rows)
+	const dgc = dl/(columns+1)
+	const dgr = dl/(rows+1)
+	const ar = 1
+	if(color){
+		const {globalAlpha} = c
+		const m = z
+		c.beginPath()
+		c.roundRect(x*m, y*m, dl*m*ar, dl*m, m*round)
+		c.globalAlpha = 0.25 * globalAlpha
+		c.fillStyle = color_palettes[color]
+		c.fill()
+		c.globalAlpha = 0.2 * globalAlpha
+		c.strokeStyle = color_palettes[color]
+		c.stroke()
+		c.globalAlpha = globalAlpha
+	}
+	pips.forEach((pip, i)=>{
+		if(!pip){ return }
+		c.fillStyle = pip.color ?? color_palettes[number_colors[pip]] ?? obj_colors.pip
+		let poly = pip.shape ?? polygons[pip]
+		if(!poly){
+			const key = `pip=${pip},s=${s}`
+			poly = polygons[key] ??= polygon(pip, min(dgr,dgc)/pip_size, rots[pip])
+		}
+		draw_shape(
+			poly,
+			x + dgc*(1 + i % columns),
+			y + dgr*(1 + floor(i / columns)),
+		)
+	})
+}
+
+const black_checker = {shape:polygon(4, 1.25, tau_8),color:color_palettes['black']}
+const white_checker = {shape:polygon(4, 1.25, tau_8),color:color_palettes['gray_1_5']}
+
+const chess_shapes = {
+	b: {
+		name: 'bishop black',
+		color: 'red',
+		shape: polygram(4, dl/((4+1) * pip_size), 0, sqrt(3)/6),
+	},
+	k: {
+		name: 'king black',
+		color: 'red',
+		shape: polygon(8, dl/((6+1) * pip_size), tau/16),
+	},
+	n: {
+		name: 'knight black',
+		color: 'red',
+		shape: [[0,0],[2,0],[2,3],[1,3],[1,1],[0,1]]
+			.map(a=>[(a[0]-1.5)/2, (a[1]-1.5)/2]),
+	},
+	p: {
+		name: 'pawn black',
+		color: 'red',
+		shape: polygon(4, dl/((6+1) * pip_size), tau_8),
+	},
+	q: {
+		name: 'queen black',
+		color: 'red',
+		shape: polygram(8, dl/((6+1) * pip_size), tau/16, sqrt(3)/6),
+	},
+	r: {
+		name: 'rook black',
+		color: 'red',
+		shape: [[1,1],[1,0],[2,0],[2,1],[3,1],[3,2],[2,2],[2,3],[1,3],[1,2],[0,2],[0,1]]
+			.map(a=>[(a[0]-1.5)/2, (a[1]-1.5)/2]),
+	},
+	B: {
+		name: 'bishop white',
+		color: 'cyan',
+		shape: polygram(4, dl/((5+1) * pip_size), 0, sqrt(3)/6),
+	},
+	K: {
+		name: 'king white',
+		color: 'cyan',
+		shape: polygon(8, dl/((6+1) * pip_size), tau/16),
+	},
+	N: {
+		name: 'knight white',
+		color: 'cyan',
+		shape: [[0,0],[2,0],[2,3],[1,3],[1,1],[0,1]]
+			.map(a=>[(a[0]-1.5)/2, (a[1]-1.5)/2]),
+	},
+	P: {
+		name: 'pawn white',
+		color: 'cyan',
+		shape: polygon(4, dl/((6+1) * pip_size), tau_8),
+	},
+	Q: {
+		name: 'queen white',
+		color: 'cyan',
+		shape: polygram(8, dl/((6+1) * pip_size), tau/16, sqrt(3)/6),
+	},
+	R: {
+		name: 'rook white',
+		color: 'cyan',
+		shape: [[1,1],[1,0],[2,0],[2,1],[3,1],[3,2],[2,2],[2,3],[1,3],[1,2],[0,2],[0,1]]
+			.map(a=>[(a[0]-1.5)/2, (a[1]-1.5)/2]),
+	},
+}
+function chessboard(black, white){
+	const black_checker = {shape:polygon(4, 1.25, tau_8),color:color_palettes[black]}
+	const white_checker = {shape:polygon(4, 1.25, tau_8),color:color_palettes[white]}
+	return Array(W*W).fill().map((_, i) => (i+floor(i/W))%2 ? black_checker : white_checker)
+}
+const chessboards = [
+	chessboard('black', 'gray_1_5'),
+	chessboard('brown', 'tan'),
+	chessboard('red_dark', 'tan'),
+	chessboard('green_dark', 'tan'),
+	chessboard('blue_dark', 'tan'),
+	chessboard('gray_1_5', 'tan'),
+	]
+
+const chess_initial_position = [].concat(
+	'rnbqkbnr'.split(''),
+	Array(W).fill('p'),
+	Array(W*(W-4)).fill(),
+	Array(W).fill('P'),
+	'RNBQKBNR'.split(''),
+)
+
+let chess_games = [
+`
+[White "Kasparov, Garry"]
+[Black "Topalov, Veselin"]
+[Date "1999.01.20"]
+[Site "Wijk aan Zee"]
+[Event "Hoogovens"]
+[Round "4"]
+[Result "1-0"]
+[WhiteElo "2812"]
+[BlackElo "2700"]
+[TimeControl "-"]
+[ECO "B07"]
+[Opening "Pirc Defense"]
+
+1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Be3 Bg7 5. Qd2 c6 6. f3 b5 7. Nge2 Nbd7 8. Bh6 Bxh6 9. Qxh6 Bb7 10. a3 e5 11. O-O-O Qe7 12. Kb1 a6 13. Nc1 O-O-O 14. Nb3 exd4 15. Rxd4 c5 16. Rd1 Nb6 17. g3 Kb8 18. Na5 Ba8 19. Bh3 d5 20. Qf4+ Ka7 21. Rhe1 d4 22. Nd5 Nbxd5 23. exd5 Qd6 24. Rxd4 cxd4 25. Re7+ Kb6 26. Qxd4+ Kxa5 27. b4+ Ka4 28. Qc3 Qxd5 29. Ra7 Bb7 30. Rxb7 Qc4 31. Qxf6 Kxa3 32. Qxa6+ Kxb4 33. c3+ Kxc3 34. Qa1+ Kd2 35. Qb2+ Kd1 36. Bf1 Rd2 37. Rd7 Rxd7 38. Bxc4 bxc4 39. Qxh8 Rd3 40. Qa8 c3 41. Qa4+ Ke1 42. f4 f5 43. Kc1 Rd2 44. Qa7 1-0
+`,
+`
+1. e4 d5 2. exd5 Qxd5 3. Bd3 Be6 4. Nf3 Nc6 5. O-O O-O-O 6. Re1 Rd6 7. Nc3 Nf6 8. Nd4 Ne5 9. Ndb5 Nfg4
+`,
+]
+
+const digit_pattern = /\d/
+const piece_pattern = /[BKNPQR]/
+const file_pattern = /[a-h]/
+
+const parse_pgn_mode = [
+	'none',
+	'tag_key',
+	'tag_val',
+	'piece',
+	'from',
+	'file',
+	'end_move',
+].reduce((o, x)=>(o[x]=Symbol(x), o),{})
+
+function parse_pgn(pgn){
+	const game = {
+		moves: [],
+		pgn: pgn,
+		tags: {},
+	}
+	const tokens = []
+	let c, i = 0, mode = parse_pgn_mode.none, pgn_length = pgn.length, tag_key, tag_val
+	let val = {piece:'',from:'',file:'',rank:''}
+	for(let i = 0; i < pgn_length; ++i){
+		c = pgn[i]
+		if(c === '['){
+			mode = parse_pgn_mode.tag_key
+			tag_key = ''
+		}
+		else if(c === ']'){
+			mode = parse_pgn_mode.none
+		}
+		else if(mode === parse_pgn_mode.tag_key){
+			if(c === '"'){
+				game.tags[tag_key] = ''
+				mode = parse_pgn_mode.tag_val
+			}
+			else {
+				tag_key += c
+			}
+		}
+		else if(mode === parse_pgn_mode.tag_val){
+			if(c !== '"'){
+				game.tags[tag_key] += c
+			}
+		}
+		else if(c === 'O'){
+			const castle = pgn.slice(i,i+5)
+			if(castle === 'O-O-O'){
+				val.castle_long = true
+				i += 4
+			}
+			else {
+				val.castle_short = true
+				i += 2
+			}
+			game.moves.push(val)
+			val = {piece:'', from:'', file:'', rank:''}
+			mode = parse_pgn_mode.end_move
+		}
+		else if(piece_pattern.test(c)){
+			val.piece = c
+			mode = parse_pgn_mode.piece
+		}
+		else if(file_pattern.test(c)){
+			if(mode === parse_pgn_mode.file){
+				val.from = val.file
+				val.file = c
+			}
+			else {
+				val.file = c
+				mode = parse_pgn_mode.file
+			}
+		}
+		else if(digit_pattern.test(c)){
+			if(mode === parse_pgn_mode.piece){
+				val.from = c
+				mode = parse_pgn_mode.from
+			}
+			// assume 1-digit rank
+			else if(mode === parse_pgn_mode.file) {
+				val.rank = c
+				game.moves.push(val)
+				val = {piece:'', from:'', file:'', rank:''}
+				mode = parse_pgn_mode.end_move
+			}
+		}
+	}
+	return game
+}
+
+const all_squares = Array(W*W).fill().map((_, i)=>i)
+const file_nicknames = Array(W).fill().map((_, i) =>
+	String.fromCharCode('a'.charCodeAt(0) + i)
+)
+const rank_and_file = Object.fromEntries(
+	Array(W).fill().map((_,i)=>([W-i, rank(W, i)]))
+	.concat(
+		file_nicknames.map((c, i)=>[c, file(W, i)])
+	)
+)
+function file(size, n){
+	return Array(size).fill().map((_, i) => i*size + n)
+}
+function rank(size, n){
+	return Array(size).fill().map((_, i) => n*size + i)
+}
+
+function knight_moves(W, x){
+	return [
+		x - 2*W - 1,
+		x - 2*W + 1,
+		x - W - 2,
+		x - W + 2,
+		x + W - 2,
+		x + W + 2,
+		x + 2*W - 1,
+		x + 2*W + 1,
+	].filter(a => (a >= 0) && (a < W*W))
+}
+
+function unobstructed_bishop_moves(W, cell, piece, board){
+	const lines = Array(4).fill().map(()=>[])
+	const x = cell % W
+	const y = floor(cell / W)
+	const neg_room = min(x, y)
+	for(let i = 1; i <= neg_room; ++i){
+		lines[0].push(cell - i - i*W)
+	}
+	const pos_room = min(W-1-x, W-1-y)
+	for(let i = 1; i <= pos_room; ++i){
+		lines[1].push(cell + i + i*W)
+	}
+	const neg_pos_room = min(x, W-1-y)
+	for(let i = 1; i <= neg_pos_room; ++i){
+		lines[2].push(cell - i + i*W)
+	}
+	const pos_neg_room = min(W-1-x, x)
+	for(let i = 1; i <= pos_neg_room; ++i){
+		lines[3].push(cell + i - i*W)
+	}
+	const squares = []
+	lines.forEach(line => {
+		for(let i = 0; i < line.length; ++i){
+			const n = line[i]
+			if(board[n] === piece){	squares.push(n)	}
+			if(board[n]){ break }
+		}
+	})
+	return squares
+}
+
+function unobstructed_rook_moves(W, cell, piece, board){
+	const lines = Array(4).fill().map(()=>[])
+	const x = cell % W
+	const y = floor(cell / W)
+	for(let i = 1; i <= x; ++i){
+		lines[0].push(cell - i)
+	}
+	for(let i = 1; i <= W-1-x; ++i){
+		lines[1].push(cell + i)
+	}
+	for(let i = 1; i <= y; ++i){
+		lines[2].push(cell - i*W)
+	}
+	for(let i = 1; i <= W-1-y; ++i){
+		lines[3].push(cell + i*W)
+	}
+	const squares = []
+	lines.forEach(line => {
+		for(let i = 0; i < line.length; ++i){
+			const n = line[i]
+			if(board[n] === piece){	squares.push(n)	}
+			if(board[n]){ break }
+		}
+	})
+	return squares
+}
+
+function unobstructed_queen_moves(W, cell, piece, board){
+	return unobstructed_bishop_moves(W, cell, piece, board)
+		.concat(
+			unobstructed_rook_moves(W, cell, piece, board)
+		)
+}
+
+function from_candidates(piece, from, board){
+	let squares = from ? rank_and_file[from] : all_squares
+	return squares.filter(i => board[i] === piece)
+}
+
+function board_debug(board){
+	return '\n' + Array(W).fill().map((_,i)=>
+		board
+			.slice(i*W, (i+1)*W)
+			.map(c => c||'.').join('')
+	).join('\n')
+}
+
+function pgn_move(board, move, move_index){
+	let {piece, from, file, rank} = move
+	let moved = false
+	const player = move_index % 2
+	const cell = (W * (W - parseInt(rank))) + file_nicknames.indexOf(file)
+	piece ||= 'P'
+	const color_piece = (player === 1) ? piece.toLowerCase() : piece
+	const king = (player === 1) ? 'k' : 'K'
+	const rook = (player === 1) ? 'r' : 'R'
+	const dir = -1 * (player * 2 - 1)
+	const back_rank = (player === 1) ? 0 : (W * (W - 1))
+	board = board.concat()
+	if(move.castle_long){
+		board[0 + back_rank] = _
+		board[2 + back_rank] = king
+		board[3 + back_rank] = rook
+		board[4 + back_rank] = _
+		moved = true
+	}
+	if(move.castle_short){
+		board[4 + back_rank] = _
+		board[5 + back_rank] = rook
+		board[6 + back_rank] = king
+		board[7 + back_rank] = _
+		moved = true
+	}
+	let froms = moved ? [] : from_candidates(color_piece, from, board)
+	if(!moved && (froms.length === 0)){
+		console.warn('Moved piece not found', move_index, move, board_debug(board))
+		moved = true
+	}
+	if(!moved && (froms.length === 1)){
+		board[froms[0]] = _
+		moved = true
+	}
+	if(!moved && (piece === 'P')){
+		let prev = cell + (W*dir)
+		if(from){
+			prev += (from > file) ? 1 : -1
+		}
+		const prev2 = cell + (W*2*dir)
+		if(board[prev]){ board[prev] = _ }
+		else if(board[prev2]){ board[prev2] = _ }
+		moved = true
+	}
+	if(!moved && (piece === 'N')){
+		froms = froms.filter(x => knight_moves(W, cell).includes(x))
+	}
+	if(!moved && (piece === 'B')){
+		froms = froms.filter(x => unobstructed_bishop_moves(W, cell, color_piece, board).includes(x))
+	}
+	if(!moved && (piece === 'R')){
+		froms = froms.filter(x => unobstructed_rook_moves(W, cell, color_piece, board).includes(x))
+	}
+	if(!moved && (piece === 'Q')){
+		froms = froms.filter(x => unobstructed_queen_moves(W, cell, color_piece, board).includes(x))
+	}
+	if(!moved && (froms.length === 0)){
+		console.warn('Moved piece not found with move validation', move_index, move, froms, board_debug(board))
+		moved = true
+	}
+	if(!moved && (froms.length === 1)){
+		board[froms[0]] = _
+		moved = true
+	}
+	if(!moved && (froms.length > 1)){
+		console.warn('Unspecified move', move_index, move, froms, board_debug(board))
+		moved = true
+	}
+	if(cell >= 0){
+		board[cell] = color_piece
+	}
+	return board
+}
+
+chess_games = chess_games.map(parse_pgn)
+const chess_positions = []
+chess_positions.push(chess_initial_position.concat())
+
+const chess_game = chess_games[0]
+document.title = `Chess | ${Object.values(chess_game.tags).join(' | ')}`
+
+for(let i = 0; i < chess_game.moves.length; ++i){
+	chess_positions.push(
+		pgn_move(chess_positions[i], chess_game.moves[i], i)
+	)
+}
+document.getElementById('step').setAttribute('max', chess_positions.length - 1)
+
+function display(){
+	c.clearRect(0, 0, width*z, height*z)
+	let x = pad_h - g, y = pad_v, m = 1, p = ps
+	const cb = chessboards[0]
+	draw_die(cb, x += g, y, _, _, 0)
+	draw_die(
+		chess_positions[step].map(p => chess_shapes[p]),
+		x, y, false
+	)
+}
+
+setTheme('Dark')
+resize()
+
+</script>

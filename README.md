@@ -1,7 +1,13 @@
 # [Dice, Cards, & Chess](https://vezquex.github.io/clock/dice.html)
 - Grids of arbitrary pips
 - Playing cards: ace through king
-- Chess FEN display
+- Chess position display
+
+# [Chess Viewer](https://vezquex.github.io/clock/chess.html)
+Step through recorded moves.
+For convenience, with the input in focus, press or hold the up arrow key to advance.
+
+The code determines where pieces came from, since PGN notation doesn't specify.
 
 # [Retro Watch](https://vezquex.github.io/clock/retro-168.html)
 Example of SVG decorations and finer adjustments
