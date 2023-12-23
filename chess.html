@@ -70,7 +70,7 @@
 		width: 7ch;
 	}
 	@media(hover: none){
-		button, input {
+		button, input, label {
 			font-size: 2rem;
 		}
 	}
@@ -107,6 +107,7 @@ const pip_size = 2.75
 const g = dl+4
 
 const W = 8
+const V = W-1
 
 let palettes
 const color_palettes = {
@@ -500,17 +501,19 @@ function rank(size, n){
 	return Array(size).fill().map((_, i) => n*size + i)
 }
 
-function knight_moves(W, x){
+function knight_moves(W, i){
+	const x = i % W
+	const y = floor(i / W)
 	return [
-		x - 2*W - 1,
-		x - 2*W + 1,
-		x - W - 2,
-		x - W + 2,
-		x + W - 2,
-		x + W + 2,
-		x + 2*W - 1,
-		x + 2*W + 1,
-	].filter(a => (a >= 0) && (a < W*W))
+		(x > 0) && (y > 1) && (i - 2*W - 1),
+		(x < W-1) && (y > 1) && (i - 2*W + 1),
+		(x > 1) && (y > 0) && (i - W - 2),
+		(x < W-2) && (y > 0) && (i - W + 2),
+		(x > 1) && (y < W-1) && (i + W - 2),
+		(x < W-2) && (y < W-1) && (i + W + 2),
+		(x > 0) && (y < W-2) && (i + 2*W - 1),
+		(x < W-1) && (y < W-2) && (i + 2*W + 1),
+	]
 }
 
 function unobstructed_bishop_moves(W, cell, piece, board){
@@ -521,15 +524,15 @@ function unobstructed_bishop_moves(W, cell, piece, board){
 	for(let i = 1; i <= neg_room; ++i){
 		lines[0].push(cell - i - i*W)
 	}
-	const pos_room = min(W-1-x, W-1-y)
+	const pos_room = min(V-x, V-y)
 	for(let i = 1; i <= pos_room; ++i){
 		lines[1].push(cell + i + i*W)
 	}
-	const neg_pos_room = min(x, W-1-y)
+	const neg_pos_room = min(x, V-y)
 	for(let i = 1; i <= neg_pos_room; ++i){
 		lines[2].push(cell - i + i*W)
 	}
-	const pos_neg_room = min(W-1-x, x)
+	const pos_neg_room = min(V-x, x)
 	for(let i = 1; i <= pos_neg_room; ++i){
 		lines[3].push(cell + i - i*W)
 	}
@@ -551,13 +554,13 @@ function unobstructed_rook_moves(W, cell, piece, board){
 	for(let i = 1; i <= x; ++i){
 		lines[0].push(cell - i)
 	}
-	for(let i = 1; i <= W-1-x; ++i){
+	for(let i = 1; i <= V-x; ++i){
 		lines[1].push(cell + i)
 	}
 	for(let i = 1; i <= y; ++i){
 		lines[2].push(cell - i*W)
 	}
-	for(let i = 1; i <= W-1-y; ++i){
+	for(let i = 1; i <= V-y; ++i){
 		lines[3].push(cell + i*W)
 	}
 	const squares = []
