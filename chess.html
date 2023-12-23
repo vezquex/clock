@@ -176,9 +176,6 @@ for(k in themes){
 const can = document.getElementById('face')
 const c = can.getContext('2d')
 
-function capitalize(s) {
-	return s.charAt(0).toUpperCase() + s.slice(1)
-}
 
 const button_box = document.getElementById('button_box')
 const face_box = document.getElementById('face_box')
@@ -488,6 +485,8 @@ const all_squares = Array(W*W).fill().map((_, i)=>i)
 const file_nicknames = Array(W).fill().map((_, i) =>
 	String.fromCharCode('a'.charCodeAt(0) + i)
 )
+const file_values = Object.fromEntries(file_nicknames.map((f, i) => [f, i]))
+
 const rank_and_file = Object.fromEntries(
 	Array(W).fill().map((_,i)=>([W-i, rank(W, i)]))
 	.concat(
@@ -596,7 +595,7 @@ function pgn_move(board, move, move_index){
 	let {piece, from, file, rank} = move
 	let moved = false
 	const player = move_index % 2
-	const cell = (W * (W - parseInt(rank))) + file_nicknames.indexOf(file)
+	const cell = (W * (W - parseInt(rank))) + file_values[file]
 	piece ||= 'P'
 	const color_piece = (player === 1) ? piece.toLowerCase() : piece
 	const king = (player === 1) ? 'k' : 'K'
