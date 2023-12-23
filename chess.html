@@ -517,25 +517,22 @@ function knight_moves(W, i){
 }
 
 function unobstructed_bishop_moves(W, cell, piece, board){
-	const lines = Array(4).fill().map(()=>[])
 	const x = cell % W
 	const y = floor(cell / W)
-	const neg_room = min(x, y)
-	for(let i = 1; i <= neg_room; ++i){
-		lines[0].push(cell - i - i*W)
-	}
-	const pos_room = min(V-x, V-y)
-	for(let i = 1; i <= pos_room; ++i){
-		lines[1].push(cell + i + i*W)
-	}
-	const neg_pos_room = min(x, V-y)
-	for(let i = 1; i <= neg_pos_room; ++i){
-		lines[2].push(cell - i + i*W)
-	}
-	const pos_neg_room = min(V-x, x)
-	for(let i = 1; i <= pos_neg_room; ++i){
-		lines[3].push(cell + i - i*W)
-	}
+	const lines = [
+		// (neg, neg)
+		Array(min(x, y)).fill().map(
+			(_,i)=>(i+=1, cell - i - i*W)),
+		// pos, pos
+		Array(min(V-x, V-y)).fill().map(
+			(_,i)=>(i+=1, cell + i + i*W)),
+		// neg, pos
+		Array(min(x, V-y)).fill().map(
+			(_,i)=>(i+=1, cell - i + i*W)),
+		// pos, neg
+		Array(min(V-x, x)).fill().map(
+			(_,i)=>(i+=1, cell + i - i*W)),
+	]
 	const squares = []
 	lines.forEach(line => {
 		for(let i = 0; i < line.length; ++i){
@@ -548,21 +545,22 @@ function unobstructed_bishop_moves(W, cell, piece, board){
 }
 
 function unobstructed_rook_moves(W, cell, piece, board){
-	const lines = Array(4).fill().map(()=>[])
 	const x = cell % W
 	const y = floor(cell / W)
-	for(let i = 1; i <= x; ++i){
-		lines[0].push(cell - i)
-	}
-	for(let i = 1; i <= V-x; ++i){
-		lines[1].push(cell + i)
-	}
-	for(let i = 1; i <= y; ++i){
-		lines[2].push(cell - i*W)
-	}
-	for(let i = 1; i <= V-y; ++i){
-		lines[3].push(cell + i*W)
-	}
+	const lines = [
+		// negative x
+		Array(x).fill().map(
+			(_,i)=>(i+=1, cell - i)),
+		// positive x
+		Array(V-x).fill().map(
+			(_,i)=>(i+=1, cell + i)),
+		// negative y
+		Array(y).fill().map(
+			(_,i)=>(i+=1, cell - i*W)),
+		// positive y
+		Array(V-y).fill().map(
+			(_,i)=>(i+=1, cell + i*W)),
+	]
 	const squares = []
 	lines.forEach(line => {
 		for(let i = 0; i < line.length; ++i){
