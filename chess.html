@@ -404,6 +404,8 @@ const parse_pgn_mode = [
 	'end_move',
 ].reduce((o, x)=>(o[x]=Symbol(x), o),{})
 
+const blank_move = () => ({piece:'',from:'',file:'',rank:''})
+
 function parse_pgn(pgn){
 	const game = {
 		moves: [],
@@ -411,10 +413,10 @@ function parse_pgn(pgn){
 		tags: {},
 	}
 	const tokens = []
-	let c, i = 0, mode = parse_pgn_mode.none, pgn_length = pgn.length, tag_key, tag_val
-	let val = {piece:'',from:'',file:'',rank:''}
+	let mode = parse_pgn_mode.none, pgn_length = pgn.length, tag_key, tag_val
+	let move = blank_move()
 	for(let i = 0; i < pgn_length; ++i){
-		c = pgn[i]
+		let c = pgn[i]
 		if(c === '['){
 			mode = parse_pgn_mode.tag_key
 			tag_key = ''
@@ -437,43 +439,43 @@ function parse_pgn(pgn){
 			}
 		}
 		else if(c === 'O'){
-			const castle = pgn.slice(i,i+5)
+			const castle = pgn.slice(i, i+5)
 			if(castle === 'O-O-O'){
-				val.castle_long = true
+				move.castle_long = true
 				i += 4
 			}
 			else {
-				val.castle_short = true
+				move.castle_short = true
 				i += 2
 			}
-			game.moves.push(val)
-			val = {piece:'', from:'', file:'', rank:''}
+			game.moves.push(move)
+			move = blank_move()
 			mode = parse_pgn_mode.end_move
 		}
 		else if(piece_pattern.test(c)){
-			val.piece = c
+			move.piece = c
 			mode = parse_pgn_mode.piece
 		}
 		else if(file_pattern.test(c)){
 			if(mode === parse_pgn_mode.file){
-				val.from = val.file
-				val.file = c
+				move.from = move.file
+				move.file = c
 			}
 			else {
-				val.file = c
+				move.file = c
 				mode = parse_pgn_mode.file
 			}
 		}
 		else if(digit_pattern.test(c)){
 			if(mode === parse_pgn_mode.piece){
-				val.from = c
+				move.from = c
 				mode = parse_pgn_mode.from
 			}
 			// assume 1-digit rank
 			else if(mode === parse_pgn_mode.file) {
-				val.rank = c
-				game.moves.push(val)
-				val = {piece:'', from:'', file:'', rank:''}
+				move.rank = c
+				game.moves.push(move)
+				move = blank_move()
 				mode = parse_pgn_mode.end_move
 			}
 		}
