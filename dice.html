@@ -92,6 +92,7 @@ const color_palettes = {
 	'gray_2_3': '#AAAAAA',
 	'green': '#00ED00',
 	'green_dark': '#007600',
+	'green_light': '#C0FFC0',
 	'magenta': '#F000F0',
 	'orange': '#F07020',
 	'red': '#E00000',
@@ -264,8 +265,6 @@ function draw_die(
 }
 
 const star = {shape:polygram(5, dl/((3+1)*pip_size), _, (3-sqrt(5))*.5),color:color_palettes['white']}
-const black_checker = {shape:polygon(4, 1.25, tau_8),color:color_palettes['black']}
-const white_checker = {shape:polygon(4, 1.25, tau_8),color:color_palettes['gray_1_5']}
 const red_stripe = {shape:polygon(4, rt3_2+.1, tau_8),color:color_palettes['red']}
 const white_stripe = {shape:polygon(4, rt3_2, tau_8),color:color_palettes['white']}
 const suits = [
@@ -287,7 +286,7 @@ const suits = [
 	},
 	{
 		name: 'club',
-		color: 'cyan',
+		color: 'green_light',
 		shape:[[50,0],[29,9],[25,35],[0,50],[5,73],[25,85],[45,75],[25,100],[75,100],[55,75],[75,85],[95,73],[100,50],[75,35],[71,9]],
 		ace_scale: 20,
 		pip_scale: 45,
@@ -303,11 +302,11 @@ for(let i = 0; i <= 2; ++i){
 	const suit = suits[i]
 	const {ace_scale, color, pip_scale, radius, shape} = suit
 	suit.ace = {
-		color,
+		color: color_palettes[color] || color,
 		shape: shape.map(a=>[(a[0]-radius)/ace_scale, (a[1]-radius)/ace_scale])
 	}
 	suit.pip = {
-		color,
+		color: color_palettes[color] || color,
 		shape: shape.map(a=>[(a[0]-radius)/pip_scale, (a[1]-radius)/pip_scale])
 	}
 }
