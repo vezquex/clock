@@ -4,8 +4,7 @@
 - Chess position display
 
 # [Chess Viewer](https://vezquex.github.io/clock/chess.html)
-Step through recorded moves.
-For convenience, with the input in focus, press or hold the up arrow key to advance.
+Step through recorded chess moves.
 
 The code determines where pieces came from, since PGN (Portable Game Notation) doesn't specify.
 

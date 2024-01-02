@@ -18,6 +18,9 @@
 		border-style: solid;
 		border-width: 1px;
 	}
+	.outset {
+		border-style: outset;
+	}
 	body, button, input {
 		background: #000;
 		color: #FFF;
@@ -29,7 +32,7 @@
 		min-height: 100vh;
 		overflow-x: hidden;
 	}
-	button, input, .label {
+	button, label {
 		align-items: center;
 		border-width: 1px;
 		cursor: pointer;
@@ -38,12 +41,16 @@
 		line-height: 1.75;
 		padding: 0 .5em;
 	}
-	.label {
-		border-right-width: 0;
-		border-style: outset;
+	button[disabled] {
+		color: #808080;
+		cursor: default;
+		border-style: solid;
 	}
-	.combo-right {
-		border-left-width: 0;
+	input {
+		border: 0;
+	}
+	.label {
+		margin-right: 1ch;
 	}
 	.flex {
 		display: flex;
@@ -67,7 +74,15 @@
 		flex-direction: row;
 	}
 	#step {
-		width: 7ch;
+		width: 4ch;
+	}
+	.nospin::-webkit-outer-spin-button,
+	.nospin::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+	.nospin {
+		-moz-appearance: textfield;
 	}
 	@media(hover: none){
 		button, input, label {
@@ -79,10 +94,12 @@
 <div class='column' style='min-height:100vh;'>
 	<div id='face_box' class='grow'><canvas id='face'></canvas></div>
 	<div id='button_box' class='row'>
-		<label class='row grow'>
-			<span class='label border shrink'>Step</span>
-			<input id='step' class='grow border combo-right' onChange='set_step(this.value)' value='0' min='0' type='number' autocomplete='off' autofocus/>
+		<button id='step_dec' class='grow' tabindex='1'><span>-</span></button>
+		<label class='row grow border outset'>
+			<span class='label'>Step</span>
+			<input id='step' class='nospin' tabindex='0' onChange='set_step(parseInt(this.value))' onFocus='this.select()' value='0' min='0' type='number' autocomplete='off'/>
 		</label>
+		<button id='step_inc' class='grow' tabindex='2'><span>+</span></button>
 	</div>
 </div>
 
@@ -176,6 +193,64 @@ for(k in themes){
 const can = document.getElementById('face')
 const c = can.getContext('2d')
 
+function on_button(event, callback){
+	// left mouse button, touch, enter, spacebar
+	if (!((event.which === 1) || (event.type === 'touchstart') || (event.keyCode === 13) || (event.keyCode === 32))){
+		return
+	}
+	const self = this
+	let interval = null
+	let timeout = null
+
+	callback()
+	event.preventDefault()
+
+	// cancel interval and timeout; unbind listeners
+	function cancel(event){
+		window.clearInterval(interval)
+		window.clearTimeout(timeout)
+		// self.blur()
+		self.removeEventListener('keydown', cancel)
+		self.removeEventListener('keyup', cancel)
+		self.removeEventListener('mouseout', cancel)
+		self.removeEventListener('mouseup', cancel)
+		self.removeEventListener('mouseup', cancel)
+		event.preventDefault()
+	}
+	self.addEventListener('keydown', cancel)
+	self.addEventListener('keyup', cancel)
+	self.addEventListener('mouseout', cancel)
+	self.addEventListener('mouseup', cancel)
+	self.addEventListener('touchend', cancel)
+
+	// long press: repeat
+	timeout = window.setTimeout(function(){
+		interval = window.setInterval(callback, 100)
+	}, 300)
+}
+
+function bind_on_button(el, cb){
+	el.addEventListener('keydown', function(event){
+		on_button.call(this, event, cb)
+	})
+	el.addEventListener('mousedown', function(event){
+		on_button.call(this, event, cb)
+	})
+	el.addEventListener('touchstart', function(event){
+		on_button.call(this, event, cb)
+	})
+}
+
+const step_dec_el = document.getElementById('step_dec')
+const step_inc_el = document.getElementById('step_inc')
+bind_on_button(
+	step_dec_el,
+	() => set_step(step - 1)
+)
+bind_on_button(
+	step_inc_el,
+	() => set_step(step + 1)
+)
 
 const button_box = document.getElementById('button_box')
 const face_box = document.getElementById('face_box')
@@ -198,8 +273,15 @@ function resize(event){
 
 window.addEventListener('resize', resize)
 
+const step_el = document.getElementById('step')
+
 function set_step(n){
-	step = parseInt(n)
+	const max = chess_positions.length - 1
+	if(n < 0 || n > max){ return }
+	step = n
+	step_el.value = n
+	step_dec_el.disabled = n === 0
+	step_inc_el.disabled = n === max
 	display()
 }
 
@@ -680,7 +762,7 @@ for(let i = 0; i < chess_game.moves.length; ++i){
 		pgn_move(chess_positions[i], chess_game.moves[i], i)
 	)
 }
-document.getElementById('step').setAttribute('max', chess_positions.length - 1)
+step_el.setAttribute('max', chess_positions.length - 1)
 
 function display(){
 	c.clearRect(0, 0, width*z, height*z)
@@ -695,5 +777,5 @@ function display(){
 
 setTheme('Dark')
 resize()
-
+set_step(0)
 </script>
