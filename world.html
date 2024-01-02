@@ -13,15 +13,15 @@
 	* {
 		box-sizing: border-box;
 	}
-	body {
-		overflow-x: hidden;
-	}
 	body, button, input, select {
 		background: #000;
 		color: #FFF;
 		font-family: monospace;
 		font-size: 1rem;
 		margin: 0;
+	}
+	body {
+		overflow-x: hidden;
 	}
 	button, select {
 		border-style: outset;
@@ -65,6 +65,7 @@
 </div>
 
 <script type='text/javascript'>
+const {abs, cos, floor, min, sin} = Math
 const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUNE', 'JULY', 'AUG.', 'SEPT', 'OCT', 'NOV', 'DEC']
 const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
@@ -81,7 +82,7 @@ const city_info = [
 	[-5, 'NYC', 'New York'],
 	// [-5, 'YTO', 'Toronto'],
 	[-4, 'SCL', 'Santiago'],
-	[-3.5 , 'YYT', 'St. John\'s'],
+	[-3.5 , 'YYT', 'St John\'s'],
 	[-3, 'RIO', 'Rio_Janeiro'],//Rio de Janeiro
 	[-2, 'FEN', 'Fern_Noronha'],//Fernando de Noronha
 	[-1, 'RAI', 'Praia'],
@@ -91,8 +92,8 @@ const city_info = [
 	// [1, 'MAD', 'Madrid'],
 	[1, 'PAR', 'Paris'],
 	// [1, 'ROM', 'Rome'],
-	// [2, 'ANK', 'Ankara']
-	[2, 'ATH', 'Athens'],
+	[2, 'ANK', 'Ankara'],
+	// [2, 'ATH', 'Athens'],
 	// [2, 'CAI', 'Cairo'],
 	// [2, 'HEL', 'Helsinki'],
 	[3, 'BGW', 'Baghdad'],
@@ -114,8 +115,17 @@ const city_info = [
 	[11, 'NOU', 'Noumea'],
 	[12, 'WLG', 'Wellington'],
 ]
+const zone_count = city_info.reduce(
+	(a, [n])=>(
+		a.found[n] ? a : (
+		a.found[n] = true,
+		{count: a.count + 1, found: a.found}
+	)),
+	{count: 0, found: {}}
+).count
 
 let mem_zone = 0
+let zone_index = city_info.findIndex(([z])=>(z === mem_zone))
 let palettes
 const color_palettes = {
 	'black': '#000000',
@@ -239,23 +249,26 @@ bind_on_button(
 )
 
 function zone_dec(){
-	mem_zone -= 1
-	if(mem_zone < -11){
-		mem_zone = 12
-	}
+	zone_index = (zone_index - 1 + city_info.length) % city_info.length
+	mem_zone = city_info[zone_index][0]
 	synchronize()
 }
 function zone_inc(){
-	mem_zone += 1
-	if(mem_zone > 12){
-		mem_zone = -11
-	}
+	zone_index = (zone_index + 1) % city_info.length
+	mem_zone = city_info[zone_index][0]
 	synchronize()
 }
 
 function zone_desc(zone){
-	const prefix = (zone > 0) ? '+' : (zone < 0) ? '-' : ''
-	return `${prefix}${(((Math.abs(zone))||'UTC')+'').padStart(2, '0')}`
+	const prefix = (zone > 0) ? '+' : (zone < 0) ? '-' : ' '
+	const n = abs(zone)
+	let s = n + ''
+	;(n < 10) && (s = ' ' + s)
+	;(floor(n) === n) && (s += '↉')
+	s = s
+		.replace('.5','½')
+		.replace('.75','¾')
+	return `${prefix}${s}`
 }
 
 function synchronize(){
@@ -317,6 +330,9 @@ const char_masks = {
 	'Y': 0b101000011,
 	'Z': 0b1110101,
 	'?': 0b11111111111,
+	'½': 0b10001101110,
+	'¾': 0b10000001101,
+	'↉': 0b10000111111,
 }
 
 const full_path_segs = {
@@ -406,6 +422,7 @@ const char_masks_sixteen = {
 	'X': 0b1010000001010000,
 	'Y': 0b0101000110000001,
 	'Z': 0b1000110000010110,
+	'\'': 0b1000000000000000,
 }
 const seg_order_sixteen = [
 	'db', 'dcl', 'dcr','dl', 'dla', 'dr', 'dra',
@@ -447,8 +464,8 @@ const tau = 2 * Math.PI
 const colon_sides = 6
 const colon_radius = 1.16
 const colon_shape = Array(colon_sides).fill().map((_,i)=>([
-	colon_radius * Math.cos(i * tau / colon_sides),
-	colon_radius * Math.sin(i * tau / colon_sides),
+	colon_radius * cos(i * tau / colon_sides),
+	colon_radius * sin(i * tau / colon_sides),
 ]))
 function colon(x, y){
 	shape(colon_shape, x, y+5)
@@ -459,8 +476,8 @@ const button_box = document.getElementById('button_box')
 const face_box = document.getElementById('face_box')
 function resize(event){
 	const scale = window.devicePixelRatio || 1
-	const face_box_height = Math.floor(window.innerHeight  - button_box.offsetHeight) - 1
-	z = Math.floor(Math.min(
+	const face_box_height = floor(window.innerHeight  - button_box.offsetHeight) - 1
+	z = floor(min(
 		window.innerWidth / width,
 		face_box_height / height,
 	))
@@ -509,10 +526,10 @@ function display(t){
 	m = 0.75
 	draw_str(seconds, (x + grid_w2)/m, (y+3.5)/m, m)
 
-	m = .1
-	const tiles = 24
+	m = .09
+	const tiles = zone_count
 	for(var i = 0; i < tiles; ++i){
-		let zone = i - 11
+		let zone = city_info[i][0]
 		let lit = zone === mem_zone
 		c.fillStyle = palettes[1]
 		lit && shape(
@@ -523,7 +540,7 @@ function display(t){
 		)
 		c.fillStyle = palettes[lit ? 3 : 2]
 		draw_str(zone_desc(zone),
-			(width-4)/m,
+			(width-4.7)/m,
 			1/m + i * grid_h,
 			m,
 		)
