@@ -50,7 +50,7 @@
 		border: 0;
 	}
 	.label {
-		margin-right: 1ch;
+		margin-right: .5ch;
 	}
 	.flex {
 		display: flex;
@@ -276,12 +276,11 @@ window.addEventListener('resize', resize)
 const step_el = document.getElementById('step')
 
 function set_step(n){
-	const max = chess_positions.length - 1
-	if(n < 0 || n > max){ return }
-	step = n
-	step_el.value = n
-	step_dec_el.disabled = n === 0
-	step_inc_el.disabled = n === max
+	const count = chess_positions.length - 1
+	step = max(0, min(n, count))
+	step_el.value = step
+	step_dec_el.disabled = step === 0
+	step_inc_el.disabled = step === count
 	display()
 }
 
