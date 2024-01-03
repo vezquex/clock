@@ -506,7 +506,7 @@ window.addEventListener('resize', resize)
 window.screen.orientation.addEventListener('change', resize)
 
 const dash = [[2.25, 7], [3.25,6], [6.75,6], [7.75, 7], [6.75,8], [3.25,8]]
-const zone_bg_shape = [[0,0],[3*grid_w,0],[3*grid_w,ch],[0,ch]]
+const zone_bg_shape = [[-hcw,hch],[0,0],[4*grid_w,0],[4*grid_w,ch],[0,ch]]
 
 function display(t){
 	const day_of_month = zeropad2(t.getUTCDate())
@@ -545,7 +545,7 @@ function display(t){
 		c.fillStyle = palettes[1]
 		lit && shape(
 			zone_bg_shape,
-			(width-4)/m,
+			(width-4.7)/m,
 			1/m + i * grid_h,
 			m,
 		)
