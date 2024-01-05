@@ -1,4 +1,4 @@
-function chess({canvas, x=0, y=0, height=128, pgn, step=0, title, width=128}){
+function chess({canvas, x, y=0, height=128, width=128, pgn, step=0, title}){
 const _ = void 0
 const {ceil, cos, floor, max, min, PI, random, sin, sqrt} = Math
 const phi = (1 + sqrt(5)) * .5
@@ -29,6 +29,7 @@ const c = canvas.getContext('2d')
 function resize(event){
 	const scale = window.devicePixelRatio || 1
 	const canvas_height = floor(min(height, width))
+	x ??= floor((width - canvas_height) / 2)
 	z = floor(canvas_height / virt_height)
 	canvas.style.height = canvas_height + 'px'
 	canvas.height = virt_height * scale * z

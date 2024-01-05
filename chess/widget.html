@@ -95,7 +95,7 @@ const chess_games = [
 		chess({step: 45, pgn: chess_games[0], canvas, height, title, width})
 		const d2 = board_wall2.getBoundingClientRect()
 		console.log(d2)
-		chess({step: 87, pgn: chess_games[1], canvas: canvas2, height:d2.height, title: title2, width: d2.width})
+		chess({step: 87, pgn: chess_games[1], canvas: canvas2, height:d2.height, width: d2.width, title: title2})
 	}
 	window.addEventListener('resize', window.requestAnimationFrame.bind(null, resize))
 	resize()
