@@ -450,13 +450,17 @@ const chess_game = parse_pgn(pgn)
 const chess_positions = []
 chess_positions.push(chess_initial_position.concat())
 
-title && (title.innerText = `${ceil(step/2)}${step%2 ? '...' : '.'} | ${Object.values(chess_game.tags).join(' | ')}`)
+function move_text(step){
+	return `${floor(step/2)+1}${step%2 ? '…' : '.'}`
+}
 
 for(let i = 0; i < chess_game.moves.length; ++i){
 	chess_positions.push(
 		pgn_move(chess_positions[i], chess_game.moves[i], i)
 	)
 }
+
+title && (title.innerText = `${move_text(step)} of ${move_text(chess_positions.length-1)}  | ${Object.values(chess_game.tags).join(' | ')}`)
 
 const cb = chessboard(colors.bs, colors.ws)
 function display(){

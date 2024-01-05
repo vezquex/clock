@@ -73,8 +73,13 @@
 		display: flex;
 		flex-direction: row;
 	}
+	#move {
+		display: inline-block;
+		min-width: 10.5ch;
+	}
 	#step {
-		width: 4ch;
+		width: 3ch;
+		margin-right: 1em;
 	}
 	.nospin::-webkit-outer-spin-button,
 	.nospin::-webkit-inner-spin-button {
@@ -98,6 +103,8 @@
 		<label class='row grow border outset'>
 			<span class='label'>Step</span>
 			<input id='step' class='nospin' tabindex='0' onChange='set_step(parseInt(this.value))' onFocus='this.select()' value='0' min='0' type='number' autocomplete='off'/>
+			<span class='label'>Move</span>
+			<span id='move'></span>
 		</label>
 		<button id='step_inc' class='grow' tabindex='2'><span>+</span></button>
 	</div>
@@ -240,12 +247,19 @@ function resize(event){
 
 window.addEventListener('resize', resize)
 
+const move_el = document.getElementById('move')
 const step_el = document.getElementById('step')
+
+function move_text(step){
+	return `${floor(step/2)+1}${step%2 ? '…' : '.'}`
+}
 
 function set_step(n){
 	const count = chess_positions.length - 1
 	step = max(0, min(n, count))
 	step_el.value = step
+	move_el.innerText = `${move_text(step)} of ${move_text(count)}`
+
 	step_dec_el.disabled = step === 0
 	step_inc_el.disabled = step === count
 	display()
