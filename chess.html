@@ -82,7 +82,7 @@
 		margin: 0;
 	}
 	.nospin {
-		-moz-appearance: textfield;
+		appearance: textfield;
 	}
 	@media(hover: none){
 		button, input, label {
@@ -107,7 +107,7 @@
 const _ = void 0
 const {ceil, cos, floor, max, min, PI, random, sin, sqrt} = Math
 const phi = (1 + sqrt(5)) * .5
-const tau = 2 * Math.PI
+const tau = 2 * PI
 const tau_4 = tau / 4
 const tau_8 = tau / 8
 const rt3_2 = sqrt(3)/2
@@ -128,43 +128,16 @@ const V = W-1
 
 let palettes
 const color_palettes = {
+	'black_piece': '#E00000',
+	'white_piece': '#00F0F0',
 	'black': '#000000',
-	'blue': '#0080DB',
-	'blue_dark': '#00406D',
-	'brown': '#783818',
-	'cyan': '#00F0F0',
 	'gray_1_5': '#333333',
-	'gray_1_3': '#555555',
 	'gray': '#808080',
-	'gray_2_3': '#AAAAAA',
-	'green': '#00ED00',
-	'green_dark': '#007600',
-	'magenta': '#F000F0',
-	'orange': '#F07020',
-	'red': '#E00000',
-	'red_dark': '#700000',
-	'tan': '#C0B090',
-	'yellow': '#F0F000',
 	'white': '#F1EDDB',
 }
 const obj_colors = {
 	die: 'gray',
 	pip: 'white',
-}
-const number_colors = {
-	1: 'gray',
-	2: 'blue',
-	3: 'green',
-	4: 'orange',
-	5: 'magenta',
-	6: 'yellow',
-	7: 'cyan',
-	8: 'red',
-	9: 'gray',
-	[ps]: 'white',
-}
-for(let i = 1; i<9; ++i){
-	number_colors[30+i] = number_colors[i]
 }
 const rots = {
 	3: tau_4,
@@ -173,9 +146,6 @@ const rots = {
 	6: 0,
 	7: tau_4,
 	8: tau/16,
-}
-const y_offsets = {
-	3: 4/3,
 }
 const themes = {
 	Dark: {
@@ -201,10 +171,8 @@ function on_button(event, callback){
 	const self = this
 	let interval = null
 	let timeout = null
-
 	callback()
 	event.preventDefault()
-
 	// cancel interval and timeout; unbind listeners
 	function cancel(event){
 		window.clearInterval(interval)
@@ -222,7 +190,6 @@ function on_button(event, callback){
 	self.addEventListener('mouseout', cancel)
 	self.addEventListener('mouseup', cancel)
 	self.addEventListener('touchend', cancel)
-
 	// long press: repeat
 	timeout = window.setTimeout(function(){
 		interval = window.setInterval(callback, 100)
@@ -256,8 +223,8 @@ const button_box = document.getElementById('button_box')
 const face_box = document.getElementById('face_box')
 function resize(event){
 	const scale = window.devicePixelRatio || 1
-	const face_box_height = Math.floor(window.innerHeight  - button_box.offsetHeight) - 1
-	z = Math.floor(Math.min(
+	const face_box_height = floor(window.innerHeight  - button_box.offsetHeight) - 1
+	z = floor(min(
 		window.innerWidth / width,
 		face_box_height / height,
 	))
@@ -326,12 +293,11 @@ function draw_die(
 	const s = max(columns, rows)
 	const dgc = dl/(columns+1)
 	const dgr = dl/(rows+1)
-	const ar = 1
 	if(color){
 		const {globalAlpha} = c
 		const m = z
 		c.beginPath()
-		c.roundRect(x*m, y*m, dl*m*ar, dl*m, m*round)
+		c.roundRect(x*m, y*m, dl*m, dl*m, m*round)
 		c.globalAlpha = 0.25 * globalAlpha
 		c.fillStyle = color_palettes[color]
 		c.fill()
@@ -342,7 +308,7 @@ function draw_die(
 	}
 	pips.forEach((pip, i)=>{
 		if(!pip){ return }
-		c.fillStyle = pip.color ?? color_palettes[number_colors[pip]] ?? obj_colors.pip
+		c.fillStyle = color_palettes[pip.color] ?? obj_colors.pip
 		let poly = pip.shape ?? polygons[pip]
 		if(!poly){
 			const key = `pip=${pip},s=${s}`
@@ -356,80 +322,77 @@ function draw_die(
 	})
 }
 
-const black_checker = {shape:polygon(4, 1.25, tau_8),color:color_palettes['black']}
-const white_checker = {shape:polygon(4, 1.25, tau_8),color:color_palettes['gray_1_5']}
-
 const chess_shapes = {
 	b: {
 		name: 'bishop black',
-		color: 'red',
+		color: 'black_piece',
 		shape: polygram(4, dl/((5+1) * pip_size), 0, 1/3),
 	},
 	k: {
 		name: 'king black',
-		color: 'red',
+		color: 'black_piece',
 		shape: polygon(8, dl/((6+1) * pip_size), tau/16),
 	},
 	n: {
 		name: 'knight black',
-		color: 'red',
+		color: 'black_piece',
 		shape: [[0,0],[2,0],[2,3],[1,3],[1,1],[0,1]]
 			.map(a=>[(a[0]-1.5)/2, (a[1]-1.5)/2]),
 	},
 	p: {
 		name: 'pawn black',
-		color: 'red',
+		color: 'black_piece',
 		shape: [[0,0],[3,0],[2,3],[1,3]]
 			.map(a=>[(a[0]-1.5)/3, (a[1]-1.5)/3]),
 	},
 	q: {
 		name: 'queen black',
-		color: 'red',
+		color: 'black_piece',
 		shape: polygram(8, dl/((6+1) * pip_size), tau/16, 2/3),
 	},
 	r: {
 		name: 'rook black',
-		color: 'red',
+		color: 'black_piece',
 		shape: [[1,1],[1,0],[2,0],[2,1],[3,1],[3,2],[2,2],[2,3],[1,3],[1,2],[0,2],[0,1]]
 			.map(a=>[(a[0]-1.5)/2, (a[1]-1.5)/2]),
 	},
 	B: {
 		name: 'bishop white',
-		color: 'cyan',
+		color: 'white_piece',
 		shape: polygram(4, dl/((5+1) * pip_size), 0, 1/3),
 	},
 	K: {
 		name: 'king white',
-		color: 'cyan',
+		color: 'white_piece',
 		shape: polygon(8, dl/((6+1) * pip_size), tau/16),
 	},
 	N: {
 		name: 'knight white',
-		color: 'cyan',
+		color: 'white_piece',
 		shape: [[0,0],[2,0],[2,3],[1,3],[1,1],[0,1]]
 			.map(a=>[(a[0]-1.5)/2, (a[1]-1.5)/2]),
 	},
 	P: {
 		name: 'pawn white',
-		color: 'cyan',
+		color: 'white_piece',
 		shape: [[0,3],[3,3],[2,0],[1,0]]
 			.map(a=>[(a[0]-1.5)/3, (a[1]-1.5)/3]),
 	},
 	Q: {
 		name: 'queen white',
-		color: 'cyan',
+		color: 'white_piece',
 		shape: polygram(8, dl/((6+1) * pip_size), tau/16, 2/3),
 	},
 	R: {
 		name: 'rook white',
-		color: 'cyan',
+		color: 'white_piece',
 		shape: [[1,1],[1,0],[2,0],[2,1],[3,1],[3,2],[2,2],[2,3],[1,3],[1,2],[0,2],[0,1]]
 			.map(a=>[(a[0]-1.5)/2, (a[1]-1.5)/2]),
 	},
 }
 function chessboard(black, white){
-	const black_checker = {shape:polygon(4, 1.25, tau_8),color:color_palettes[black]}
-	const white_checker = {shape:polygon(4, 1.25, tau_8),color:color_palettes[white]}
+	const black_checker = {shape:polygon(4, 1.25, tau_8),color:black}
+	const white_checker = {shape:polygon(4, 1.25, tau_8),color:white}
 	return Array(W*W).fill().map((_, i) => (i+floor(i/W))%2 ? black_checker : white_checker)
 }
 const chessboards = [
@@ -439,7 +402,7 @@ const chessboards = [
 	chessboard('green_dark', 'tan'),
 	chessboard('blue_dark', 'tan'),
 	chessboard('gray_1_5', 'tan'),
-	]
+]
 
 const chess_initial_position = [].concat(
 	'rnbqkbnr'.split(''),
@@ -612,7 +575,7 @@ function unobstructed_bishop_moves(W, cell, piece, board){
 		Array(min(x, V-y)).fill().map(
 			(_,i)=>(i+=1, cell - i + i*W)),
 		// pos, neg
-		Array(min(V-x, x)).fill().map(
+		Array(min(V-x, y)).fill().map(
 			(_,i)=>(i+=1, cell + i - i*W)),
 	]
 	const squares = []
@@ -766,8 +729,7 @@ step_el.setAttribute('max', chess_positions.length - 1)
 function display(){
 	c.clearRect(0, 0, width*z, height*z)
 	let x = pad_h - g, y = pad_v, m = 1, p = ps
-	const cb = chessboards[0]
-	draw_die(cb, x += g, y, _, _, 0)
+	draw_die(chessboards[0], x += g, y, _, _, 0)
 	draw_die(
 		chess_positions[step].map(p => chess_shapes[p]),
 		x, y, false
