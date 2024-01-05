@@ -6,7 +6,7 @@
 # [Chess Viewer](https://vezquex.github.io/clock/chess/)
 Step through recorded chess moves.
 See also: [Encapsulated Transparent Chess Widget](https://vezquex.github.io/clock/chess/widget.html)
-The code determines where pieces came from, since PGN (Portable Game Notation) doesn't specify.
+The code determines where pieces came from, as PGN (Portable Game Notation) doesn't specify.
 
 
 # [Retro Watch](https://vezquex.github.io/clock/retro-168.html)
