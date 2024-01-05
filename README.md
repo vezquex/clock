@@ -4,9 +4,8 @@
 - Chess position display
 
 # [Chess Viewer](https://vezquex.github.io/clock/chess/)
-Step through recorded chess moves.
-The code determines where pieces came from, as PGN (Portable Game Notation) doesn't specify.
-See also: [Encapsulated Transparent Chess Widget](https://vezquex.github.io/clock/chess/widget.html)
+Step through a recorded chess game.
+[Encapsulated Transparent Chess Widget](https://vezquex.github.io/clock/chess/widget.html)
 
 
 # [Retro Watch](https://vezquex.github.io/clock/retro-168.html)

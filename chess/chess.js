@@ -38,6 +38,7 @@ function resize(event){
 	canvas.style.width = (virt_width*z)+'px'
 	canvas.style.left = x+'px'
 	canvas.style.top = y+'px'
+	canvas.style.display = 'block'
 	c.scale(scale, scale)
 	display()
 }
@@ -459,8 +460,8 @@ for(let i = 0; i < chess_game.moves.length; ++i){
 		pgn_move(chess_positions[i], chess_game.moves[i], i)
 	)
 }
-
-title && (title.innerText = `${move_text(step)} of ${move_text(chess_positions.length-1)}  | ${Object.values(chess_game.tags).join(' | ')}`)
+const title_text = `${move_text(step)} of ${move_text(chess_positions.length-1)}  | ${Object.values(chess_game.tags).join(' | ')}`
+title ? (title.innerText = title_text) : (canvas.title = title_text)
 
 const cb = chessboard(colors.bs, colors.ws)
 function display(){
