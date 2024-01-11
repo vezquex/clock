@@ -16,10 +16,6 @@
 	.border {
 		border-color: #404040;
 		border-style: solid;
-		border-width: 1px;
-	}
-	.outset {
-		border-style: outset;
 	}
 	body, button, input {
 		background: #000;
@@ -29,17 +25,26 @@
 		margin: 0;
 	}
 	body {
-		min-height: 100vh;
 		overflow-x: hidden;
 	}
 	button, label {
 		align-items: center;
-		border-width: 1px;
 		cursor: pointer;
-		height: 2em;
 		justify-content: center;
 		line-height: 1.75;
 		padding: 0 .5em;
+	}
+	button {
+		border-style: outset;
+		border-width: 1px;
+	}
+	.active {
+		border-style: inset;
+	}
+	label {
+		border-width: 1px 0;
+		display: flex;
+		flex-wrap: wrap;
 	}
 	button[disabled] {
 		color: #808080;
@@ -52,8 +57,7 @@
 	.label {
 		margin-right: .5ch;
 	}
-	.flex {
-		display: flex;
+	.center {
     justify-content: center;
 	}
 	.grow {
@@ -90,21 +94,20 @@
 		appearance: textfield;
 	}
 	@media(hover: none){
-		button, input, label {
+		button {
 			font-size: 2rem;
 		}
 	}
 </style>
 
 <div class='column' style='min-height:100vh;'>
-	<div id='face_box' class='grow flex'><canvas id='face'></canvas></div>
+	<div id='face_box' class='row grow center'><canvas id='face'></canvas></div>
 	<div id='button_box' class='row'>
 		<button id='step_dec' class='grow' tabindex='1'><span>-</span></button>
-		<label class='row grow border outset'>
+		<label class='grow border'>
 			<span class='label'>Step</span>
 			<input id='step' class='nospin' tabindex='0' onChange='set_step(parseInt(this.value))' onFocus='this.select()' value='0' min='0' type='number' autocomplete='off'/>
-			<span class='label'>Move</span>
-			<span id='move'></span>
+			<span>Move <span id='move'></span></span>
 		</label>
 		<button id='step_inc' class='grow' tabindex='2'><span>+</span></button>
 	</div>
@@ -190,6 +193,7 @@ function on_button(event, callback){
 		self.removeEventListener('mouseout', cancel)
 		self.removeEventListener('mouseup', cancel)
 		self.removeEventListener('mouseup', cancel)
+		self.classList.remove('active')
 		event.preventDefault()
 	}
 	self.addEventListener('keydown', cancel)
@@ -197,6 +201,7 @@ function on_button(event, callback){
 	self.addEventListener('mouseout', cancel)
 	self.addEventListener('mouseup', cancel)
 	self.addEventListener('touchend', cancel)
+	self.classList.add('active')
 	// long press: repeat
 	timeout = window.setTimeout(function(){
 		interval = window.setInterval(callback, 100)
