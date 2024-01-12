@@ -521,23 +521,22 @@ function display(t){
 	draw_die(chessboards[3], x += g, y, false)
 	draw_die(chessboards[4], x += g, y, false)
 
-	let cw = [3,7], gc = dl+1.7, ace_pad = Array(10).fill()
+	let cr = dl/16, cw = [3,7], gc = dl+1.7, ace_pad = Array(10).fill()
 	z = z*10/13
 	y = (y+5)*13/10
 	suits.forEach(suit => {
 		x = pad_h*13/9 - gc, y += g
-		draw_die([...ace_pad, suit.ace], x += gc, y, _, cw)
+		draw_die([...ace_pad, suit.ace], x += gc, y, _, cw, cr)
 		p = suit.pip
-		/*2*/draw_die([_,p,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,p], x += gc, y, _, cw)
-		/*3*/draw_die([_,p,_,_,_,_,_,_,_,_,p,_,_,_,_,_,_,_,_,p], x += gc, y, _, cw)
-		/*4*/draw_die([p,_,p,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw)
-		/*5*/draw_die([p,_,p,_,_,_,_,_,_,_,p,_,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw)
-		/*6*/draw_die([p,_,p,_,_,_,_,_,_,p,_,p,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw)
-		/*7*/draw_die([p,_,p,_,p,_,_,_,_,p,_,p,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw)
-		// x = pad_h - gc, y += g
-		/*8*/draw_die([p,_,p,_,p,_,_,_,_,p,_,p,_,p,_,_,_,_,p,_,p], x += gc, y, _, cw)
-		/*9*/draw_die([p,_,p,_,_,_,p,_,p,_,p,_,p,_,p,_,_,_,p,_,p], x += gc, y, _, cw)
-		/*10*/draw_die([p,_,p,_,p,_,p,_,p,_,_,_,p,_,p,_,p,_,p,_,p], x += gc, y, _, cw)
+		/*2*/draw_die([_,p,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,p], x += gc, y, _, cw, cr)
+		/*3*/draw_die([_,p,_,_,_,_,_,_,_,_,p,_,_,_,_,_,_,_,_,p], x += gc, y, _, cw, cr)
+		/*4*/draw_die([p,_,p,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw, cr)
+		/*5*/draw_die([p,_,p,_,_,_,_,_,_,_,p,_,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw, cr)
+		/*6*/draw_die([p,_,p,_,_,_,_,_,_,p,_,p,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw, cr)
+		/*7*/draw_die([p,_,p,_,p,_,_,_,_,p,_,p,_,_,_,_,_,_,p,_,p], x += gc, y, _, cw, cr)
+		/*8*/draw_die([p,_,p,_,p,_,_,_,_,p,_,p,_,_,_,_,p,_,p,_,p], x += gc, y, _, cw, cr)
+		/*9*/draw_die([p,_,p,_,_,_,p,_,p,_,p,_,p,_,p,_,_,_,p,_,p], x += gc, y, _, cw, cr)
+		/*10*/draw_die([p,_,p,_,p,_,p,_,p,_,_,_,p,_,p,_,p,_,p,_,p], x += gc, y, _, cw, cr)
 		/*J*/draw_die([
 		_,p,p,p,
 		_,_,_,p,
@@ -545,23 +544,23 @@ function display(t){
 		p,_,_,p,
 		p,_,_,p,
 		_,p,p,_,
-		], x += gc, y, _, [4,6])
+		], x += gc, y, _, [4,6], cr)
 		/*Q*/draw_die([
-		_,p,_,p,_,p,_,
-		_,_,_,_,_,_,_,
-		p,_,_,p,_,_,p,
-		_,_,_,_,p,_,_,
-		_,p,_,_,_,p,_,
-		_,_,_,_,_,_,p,
-		_,_,p,_,p,_,_,
-		], x += gc, y, _, [7])
+		_,_,p,_,_,
+		_,p,_,p,_,
+		p,_,_,_,p,
+		_,_,_,_,_,
+		p,_,p,_,p,
+		_,p,_,p,_,
+		_,_,p,_,p,
+		], x += gc, y, _, [5,7], cr)
 		/*K*/draw_die([
 		p,p,_,_,p,
 		_,p,_,p,_,
 		_,p,p,p,_,
 		_,p,_,p,_,
 		p,p,_,_,p,
-		], x += gc, y, _, [5,5])
+		], x += gc, y, _, [5,5], cr)
 	})
 }
 
