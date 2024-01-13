@@ -2,6 +2,7 @@
 - Grids of arbitrary pips
 - Playing cards: ace through king
 - Chess position display
+[Playing Cards with labels](https://vezquex.github.io/clock/card.html)
 
 # [Chess Viewer](https://vezquex.github.io/clock/chess/)
 Step through a recorded chess game.
