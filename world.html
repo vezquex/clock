@@ -214,7 +214,7 @@ function on_button(event, callback){
 		self.removeEventListener('keyup', cancel)
 		self.removeEventListener('mouseout', cancel)
 		self.removeEventListener('mouseup', cancel)
-		self.removeEventListener('mouseup', cancel)
+		self.removeEventListener('touchend', cancel)
 		event.preventDefault()
 	}
 	self.addEventListener('keydown', cancel)

@@ -192,7 +192,7 @@ function on_button(event, callback){
 		self.removeEventListener('keyup', cancel)
 		self.removeEventListener('mouseout', cancel)
 		self.removeEventListener('mouseup', cancel)
-		self.removeEventListener('mouseup', cancel)
+		self.removeEventListener('touchend', cancel)
 		self.classList.remove('active')
 		event.preventDefault()
 	}
