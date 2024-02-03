@@ -44,7 +44,6 @@
 	.svg {
 		margin: 0 auto;
 		max-height: 100vh;
-		/* opacity:.3; */
 	}
 	.flex {
 		display: flex;
@@ -53,13 +52,12 @@
 	.wide {
 		width: 100vw;
 	}
-	/* #face {	opacity: 0.3;	} */
 	.bold {
 		font-weight:700;
 	}
 	.button-label {
 		font-size:140px;
-		letter-spacing:10;
+		letter-spacing:10px;
 	}
 </style>
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
@@ -275,7 +273,6 @@ function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(offset_el.value)
 	let t = new Date(Date.now() + offset)
-	// t = new Date(2020,9,25,10,19,10)
 	display(t)
 	const r = 1000 - (t % 1000)
 	window.synchronizeTimeout = window.setTimeout(synchronize, r)
