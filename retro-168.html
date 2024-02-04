@@ -113,18 +113,14 @@
 </text>
 </svg>
 </div>
-<div class='fill'>
-	<div class='abs flex wide' >
-		<input id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
-		<label>
-			<span class='label'>Theme</span>
-			<select id='theme' onChange='setTheme(this.value)'></select>
-		</label>
-	</div>
+<div class='abs flex wide' >
+	<input id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
+	<label>
+		<span class='label'>Theme</span>
+		<select id='theme' onChange='setTheme(this.value)'></select>
+	</label>
 </div>
-<div class='fill'>
-	<canvas id='face' class='abs'></canvas>
-</div>
+<canvas id='face' class='abs'></canvas>
 
 <script type='text/javascript'>
 const _ = void 0
