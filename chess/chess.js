@@ -1,11 +1,10 @@
 function chess({canvas, x, y=0, height=128, width=128, pgn, step=0, title}){
 const _ = void 0
-const {ceil, cos, floor, max, min, PI, random, sin, sqrt} = Math
+const {asin, ceil, cos, floor, max, min, PI, random, sin, sqrt} = Math
 const phi = (1 + sqrt(5)) * .5
 const tau = 2 * PI
 const tau_8 = tau / 8
 const rt2 = sqrt(2)
-const rt3_2 = sqrt(3)/2
 
 const virt_height = 16
 const virt_width = 16
@@ -62,7 +61,12 @@ function polygon(sides, radius = 1, rot = 0){
 	]))
 }
 
-function polygram(sides, radius = 1, rot = 0, inner_radius = .5/phi){
+function polygram(
+	sides = 3,
+	radius = 1,
+	rot = 0,
+	inner_radius = sin(asin(phi - 1)) / (1 + sin(asin(phi - 1))),
+){
 	return Array(sides*2).fill().map((_,i)=>([
 		(i%2 ? 1 : inner_radius) * radius * sin(i * tau / (2*sides) - rot),
 		(i%2 ? 1 : inner_radius) * radius * cos(i * tau / (2*sides) - rot),

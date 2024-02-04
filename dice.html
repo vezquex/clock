@@ -62,7 +62,7 @@
 
 <script type='text/javascript'>
 const _ = void 0
-const {ceil, cos, floor, max, min, PI, random, sin, sqrt} = Math
+const {asin, ceil, cos, floor, max, min, PI, random, sin, sqrt} = Math
 const phi = (1 + sqrt(5)) * .5
 const tau = 2 * Math.PI
 const tau_4 = tau / 4
@@ -214,7 +214,12 @@ function polygon(sides, radius = 1, rot = tau_4){
 	]))
 }
 
-function polygram(sides, radius = 1, rot = 0, inner_radius = .5/phi){
+function polygram(
+	sides = 3,
+	radius = 1,
+	rot = 0,
+	inner_radius = sin(asin(phi - 1)) / (1 + sin(asin(phi - 1))),
+){
 	return Array(sides*2).fill().map((_,i)=>([
 		(i%2 ? 1 : inner_radius) * radius * sin(i * tau / (2*sides) - rot),
 		(i%2 ? 1 : inner_radius) * radius * cos(i * tau / (2*sides) - rot),
