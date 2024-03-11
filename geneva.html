@@ -6,7 +6,9 @@
 </title>
 <style type='text/css'>
 	:root {
+		--accent: #808080;
 		accent-color: var(--accent);
+		color-scheme: dark;
 	}
 	body, option {
 		background: #000;
@@ -244,6 +246,7 @@ const offset_el = document.getElementById('offset')
 function setTheme(theme){
 	palettes = themes[theme]
 	document.querySelector(`#theme [value=${theme}]`).selected = true
+	document.documentElement.style.setProperty('--accent', palettes.dial)
 	colors.forEach(color => {
 		document.documentElement.style.setProperty('--'+color, palettes[color])
 	})
