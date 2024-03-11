@@ -158,7 +158,7 @@ const height = 128
 const width = height
 const half = width / 2
 const bezel_r = 50
-const bezel_mark_len = 9.5
+const bezel_mark_len = 9
 const bezel_mark_thick = 0.75
 const dash = 1.2
 const dial_r = half * 780/1024
@@ -173,6 +173,9 @@ const minute_thick = 0.25
 const thick = .2
 
 const tau = 2 * Math.PI
+const tau_4 = tau / 4
+const tau_12 = tau / 12
+const tau_60 = tau / 60
 const {cos, sin} = Math
 const paths = []
 const locale = 'en-us'
@@ -253,14 +256,6 @@ function rot(a, [x,y]){
 	]
 }
 
-const bezel_index = [
-	[0, -bezel_mark_thick],
-	[bezel_mark_len, -bezel_mark_thick],
-	[bezel_mark_len, bezel_mark_thick],
-	[0, bezel_mark_thick],
-	[0, -bezel_mark_thick],
-]
-
 function display(t){
 	const hours = t.getHours()
 	const minutes = t.getMinutes()
@@ -274,7 +269,7 @@ function display(t){
 	fc.lineWidth = .5*z
 	fc.clearRect(0, 0, width*z, height*z)
 	fc.translate(half*z, half*z)
-	fc.rotate(-tau/4)
+	fc.rotate(-tau_4)
 
 	const hr = hours % 12
 
@@ -327,7 +322,7 @@ function display(t){
 	// second hand
 	fc.save()
 	fc.lineWidth = .5*z
-	fc.rotate(seconds * tau / 60)
+	fc.rotate(seconds * tau_60)
 	
 	fc.beginPath()
 	fc.moveTo(-15*z, 0)
@@ -359,31 +354,36 @@ function display(t){
 
 function display_static(){
 	c.clearRect(0, 0, width*z, height*z)
-
+	c.lineCap = 'round'
+	c.lineWidth = 2 * bezel_mark_thick * z
+	c.strokeStyle = palettes.mark
 	c.fillStyle = palettes.mark
-
-	;[0,2,4,6,8,10].forEach(
-		i => {
-			const a = -i*tau/12
-			shape(
-				bezel_index.map(v => rot(a, v)),
-				half + (bezel_r * cos(-a)),
-				half + (bezel_r * sin(-a)),
-			)
-		}
-	)
 	;Array(60).fill().map((_, i) => i)
 	.filter(x => x % 60)
 	.forEach(i => {
-		const a = -(i+45)*tau/60
+		const a = (i+45)*tau_60
 		circle(
 			bezel_mark_thick,
-			half + (bezel_r * cos(-a)),
-			half + (bezel_r * sin(-a)),
+			half + (bezel_r * cos(a)),
+			half + (bezel_r * sin(a)),
 		)}
 	)
+	;[
+		1, 3, 5, 7, 9, 11,
+	].forEach(i => {
+		const a = (i-3)*tau_12
+		const x = half + (bezel_r * cos(a))
+		const y = half + (bezel_r * sin(a))
+		c.beginPath()
+		c.moveTo(x*z, y*z)
+		c.lineTo(
+			(half + ((bezel_r + bezel_mark_len) * cos(a)))*z,
+			(half + ((bezel_r + bezel_mark_len) * sin(a)))*z,
+		)
+		c.stroke()
+	})
 	;Array(60).fill().forEach((_, i) => {
-		const a = -i*tau/60 + tau/4
+		const a = -i * tau_60 + tau_4
 		shape(
 			[
 				rot(a, [0, -minute_thick]),
@@ -403,15 +403,15 @@ function display_static(){
 		i => {
 			circle(
 				hour_radius,
-				half + (hour_r * cos(i*tau/12)),
-				half + (hour_r * sin(i*tau/12)),
+				half + (hour_r * cos(i*tau_12)),
+				half + (hour_r * sin(i*tau_12)),
 			)
 			c.stroke()
 		}
 	)
 	;[0,3,6].forEach(
 		i => {
-			const a = -i*tau/12
+			const a = -i * tau_12
 			shape(
 				[
 					rot(a, [-hour_len,-hour_thick]),
