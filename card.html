@@ -203,7 +203,7 @@ function polygram(
 	rot = 0,
 	inner_radius = sin(asin(phi - 1)) / (1 + sin(asin(phi - 1))),
 ){
-	return Array(points*2).fill().map((_,i)=>([
+	return Array(sides*2).fill().map((_,i)=>([
 		(i%2 ? 1 : inner_radius) * radius * sin(i * tau / (2*sides) - rot),
 		(i%2 ? 1 : inner_radius) * radius * cos(i * tau / (2*sides) - rot),
 	]))
@@ -224,7 +224,6 @@ function draw_die(
 	const dgr = dl/(rows+1)
 	const ar = 1
 	if(color){
-		const {globalAlpha} = c
 		c.beginPath()
 		c.roundRect(x*z, y*z, dl*z*ar, dl*z, round)
 		c.fillStyle = color_palettes[color] || color_palettes[obj_colors.die]

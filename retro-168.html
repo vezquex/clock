@@ -5,8 +5,13 @@
 	Retro Watch 168
 </title>
 <style type='text/css'>
+	*, *::before, *::after {
+		box-sizing: border-box;
+	}
 	:root {
+		--accent: #808080;
 		accent-color: var(--accent);
+		color-scheme: dark;
 	}
 	body, option {
 		background: #000;
@@ -20,17 +25,25 @@
 		font-size: 1em;
 		margin: 0;
 	}
+	details {
+		opacity: 0.5;
+	}
+	input, select, .label, summary {
+		padding: .5em;
+	}
+	input {
+		width: 100%;
+	}
 	label {
 		display: flex;
 	}
-	input, select, .label {
-		background: 0;
-		border: 0;
-		opacity: 0.5;
-		padding: .5em;
-	}
 	select {
-		flex-grow: 1;
+		min-width: 8rem;
+	}
+	summary {
+		cursor:pointer;
+		list-style: none;
+		user-select: none;
 	}
 	.abs {
 		position:absolute;
@@ -113,13 +126,19 @@
 </text>
 </svg>
 </div>
-<div class='abs flex wide' >
-	<input id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
+<details class='abs flex wide'>
+	<summary title='Settings'>☰</summary>
+	<label>
+		<span class='label'>Offset</span>
+		<input id='offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
+	</label>
 	<label>
 		<span class='label'>Theme</span>
 		<select id='theme' onChange='setTheme(this.value)'></select>
 	</label>
-</div>
+</details>
+
+
 <canvas id='face' class='abs'></canvas>
 
 <script type='text/javascript'>
@@ -134,7 +153,6 @@ const color_palettes = {
 	bg: '#000',
 	brand: '#B0B0B0',
 	dark_label: '#868EA1',
-	brand: '#B0B0B0',
 	gray: '#B0B0B0',
 	highlight: '#C6311B',
 	inner_ring: '#B0B0B0',
