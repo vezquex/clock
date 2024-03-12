@@ -296,11 +296,10 @@ function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(offset_el.value)
 	let t = new Date(Date.now() + offset)
-	t = new Date(2020,0,8,10,7,37,0)
-	// t = new Date(2020,0,8,3,15,0,0)
+	// t = new Date(2020,0,8,10,7,37,0)
 	display(t)
 	const r = delay - (t % delay)
-	// window.synchronizeTimeout = window.setTimeout(synchronize, r)
+	window.synchronizeTimeout = window.setTimeout(synchronize, r)
 }
 
 function shapec(c, path, x = 0, y = 0, m = 1){
