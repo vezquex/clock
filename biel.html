@@ -57,11 +57,11 @@
 	.bold {
 		font-weight:700;
 	}
-	.mono {font-family: "Roboto Mono", monospace;}
+	.mono {font-family: 'Roboto Mono', monospace;}
 	.sans {font-family: Roboto, sans-serif; letter-spacing: 3px;}
 	.cursive {font-family: cursive; letter-spacing: -1px; font-style:italic; }
 	text {text-anchor:middle;}
-	.info {font-size: 36px;}
+	.info {font-size: 34px; letter-spacing: 1px;}
 </style>
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
 <svg version="1.1" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class='svg'>
@@ -70,7 +70,7 @@
 <circle id="bezel" style="fill:var(--bezel);opacity:1.0;" r="968" cx="1024" cy="1024"/>
 <circle id="dial" style="fill:var(--dial);" r="780" cx="1024" cy="1024"/>
 
-<path id="twelve_bezel" style="stroke:var(--mark);stroke-width:16;fill:none;" d="M 1024,220 l -108,-140 q 108,-16 216,0z"/>
+<path id="twelve_bezel" style="stroke:var(--mark);stroke-width:16;fill:none;" d="M 1024,224 l -118,-140 q 118,-16 236,0z"/>
 <circle id="twelve_pip" style="fill:var(--mark);stroke:var(--edge);stroke-width:8;" r="32" cx="1024" cy="132"/>
 <g style="fill:var(--mark);font:120px sans-serif;">
 	<text id="ten" transform="rotate(55 1024 1024) translate(1024 176) scale(2.5 1)">
@@ -104,37 +104,39 @@
 		0
 	</text>
 </g>
-<text x="1024" y="700" style="fill:var(--text);font:100px Courier, monospace;">
+<text x="1024" y="700" style="fill:var(--text);font:bold 110px Times, serif;">
 	Θ
 </text>
-<text x="1036" y="780" style="fill:var(--text);font:100px Courier, monospace;">
-	THETA
+<text transform="translate(1024 774) scale(1.25 1)"
+class="mono"
+style="fill:var(--text);font-size:80px;">
+THETA
 </text>
 <text class="cursive"
 style="fill:var(--highlight);font-size:50px;"
-transform="translate(1030 855) scale(1.5 1)">
+transform="translate(1030 845) scale(1.5 1)">
 	<tspan style="font-size:1.5em;">S</tspan><tspan dy="-10">uperstar</tspan>
 </text>
 <text x="1032" y="1138" class="sans info" style="opacity:.3;fill:var(--text);font-weight:lighter;font-size:44px;">
 	[SiO<tspan dy="10">2</tspan><tspan dy="-10">]</tspan>
 </text>
-<text x="1024" y="908" class="sans info" style="fill:var(--text);">
+<text x="1024" y="900" class="sans info" style="fill:var(--text);">
 	UNDERWATER
 </text>
-<text x="1032" y="1258" class="sans info" style="fill:var(--text);">
+<text x="1032" y="1236" class="sans info" style="fill:var(--text);">
 	JAVASCRIPT
 </text>
-<text x="1024" y="1310" class="sans info" style="fill:var(--text);">
+<text x="1024" y="1282" class="sans info" style="fill:var(--text);">
 	VIRTUAL CHRONOMETER
 </text>
-<text x="1028" y="1362" class="sans info" style="fill:var(--text);">
+<text x="1028" y="1328" class="sans info" style="fill:var(--text);">
 	300m ≈ 1000ft
 </text>
 <path id="curve"
 pathLength="2"
 d="
 M 1024, 254
-a 770,770 0 1,0 5,0
+a 746,746 0 1,0 5,0
 " fill='none'/>
 <text class="mono" style="fill:var(--text);font-size:24px;">
 	<textPath xlink:href="#curve"	startOffset="1"
@@ -191,35 +193,48 @@ const themes = {
 		bezel: '#300000',
 		dial: '#400000',
 	},
+	'Tan': {
+		bezel: '#262427',
+		dial: '#424242',
+		edge: '#CFCAC7',
+		mark: '#D2A67F',
+		text: '#D2A67F',
+	},
 }
 const height = 128
 const width = height
 const half = width / 2
 const bezel_r = 50
 const bezel_mark_len = 9.5
-const bezel_mark_thick = .75
-const bezel_minute_len = bezel_mark_thick * 2
+const bezel_mark_r = 1
+const bezel_minute_len = bezel_mark_r * 2
 const dash = 1.2
 const dial_r = half * 780/1024
-const hour_r = 40
-const hour_r_rect = 37
-const hour_len = 6
+const hour_r = 35
+const hour_r_rect = 28
+const hour_len = 12
 const hour_radius = 4
 const hour_thick = 2.25
 const minute_len = 2.25
-const minute_r = half * 766/1024
+const minute_len_five = minute_len * 1.5
+const minute_r = half * 720/1024
 const minute_thick = 0.2
+const minute_thick_five = minute_thick * 1.5
 const thick = .2
 const tw_gap = 3
 
 // zoom
 let z = 1
 
+const {cos, sin, sqrt, tan} = Math
+const phi = (1 + sqrt(5)) * .5
 const tau = 2 * Math.PI
 const tau_4 = tau / 4
 const tau_12 = tau / 12
 const tau_60 = tau / 60
-const {cos, sin} = Math
+const pent_cross = 2 * sin(tau/5)
+const pent_h = phi / 2 + 1
+const pent_tip = 1 - cos(tau/5)
 
 for(k in themes){
 	themes[k] = Object.assign({}, color_palettes, themes[k])
@@ -281,10 +296,11 @@ function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(offset_el.value)
 	let t = new Date(Date.now() + offset)
-	// t = new Date(2020,0,8,10,7,37,0)
+	t = new Date(2020,0,8,10,7,37,0)
+	// t = new Date(2020,0,8,3,15,0,0)
 	display(t)
 	const r = delay - (t % delay)
-	window.synchronizeTimeout = window.setTimeout(synchronize, r)
+	// window.synchronizeTimeout = window.setTimeout(synchronize, r)
 }
 
 function shapec(c, path, x = 0, y = 0, m = 1){
@@ -305,8 +321,6 @@ function circle(r, x, y, m = 1){
 	c.fill()
 }
 
-const paths = []
-
 const locale = 'en-us'
 
 function rot(a, [x,y]){
@@ -316,20 +330,22 @@ function rot(a, [x,y]){
 	]
 }
 
-const bezel_index = [
-	[0, -bezel_mark_thick],
-	[bezel_mark_len, -bezel_mark_thick],
-	[bezel_mark_len, bezel_mark_thick],
-	[0, bezel_mark_thick],
-	[0, -bezel_mark_thick],
-]
-const bezel_minute = [
-	[bezel_minute_len, -bezel_mark_thick],
-	[0, -bezel_mark_thick],
-	[0, bezel_mark_thick],
-	[bezel_minute_len, bezel_mark_thick],
-	[bezel_minute_len, -bezel_mark_thick],
-]
+const rect = (w, h) => ([
+	[0, 0],
+	[w, 0],
+	[w, h],
+	[0, h],
+])
+
+const rect_my = (y, h) => ([
+	[0, -y],
+	[h, -y],
+	[h, y],
+	[0, y],
+])
+
+const bezel_index = rect_my(bezel_mark_r, bezel_mark_len)
+const bezel_minute = rect_my(bezel_mark_r, bezel_minute_len)
 
 function polygon(sides, radius = 1, rot = tau_4){
 	return Array(sides).fill().map((_,i)=>([
@@ -337,9 +353,44 @@ function polygon(sides, radius = 1, rot = tau_4){
 		radius * sin(i * tau / sides - rot),
 	]))
 }
-const pentagon_hour = polygon(5, 5, 0)
-const triangle_minute = polygon(3, 5, 0)
-const triangle_minute_lume = polygon(3, 3, 0)
+
+const arm_w = 2
+const arm_w2 = 3
+const base_h = 1.5
+const base_w = 4
+const fudge = .25
+const hour_h = hour_r - hour_radius
+const lume_inset = 2.5
+const lume_inset_arm = .75
+const minute_h = minute_r - minute_len_five - 1.25
+const minute_head_h = 8
+const stem_h = 5
+const stem_w = 1.5
+const arm_h = minute_h - stem_h - minute_head_h
+const minute_head_w = minute_head_h*4/3
+const hour_head_w = minute_head_w * 0.828633
+const pr = hour_head_w / phi
+const pc = hour_h - pr
+const cross = pr * pent_cross
+const tip = pr * pent_tip
+const hour_right_arm = [
+	[stem_h, base_w/2 - arm_w],
+	[hour_h - tip, cross/2 - arm_w2],
+	[hour_h - tip, cross/2],
+	[stem_h, base_w/2],
+]
+const hour_left_arm = hour_right_arm.map(([x,y])=>[x,-y])
+const hour_arm_slope_inner = (hour_right_arm[1][1] - hour_right_arm[0][1]) / (hour_right_arm[1][0] - hour_right_arm[0][0])
+const hour_arm_slope_outer = (hour_right_arm[3][1] - hour_right_arm[2][1]) / (hour_right_arm[3][0] - hour_right_arm[2][0])
+const hour_arm_lume_w_inner = hour_h - pr * pent_h - (stem_h + base_h)
+const hour_arm_lume_w_outer = stem_h + base_h - (hour_h - pr * pent_h)
+const hour_right_arm_lume = [
+	[stem_h + base_h, base_w/2 - arm_w + lume_inset_arm],
+	[hour_h - pr * pent_h, base_w/2 - arm_w + lume_inset_arm + hour_arm_slope_inner * hour_arm_lume_w_inner],
+	[hour_h - pr * pent_h, base_w/2 - lume_inset_arm - hour_arm_slope_outer * hour_arm_lume_w_outer],
+	[stem_h + base_h, base_w/2 - lume_inset_arm],
+]
+const hour_left_arm_lume = hour_right_arm_lume.map(([x,y])=>[x,-y])
 
 function display(t){
 	const hours = t.getHours()
@@ -366,50 +417,18 @@ function display(t){
 		(hr / 12 + minutes / 720 + seconds / 43200) * tau,
 	)
 	fc.fillStyle = palettes.edge
-	shapec(
-		fc,
-		[
-			[0, 0],
-			[6, 0],
-			[6, 1],
-			[0, 1],
-		],
-		0, -.5,
-	)
-	shapec(
-		fc,
-		[
-			[0, 0],
-			[0, 3],
-			[1.5, 3],
-			[1.5, 0],
-		],
-		6, -1.5,
-	)
-	shapec(
-		fc,
-		[
-			[0, 0],
-			[21, -3],
-			[21, 0],
-			[0, 1.2],
-		],
-		6, -1.8,
-	)
-	shapec(
-		fc,
-		[
-			[0, 0],
-			[21, 3],
-			[21, 0],
-			[0, -1.2],
-		],
-		6, 1.8,
-	)
-	shapec(fc, pentagon_hour, 25.5)
+	shapec(fc, rect(stem_h + fudge, stem_w), 0, -stem_w/2)
+	shapec(fc, rect(base_h, base_w), stem_h, -base_w/2)
+	// hour head
+	shapec(fc, polygon(5, pr, 0), pc)
+	shapec(fc, hour_left_arm)
+	shapec(fc, hour_right_arm)
 	fc.fillStyle = palettes.mark
+	shapec(fc, hour_left_arm_lume)
+	shapec(fc, hour_right_arm_lume)
+	// hour hand lume
 	fc.beginPath()
-	fc.arc(25.5*z, 0, 2.75*z, 0, tau)
+	fc.arc(pc*z, 0, z*pr/phi, 0, tau)
 	fc.fill()
 	fc.restore()
 
@@ -417,85 +436,121 @@ function display(t){
 	fc.save()
 	fc.rotate((minutes / 60 + seconds / 3600) * tau)
 	fc.fillStyle = palettes.edge
+	shapec(fc, rect(stem_h, stem_w), 0, -stem_w/2)
+	// base
+	fc.fillStyle = palettes.edge
+	shapec(
+		fc,
+		rect(base_h, base_w),
+		stem_h, -base_w/2,
+	)
+	// left arm
+	shapec(
+		fc,
+		[
+			[0, arm_w - base_w/2],
+			[arm_h + fudge, arm_w2 - minute_head_w/2],
+			[arm_h, -minute_head_w/2],
+			[0, -base_w/2],
+		],
+		stem_h,
+	)
+	// right arm
+	shapec(
+		fc,
+		[
+			[0, -(arm_w - base_w/2)],
+			[arm_h + fudge, -(arm_w2 - minute_head_w/2)],
+			[arm_h, minute_head_w/2],
+			[0, base_w/2],
+		],
+		stem_h,
+	)
+	// head
 	shapec(
 		fc,
 		[
 			[0, 0],
-			[6, 0],
-			[6, 1],
-			[0, 1],
+			[minute_head_h, minute_head_w/2],
+			[0, minute_head_w]
 		],
-		0, -.5,
+		minute_h - minute_head_h, -minute_head_w/2
 	)
-	shapec(
-		fc,
-		[
-			[0, 0],
-			[0, 3],
-			[1.5, 3],
-			[1.5, 0],
-		],
-		6, -1.5,
-	)
-	shapec(
-		fc,
-		[
-			[0, 0],
-			[31.5, -2.5],
-			[32, 0],
-			[0, 1.2],
-		],
-		6, -1.8,
-	)
-	shapec(
-		fc,
-		[
-			[0, 0],
-			[31.5, 2.5],
-			[32, 0],
-			[0, -1.2],
-		],
-		6, 1.8,
-	)
-	shapec(fc, triangle_minute, 40)
 	fc.fillStyle = palettes.mark
-	shapec(fc, triangle_minute_lume, 40)
+	// head lume
+	shapec(
+		fc,
+		[
+			[0, lume_inset],
+			[minute_head_h - 1.5*lume_inset, minute_head_w/2],
+			[0, minute_head_w - lume_inset]
+		],
+		stem_h + arm_h + lume_inset/2, -minute_head_w/2
+	)
+	// left arm lume
+	shapec(
+		fc,
+		[
+			[base_h, -(base_w/2 - arm_w + lume_inset_arm)],
+			[arm_h, -(minute_head_w/2 - arm_w2 + lume_inset_arm)],
+			[arm_h, -(minute_head_w/2 - lume_inset_arm)],
+			[base_h, -(base_w/2 - lume_inset_arm/2)],
+		],
+		stem_h,
+	)
+	// right arm lume
+	shapec(
+		fc,
+		[
+			[base_h, base_w/2 - arm_w + lume_inset_arm],
+			[arm_h, minute_head_w/2 - arm_w2 + lume_inset_arm],
+			[arm_h, minute_head_w/2 - lume_inset_arm],
+			[base_h, base_w/2 - lume_inset_arm/2],
+		],
+		stem_h,
+	)
+
 	fc.restore()
 
 	// center post
 	fc.beginPath()
-	fc.arc(0, 0, 4*z, 0, tau)
+	fc.arc(0, 0, 3.5*z, 0, tau)
 	fc.fillStyle = palettes.edge
 	fc.fill()
 
 	// second hand
+	const second_hand_h = minute_r - minute_len
 	fc.save()
 	fc.lineWidth = .5*z
 	fc.rotate(seconds * tau_60)
 	
+	// body
 	fc.beginPath()
 	fc.moveTo(-15*z, 0)
-	fc.lineTo(45.6*z, 0)
+	fc.lineTo(second_hand_h*z, 0)
 	fc.strokeStyle = palettes.edge
 	fc.stroke()
 
+	// tip
 	fc.beginPath()
-	fc.moveTo(35.6*z, 0)
-	fc.lineTo(45.6*z, 0)
+	fc.moveTo(28*z, 0)
+	fc.lineTo(second_hand_h*z, 0)
 	fc.strokeStyle = palettes.highlight
 	fc.stroke()
 
+	// eye
 	fc.beginPath()
-	fc.arc(33.6*z, 0, 2*z, 0, tau, true)
+	fc.arc(28*z, 0, 2.5*z, 0, tau, true)
 	fc.fillStyle = palettes.mark
 	fc.strokeStyle = palettes.edge
 	fc.fill()
 	fc.stroke()
 
+	// tail
 	fc.beginPath()
 	fc.lineWidth = 2*z
-	fc.moveTo(-17*z, 0)
-	fc.lineTo(-8*z, 0)
+	fc.moveTo(-17.4*z, 0)
+	fc.lineTo(-7.4*z, 0)
 	fc.strokeStyle = palettes.edge
 	fc.stroke()
 
@@ -510,8 +565,10 @@ function display_static(){
 	c.strokeStyle = palettes.mark
 	c.lineWidth = .5 * z
 
-	;[0,2,4,6,8,10].forEach(i => {
-		const a = -i * tau_12
+	;[
+		1, 3, 5, 7, 9, 11,
+	].forEach(i => {
+		const a = -i * tau_12 + tau_4
 		shape(
 			bezel_index.map(v => rot(a, v)),
 			half + (bezel_r * cos(-a)),
@@ -523,7 +580,7 @@ function display_static(){
 	.forEach(i => {
 		const a = -i * tau_60 + tau_4
 		circle(
-			bezel_mark_thick,
+			bezel_mark_r,
 			half + (bezel_r * cos(-a)),
 			half + (bezel_r * sin(-a)),
 		)}
@@ -538,20 +595,33 @@ function display_static(){
 			half + (bezel_r * sin(-a)),
 		)
 	})
+	;Array(12).fill().map((_, i) => i*5)
+	.forEach(i => {
+		const a = -i * tau_60 + tau_4
+		shape(
+			rect_my(minute_thick_five, -minute_len_five).map(v => rot(a, v)),
+			half + (minute_r * cos(-a)),
+			half + (minute_r * sin(-a)),
+		)
+	})
 	;[
-		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
-		30,
-		32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+		1, 2, 3, 4,
+		6, 7, 8, 9,
+		11, 12, 13, 14,
+		16, 17, 18, 19,
+		21, 22, 23, 24,
+		26, 27, 28,
+		32, 33, 34,
+		36, 37, 38, 39,
+		41, 42, 43, 44,
+		46, 47, 48, 49,
+		51, 52, 53, 54,
+		56, 57, 58, 59,
 	]
 	.forEach(i => {
 		const a = -i * tau_60 + tau_4
 		shape(
-			[
-				rot(a, [0, -minute_thick]),
-				rot(a, [-minute_len, -minute_thick]),
-				rot(a, [-minute_len, minute_thick]),
-				rot(a, [0, minute_thick]),
-			],
+			rect_my(minute_thick, -minute_len).map(v => rot(a, v)),
 			half + (minute_r * cos(-a)),
 			half + (minute_r * sin(-a)),
 		)
@@ -560,15 +630,9 @@ function display_static(){
 		29, 31,
 	].forEach(i => {
 		const a = -i * tau_60 + tau_4
-		const l = 1
 		const r = minute_r - minute_len
 		shape(
-			[
-				rot(a, [0,-minute_thick]),
-				rot(a, [l,-minute_thick]),
-				rot(a, [l,minute_thick]),
-				rot(a, [0,minute_thick]),
-			],
+			rect_my(minute_thick, 1).map(v => rot(a, v)),
 			half + (r * cos(-a)),
 			half + (r * sin(-a)),
 		)
@@ -586,35 +650,27 @@ function display_static(){
 		)
 		c.stroke()
 	})
-	;[0,3,6].forEach(i => {
-		const a = -i * tau_12
+	;[
+		3, 6, 9,
+	].forEach(i => {
+		const a = -i * tau_12 + tau_4
 		shape(
-			[
-				rot(a, [-hour_len,-hour_thick]),
-				rot(a, [hour_len,-hour_thick]),
-				rot(a, [hour_len,hour_thick]),
-				rot(a, [-hour_len,hour_thick]),
-				rot(a, [-hour_len,-hour_thick]),
-			],
+			rect_my(hour_thick, hour_len).map(v => rot(a, v)),
 			half + (hour_r_rect * cos(-a)),
 			half + (hour_r_rect * sin(-a)),
 		)
+		c.closePath()
 		c.stroke()
 	})
 	;[-1,1].forEach(i => {
 		const a = -9/12*tau
 		const gap = i * tw_gap
 		shape(
-			[
-				rot(a, [-hour_len,-hour_thick + gap]),
-				rot(a, [hour_len,-hour_thick + gap]),
-				rot(a, [hour_len,hour_thick + gap]),
-				rot(a, [-hour_len,hour_thick + gap]),
-				rot(a, [-hour_len,-hour_thick + gap]),
-			],
+			rect_my(hour_thick, hour_len).map(([x,y]) => rot(a, [x, y + gap])),
 			half + (hour_r_rect * cos(-a)),
 			half + (hour_r_rect * sin(-a)),
 		)
+		c.closePath()
 		c.stroke()
 	})
 	// minute arcs

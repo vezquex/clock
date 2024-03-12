@@ -214,7 +214,6 @@ const tau_4 = tau / 4
 const tau_12 = tau / 12
 const tau_60 = tau / 60
 const {cos, sin} = Math
-const paths = []
 const locale = 'en-us'
 
 // zoom
@@ -408,9 +407,9 @@ function display_static(){
 	c.clearRect(0, 0, width*z, height*z)
 	c.fillStyle = palettes.mark
 	;[
-		0, 2, 4, 6, 8, 10,
+		1, 3, 5, 7, 9, 11,
 	].forEach(i => {
-		const a = -i * tau_12
+		const a = -i * tau_12 + tau_4
 		shape(
 			bezel_index.map(v => rot(a, v)),
 			half + (bezel_r * cos(-a)),
@@ -476,9 +475,9 @@ function display_static(){
 		c.stroke()
 	})
 	;[
-		0, 3, 6,
+		3, 6, 9,
 	].forEach(i => {
-		const a = -i * tau_12
+		const a = -i * tau_12 + tau_4
 		shape(
 			[
 				rot(a, [-hour_len,-hour_thick]),
