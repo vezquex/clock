@@ -5,6 +5,9 @@
 	Analog Clock
 </title>
 <style type='text/css'>
+	*, *::before, *::after {
+		box-sizing: border-box;
+	}
 	:root {
 		--accent: #808080;
 		accent-color: var(--accent);
@@ -22,17 +25,25 @@
 		font-size: 1em;
 		margin: 0;
 	}
+	details {
+		opacity: 0.5;
+	}
+	input, select, .label, summary {
+		padding: .5em;
+	}
+	input {
+		width: 100%;
+	}
 	label {
 		display: flex;
 	}
-	input, select, .label {
-		background: 0;
-		border: 0;
-		opacity: 0.5;
-		padding: .5em;
-	}
 	select {
-		flex-grow: 1;
+		min-width: 8rem;
+	}
+	summary {
+		cursor:pointer;
+		list-style: none;
+		user-select: none;
 	}
 	.abs {
 		position:absolute;
@@ -62,7 +73,7 @@
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
 <svg version="1.1" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class='svg'>
 <rect id="canvas" x="0" y="0" width="2048" height="2048" fill="none"/>
-<circle id="edge" style="fill:var(--edge);opacity:1.0;" r="1024" cx="1024" cy="1024"/>
+<circle id="edge" style="fill:var(--dial);opacity:1.0;" r="1024" cx="1024" cy="1024"/>
 <circle id="bezel" style="fill:var(--bezel);opacity:1.0;" r="968" cx="1024" cy="1024"/>
 <circle id="dial" style="fill:var(--dial);" r="780" cx="1024" cy="1024"/>
 
@@ -89,13 +100,17 @@
 <canvas id='face-static' class='abs'></canvas>
 <canvas id='face' class='abs'></canvas>
 </div>
-<div class='abs flex wide' >
-	<input id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='60000' onChange='synchronize()'>
+<details class='abs flex wide'>
+	<summary title='Settings'>☰</summary>
+	<label>
+		<span class='label'>Offset</span>
+		<input id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='60000' onChange='synchronize()'>
+	</label>
 	<label>
 		<span class='label'>Theme</span>
 		<select id='theme' onChange='setTheme(this.value)'></select>
 	</label>
-</div>
+</details>
 
 <script type='text/javascript'>
 const _ = void 0
@@ -104,9 +119,9 @@ let palettes
 const color_palettes = {
 	bezel: '#000000',
 	dial: '#000000',
-	edge: '#808080',
+	edge: '#A0A0A0',
 	highlight: '#C00000',
-	mark: '#FFFFFF',
+	mark: '#E0E0E0',
 	text: '#FF8080',
 }
 const themes = {
@@ -134,6 +149,8 @@ const themes = {
 	'Red': {
 		bezel: '#300000',
 		dial: '#400000',
+		edge: '#A08060',
+		mark: '#FFE0A0',
 	},
 }
 for(k in themes){

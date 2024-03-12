@@ -5,6 +5,9 @@
 	Biel Dive Watch
 </title>
 <style type='text/css'>
+	*, *::before, *::after {
+		box-sizing: border-box;
+	}
 	:root {
 		--accent: #808080;
 		accent-color: var(--accent);
@@ -22,17 +25,25 @@
 		font-size: 1em;
 		margin: 0;
 	}
+	details {
+		opacity: 0.5;
+	}
+	input, select, .label, summary {
+		padding: .5em;
+	}
+	input {
+		width: 100%;
+	}
 	label {
 		display: flex;
 	}
-	input, select, .label {
-		background: 0;
-		border: 0;
-		opacity: 0.5;
-		padding: .5em;
-	}
 	select {
-		flex-grow: 1;
+		min-width: 8rem;
+	}
+	summary {
+		cursor:pointer;
+		list-style: none;
+		user-select: none;
 	}
 	.abs {
 		position:absolute;
@@ -146,13 +157,17 @@ a 746,746 0 1,0 5,0
 <canvas id='face-static' class='abs'></canvas>
 <canvas id='face' class='abs'></canvas>
 </div>
-<div class='abs flex wide' >
-	<input id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='60000' onChange='synchronize()'>
+<details class='abs flex wide'>
+	<summary title='Settings'>☰</summary>
+	<label>
+		<span class='label'>Offset</span>
+		<input id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='60000' onChange='synchronize()'>
+	</label>
 	<label>
 		<span class='label'>Theme</span>
 		<select id='theme' onChange='setTheme(this.value)'></select>
 	</label>
-</div>
+</details>
 
 <script type='text/javascript'>
 const bps = 4
