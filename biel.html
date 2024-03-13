@@ -161,7 +161,7 @@ a 746,746 0 1,0 5,0
 	<summary title='Settings'>☰</summary>
 	<label>
 		<span class='label'>Offset</span>
-		<input id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='60000' onChange='synchronize()'>
+		<input id='offset' value='0' type='range' max='86400000' step='60000' onChange='synchronize()'>
 	</label>
 	<label>
 		<span class='label'>Theme</span>
@@ -311,7 +311,7 @@ function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(offset_el.value)
 	let t = new Date(Date.now() + offset)
-	// t = new Date(2020,0,8,10,7,37,0)
+	// t = new Date(2020,0,8,10,15,0,0)
 	display(t)
 	const r = delay - (t % delay)
 	window.synchronizeTimeout = window.setTimeout(synchronize, r)
@@ -374,10 +374,10 @@ const base_h = 1.5
 const base_w = 4
 const fudge = .25
 const hour_h = hour_r - hour_radius
-const lume_inset = 2.5
+const lume_inset = 2
 const lume_inset_arm = .75
-const minute_h = minute_r - minute_len_five - 1.25
-const minute_head_h = 8
+const minute_h = minute_r - minute_len_five - 1.5
+const minute_head_h = 9
 const stem_h = 5
 const stem_w = 1.5
 const arm_h = minute_h - stem_h - minute_head_h
