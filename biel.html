@@ -222,7 +222,7 @@ const half = width / 2
 const bezel_r = 50
 const bezel_mark_len = 9.5
 const bezel_mark_r = 1
-const bezel_minute_len = bezel_mark_r * 2
+const bezel_minute_len = bezel_mark_r * 3
 const dash = 1.2
 const dial_r = half * 780/1024
 const hour_r = 35
@@ -603,10 +603,11 @@ function display_static(){
 	.filter(x => !((x+1) % 5))
 	.forEach(i => {
 		const a = -(i + 1) * tau_60 + tau_4
+		const r = bezel_r - bezel_mark_r
 		shape(
 			bezel_minute.map(v => rot(a, v)),
-			half + (bezel_r * cos(-a)),
-			half + (bezel_r * sin(-a)),
+			half + (r * cos(-a)),
+			half + (r * sin(-a)),
 		)
 	})
 	;Array(12).fill().map((_, i) => i*5)
