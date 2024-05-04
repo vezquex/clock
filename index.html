@@ -79,7 +79,7 @@ function clock_widget(){
 		clock_el.setAttribute('day', t.getDay())
 		const numdate = clock.numdate.innerHTML = t.getFullYear()+'-'+('0' + (t.getMonth()+1)).slice(-2)+'-'+('0' + t.getDate()).slice(-2)
 		const date = clock.date.innerHTML = month_name+' '+ t.getDate()
-		document.title = `${hours_fmt}:${minutes} ${date}, ${numdate}`
+		document.title = `${hours_fmt}:${minutes_fmt} ${date}, ${numdate}`
 		const emoji = String.fromCodePoint(
 			((hours % 12) || 12) + 0x1F54F
 			+ (minutes < 30 ? 0 : 12)
