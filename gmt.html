@@ -156,10 +156,10 @@
 <text x="1024" y="716" style="fill:var(--text);font:148px serif;">
 	Θ
 </text>
-<text x="687" y="768" class="mono" style="fill:var(--text);font-size: 64px;letter-spacing:5px;" transform="scale(1.5 1)">
+<text x="683" y="772" class="mono" style="fill:var(--text);font-size: 64px;letter-spacing:5px;" transform="scale(1.5 1)">
 	THETA
 </text>
-<text x="1028" y="816" class="mono" style="fill:var(--text);font-size:40px;letter-spacing:4px;word-spacing:-.2em;">
+<text x="1024" y="816" class="mono" style="fill:var(--text);font-size:40px;letter-spacing:4px;word-spacing:-.2em;">
 	GREENWICH MEAN TIME
 </text>
 <text x="768" y="866" class="mono" style="fill:var(--highlight);font-size:44px;letter-spacing:4px;word-spacing:-.4em;" transform="scale(1.333 1)">
@@ -312,7 +312,8 @@ function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(offset_el.value)
 	let t = new Date(Date.now() + offset)
-	// t = new Date(2020,9,25,3,10,31,0)
+	// t = new Date(2000,0,25,3,10,31,0)
+	// t = new Date(2000,0,25,9,12,18,0)
 	display(t)
 	const r = delay - (t % delay)
 	window.synchronizeTimeout = window.setTimeout(synchronize, r)
