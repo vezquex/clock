@@ -20,7 +20,6 @@
 		overflow: hidden;
 	}
 	body, input, select {
-		color: #FFF;
 		font-family: sans-serif;
 		font-size: 1em;
 		margin: 0;
@@ -72,7 +71,6 @@
 	.ten {letter-spacing: -.051em; font-size: .0833em; }
 	.mono {font-family: 'Roboto Mono', monospace;}
 	text {text-anchor:middle;}
-	.left {text-anchor:start;}
 	/* #face {opacity:.5} */
 	/* #face-static {opacity:.5} */
 </style>
@@ -85,7 +83,7 @@
 <circle style="fill:var(--dial);" r="700" cx="1024" cy="1024"/>
 
 <path id="twelve" style="fill:var(--lume);stroke:var(--edge);stroke-width:12px;" d="M 942,392 l 84,192 84,-192z"/>
-<g class="bold" style="fill:var(--mark);font-size:100px;">
+<g class="bold" style="fill:var(--bezel_text);font-size:100px;">
 	<text class="ten" transform="rotate(30 1024 1024) translate(1024 192) scale(27 16)">
 		2
 	</text>
@@ -205,19 +203,23 @@ const _ = void 0
 let palettes
 const color_palettes = {
 	bezel: '#C0C0C0',
+	bezel_text: '#000000',
 	ring: '#A0A0A0',
 	dial: '#000000',
 	edge: '#808080',
 	highlight: '#E06000',
 	lume: '#FFFFFF',
-	mark: '#000000',
-	text: '#000000',
+	mark: '#FFFFFF',
+	text: '#FFFFFF',
 }
 const themes = {
-	'Black': {},
+	'Black': {
+	},
 	'White': {
 		dial: '#F0F0F0',
 		edge: '#000000',
+		mark: '#000000',
+		text: '#000000',
 	},
 }
 for(k in themes){
@@ -486,7 +488,7 @@ function display(t){
 
 function display_static(){
 	c.clearRect(0, 0, width*z, height*z)
-	c.fillStyle = palettes.mark
+	c.fillStyle = palettes.bezel_text
 	;Array(12).fill().map((_, i) => i + .5)
 	.forEach(i => {
 		const a = -i * tau_12 + tau_4
@@ -496,6 +498,7 @@ function display_static(){
 			half + (bezel_r * sin(-a)),
 		)
 	})
+	c.fillStyle = palettes.mark
 	;[
 		1, 2, 3, 4,
 		6, 7, 8, 9,
