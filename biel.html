@@ -81,6 +81,7 @@
 <circle id="bezel" style="fill:var(--bezel);opacity:1.0;" r="968" cx="1024" cy="1024"/>
 <circle id="dial" style="fill:var(--dial);" r="780" cx="1024" cy="1024"/>
 
+<g id="bezel_group">
 <path id="twelve_bezel" style="stroke:var(--mark);stroke-width:16;fill:none;" d="M 1024,224 l -118,-140 q 118,-16 236,0z"/>
 <circle id="twelve_pip" style="fill:var(--mark);stroke:var(--edge);stroke-width:8;" r="32" cx="1024" cy="132"/>
 <g style="fill:var(--mark);font:120px sans-serif;">
@@ -114,6 +115,7 @@
 	<text class="ten" transform="rotate(306 1024 1024) translate(1024 176) scale(3 1)">
 		0
 	</text>
+</g>
 </g>
 <text x="1024" y="700" style="fill:var(--text);font:bold 110px Times, serif;">
 	Θ
@@ -162,6 +164,10 @@ a 746,746 0 1,0 5,0
 	<label>
 		<span class='label'>Offset</span>
 		<input id='offset' value='0' type='range' max='86400000' step='60000' onChange='synchronize()'>
+	</label>
+	<label>
+		<span class='label'>Bezel</span>
+		<input id='bezel_offset' value='120' type='range' max='120' step='1' onChange='display_static()'>
 	</label>
 	<label>
 		<span class='label'>Theme</span>
@@ -293,6 +299,7 @@ function resize(){
 }
 window.addEventListener('resize', resize)
 
+const bezel_el = document.getElementById('bezel_offset')
 const offset_el = document.getElementById('offset')
 
 function setTheme(theme){
@@ -573,6 +580,13 @@ function display(t){
 }
 
 function display_static(){
+	const bezel_frac = Number(bezel_el.value) / 120
+	const bezel_angle = bezel * tau
+	document.getElementById('bezel_group').setAttribute(
+		'transform',
+		`rotate(${360 * bezel_frac} 1024 1024)`,
+	)
+
 	c.clearRect(0, 0, width*z, height*z)
 
 	c.fillStyle = palettes.mark
@@ -582,7 +596,7 @@ function display_static(){
 	;[
 		1, 3, 5, 7, 9, 11,
 	].forEach(i => {
-		const a = -i * tau_12 + tau_4
+		const a = -i * tau_12 + tau_4 - bezel_angle
 		shape(
 			bezel_index.map(v => rot(a, v)),
 			half + (bezel_r * cos(-a)),
@@ -592,7 +606,7 @@ function display_static(){
 	;Array(60).fill().map((_, i) => i)
 	.filter(x => x % 5)
 	.forEach(i => {
-		const a = -i * tau_60 + tau_4
+		const a = -i * tau_60 + tau_4 - bezel_angle
 		circle(
 			bezel_mark_r,
 			half + (bezel_r * cos(-a)),
@@ -602,7 +616,7 @@ function display_static(){
 	;Array(59).fill().map((_, i) => i)
 	.filter(x => !((x+1) % 5))
 	.forEach(i => {
-		const a = -(i + 1) * tau_60 + tau_4
+		const a = -(i + 1) * tau_60 + tau_4 - bezel_angle
 		const r = bezel_r - bezel_mark_r
 		shape(
 			bezel_minute.map(v => rot(a, v)),
