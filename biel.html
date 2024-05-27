@@ -581,7 +581,7 @@ function display(t){
 
 function display_static(){
 	const bezel_frac = Number(bezel_el.value) / 120
-	const bezel_angle = bezel * tau
+	const bezel_angle = bezel_frac * tau
 	document.getElementById('bezel_group').setAttribute(
 		'transform',
 		`rotate(${360 * bezel_frac} 1024 1024)`,
