@@ -145,6 +145,10 @@ a 770,770 0 1,0 5,0
 		<span class='label'>Theme</span>
 		<select id='theme' onChange='setTheme(this.value)'></select>
 	</label>
+	<label>
+		<span class='label'>Hour Shape</span>
+		<select id='hour_shape' onChange='setHourShape(this.value)'></select>
+	</label>
 </details>
 
 <script type='text/javascript'>
@@ -194,6 +198,83 @@ document.getElementById('theme').innerHTML = Object.keys(themes).map(
 	t => `<option value='${t}'>${t.replaceAll('_',' ')}</option>`
 ).join('')
 
+let hour_shape
+const hour_shapes = {
+	'Snowflake': (z, fc)=>{
+		fc.fillStyle = palettes.edge
+		const d = edge_thick
+		shapec(
+			fc,
+			[
+				[20, 0],
+				[25, -5],
+				[30, 0],
+				[33, 0],
+				[33, 6],
+				[30, 6],
+				[25, 11],
+				[20, 6],
+				[0, 6],
+				[0, 0],
+			],
+			0, -3,
+		)
+		fc.fillStyle = palettes.mark
+		shapec(
+			fc,
+			[
+				[20+d/sq2, 0+d],
+				[25, -5+d*sq2],
+				[30-d/2, 0+d],
+				[33-d, 0+d],
+				[33-d, 6-d],
+				[30-d/2, 6-d],
+				[25, 11-d*sq2],
+				[20+d/sq2, 6-d],
+				[5, 6-d],
+				[5, 0+d],
+			],
+			0, -3,
+		)
+	},
+	'Triplet': (z, fc)=>{
+		shapec(
+			fc,
+			[
+				[0, 0],
+				[23, 0],
+				[26, 2],
+				[23, 4],
+				[0, 4],
+				[0, 0],
+			],
+			0, -2,
+		)
+		fc.stroke()
+
+		// ornament
+		const r = 5*z
+		const o = 23*z - r
+		fc.beginPath()
+		fc.arc(o, 0, r, 0, tau)
+		fc.fill()
+		fc.stroke()
+
+		fc.beginPath()
+		fc.moveTo(o, 0)
+		fc.lineTo(o-r, 0)
+		fc.moveTo(o, 0)
+		let p = rot(tau/6, [r, 0])
+		fc.lineTo(o + p[0], p[1])
+		fc.moveTo(o, 0)
+		p = rot(-tau/6, [r, 0])
+		fc.lineTo(o + p[0], p[1])
+		fc.stroke()
+	},
+}
+document.getElementById('hour_shape').innerHTML = Object.keys(hour_shapes).map(
+	t => `<option value='${t}'>${t.replaceAll('_',' ')}</option>`
+).join('')
 
 const face = document.getElementById('face')
 const fc = face.getContext('2d')
@@ -211,7 +292,7 @@ const bezel_r = 50
 const bezel_mark_len = 9.5
 const bezel_mark_thick = 1.5
 const bezel_minute_len = 4
-const bezel_minute_thick = 0.5
+const edge_thick = 0.5
 const dash = 1.2
 const dial_r = half * 780/1024
 const hour_r = 40
@@ -225,6 +306,7 @@ const minute_thick = 0.25
 const thick = .2
 
 const tau = 2 * Math.PI
+const sq2 = Math.SQRT2
 const tau_4 = tau / 4
 const tau_12 = tau / 12
 const tau_60 = tau / 60
@@ -268,6 +350,13 @@ function setTheme(theme){
 		document.documentElement.style.setProperty('--'+color, palettes[color])
 	})
 	display_static()
+	synchronize()
+}
+
+function setHourShape(shape){
+	document.querySelector(`#hour_shape [value=${shape}]`).selected = true
+	hour_shape = shape
+	// display_static()
 	synchronize()
 }
 
@@ -316,11 +405,11 @@ const bezel_index = [
 ]
 
 const bezel_minute = [
-	[bezel_minute_len, -bezel_minute_thick],
-	[0, -bezel_minute_thick],
-	[0, bezel_minute_thick],
-	[bezel_minute_len, bezel_minute_thick],
-	[bezel_minute_len, -bezel_minute_thick],
+	[bezel_minute_len, -edge_thick],
+	[0, -edge_thick],
+	[0, edge_thick],
+	[bezel_minute_len, edge_thick],
+	[bezel_minute_len, -edge_thick],
 ]
 
 function display(t){
@@ -331,9 +420,9 @@ function display(t){
 	// const weekday = t.toLocaleString(locale, {weekday:'short'}).toUpperCase().slice(0,2)
 
 	fc.fillStyle = palettes.mark
+	fc.lineWidth = .5*z
 	fc.strokeStyle = palettes.edge
 	fc.save()
-	fc.lineWidth = .5*z
 	fc.clearRect(0, 0, width*z, height*z)
 	fc.translate(half*z, half*z)
 	fc.rotate(-tau_4)
@@ -347,39 +436,7 @@ function display(t){
 	fc.rotate(
 		(hr / 12 + minutes / 720 + seconds / 43200) * tau,
 	)
-	shapec(
-		fc,
-		[
-			[0, 0],
-			[23, 0],
-			[26, 2],
-			[23, 4],
-			[0, 4],
-			[0, 0],
-		],
-		0, -2,
-	)
-	fc.stroke()
-
-	// ornament
-	const o = 19.5*z
-	const r = 4*z
-	fc.beginPath()
-	fc.arc(o, 0, r, 0, tau)
-	fc.fill()
-	fc.stroke()
-
-	fc.beginPath()
-	fc.moveTo(o, 0)
-	fc.lineTo(o-r, 0)
-	fc.moveTo(o, 0)
-	let p = rot(tau/6, [r, 0])
-	fc.lineTo(o + p[0], p[1])
-	fc.moveTo(o, 0)
-	p = rot(-tau/6, [r, 0])
-	fc.lineTo(o + p[0], p[1])
-	fc.stroke()
-
+	hour_shapes[hour_shape]?.(z, fc);
 	fc.restore()
 
 	// minute hand
@@ -399,7 +456,7 @@ function display(t){
 		0, -3,
 	)
 	fc.fillStyle = palettes.mark
-	fc.fillRect(6.5*z, -2*z, 25*z, 4*z)
+	fc.fillRect(6*z, -2.5*z, 26*z, 5*z)
 	fc.restore()
 
 	// center post
@@ -410,7 +467,6 @@ function display(t){
 
 	// second hand
 	fc.save()
-	fc.lineWidth = .5*z
 	fc.rotate(seconds * tau_60)
 	
 	fc.beginPath()
@@ -493,7 +549,6 @@ function display_static(){
 		)
 	})
 	c.fillStyle = palettes.mark
-	c.lineWidth = .5 * z
 	c.lineCap = 'square'
 	c.strokeStyle = palettes.edge
 	;[
@@ -525,5 +580,6 @@ function display_static(){
 	})
 }
 setTheme('Green')
+setHourShape('Snowflake')
 resize()
 </script>
