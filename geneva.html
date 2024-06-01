@@ -360,6 +360,26 @@ function display(t){
 		0, -2,
 	)
 	fc.stroke()
+
+	// ornament
+	const o = 19.5*z
+	const r = 4*z
+	fc.beginPath()
+	fc.arc(o, 0, r, 0, tau)
+	fc.fill()
+	fc.stroke()
+
+	fc.beginPath()
+	fc.moveTo(o, 0)
+	fc.lineTo(o-r, 0)
+	fc.moveTo(o, 0)
+	let p = rot(tau/6, [r, 0])
+	fc.lineTo(o + p[0], p[1])
+	fc.moveTo(o, 0)
+	p = rot(-tau/6, [r, 0])
+	fc.lineTo(o + p[0], p[1])
+	fc.stroke()
+
 	fc.restore()
 
 	// minute hand
