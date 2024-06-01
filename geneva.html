@@ -81,8 +81,9 @@
 <circle id="dial" style="fill:var(--dial);" r="780" cx="1024" cy="1024"/>
 <!-- <image style="opacity:.5;" href="/C:/Users/r/OneDrive/time/submariner-dial.avif" width="2600" x="-274" y="-280"/> -->
 
-<path id="twelve_bezel" style="fill:var(--mark);" d="M 1024,220 l -108,-140 q 108,-16 216,0"/>
 <path id="twelve" style="fill:var(--mark);stroke:var(--edge);stroke-width:8px;" d="M 942,316 l 84,192 84,-192z"/>
+<g id="bezel_group">
+<path id="twelve_bezel" style="fill:var(--mark);" d="M 1024,220 l -108,-140 q 108,-16 216,0"/>
 <g class="bold" style="fill:var(--mark);font-size:100px;">
 	<text class="ten" transform="rotate(60 1024 1024) translate(1024 224) scale(1 2)">
 		10
@@ -99,6 +100,7 @@
 	<text class="ten" transform="rotate(300 1024 1024) translate(1024 224) scale(1 2)">
 		50
 	</text>
+</g>
 </g>
 <text x="1024" y="726" style="fill:var(--text);font:168px serif;">
 	Θ
@@ -140,6 +142,10 @@ a 770,770 0 1,0 5,0
 	<label>
 		<span class='label'>Offset</span>
 		<input id='offset' value='0' type='range' max='86400000' step='60000' onChange='synchronize()'>
+	</label>
+	<label>
+		<span class='label'>Bezel</span>
+		<input id='bezel_offset' value='120' type='range' max='120' step='1' onChange='display_static()'>
 	</label>
 	<label>
 		<span class='label'>Theme</span>
@@ -340,6 +346,7 @@ function resize(){
 }
 window.addEventListener('resize', resize)
 
+const bezel_el = document.getElementById('bezel_offset')
 const offset_el = document.getElementById('offset')
 
 function setTheme(theme){
@@ -492,12 +499,19 @@ function display(t){
 }
 
 function display_static(){
+	const bezel_frac = Number(bezel_el.value) / 120
+	const bezel_angle = bezel_frac * tau
+	document.getElementById('bezel_group').setAttribute(
+		'transform',
+		`rotate(${360 * bezel_frac} 1024 1024)`,
+	)
+
 	c.clearRect(0, 0, width*z, height*z)
 	c.fillStyle = palettes.mark
 	;[
 		1, 3, 5, 7, 9, 11,
 	].forEach(i => {
-		const a = -i * tau_12 + tau_4
+		const a = -i * tau_12 + tau_4 - bezel_angle
 		shape(
 			bezel_index.map(v => rot(a, v)),
 			half + (bezel_r * cos(-a)),
@@ -507,7 +521,7 @@ function display_static(){
 	;Array(15).fill().map((_, i) => i)
 	.filter(x => x % 5)
 	.forEach(i => {
-		const a = -i * tau_60 + tau_4
+		const a = -i * tau_60 + tau_4 - bezel_angle
 		shape(
 			bezel_minute.map(v => rot(a, v)),
 			half + (bezel_r * cos(-a)),
