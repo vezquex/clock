@@ -141,7 +141,7 @@ a 770,770 0 1,0 5,0
 	<summary title='Settings'>☰</summary>
 	<label>
 		<span class='label'>Offset</span>
-		<input id='offset' value='0' type='range' max='86400000' step='60000' onChange='synchronize()'>
+		<input id='offset' value='0' type='range' max='86400000' step='60000' onInput='synchronize()'>
 	</label>
 	<label>
 		<span class='label'>Bezel</span>
@@ -243,7 +243,7 @@ const hour_shapes = {
 			0, -3,
 		)
 	},
-	'Triplet': (z, fc)=>{
+	'Sectors': (z, fc)=>{
 		shapec(
 			fc,
 			[
@@ -363,7 +363,6 @@ function setTheme(theme){
 function setHourShape(shape){
 	document.querySelector(`#hour_shape [value=${shape}]`).selected = true
 	hour_shape = shape
-	// display_static()
 	synchronize()
 }
 
@@ -595,6 +594,6 @@ function display_static(){
 	})
 }
 setTheme('Green')
-setHourShape('Triplet')
+setHourShape('Sectors')
 resize()
 </script>

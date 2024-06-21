@@ -55,7 +55,7 @@
 </style>
 
 <div class='column' style='min-height:100vh;'>
-	<input id='offset' style='display:none;' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
+	<input id='offset' style='display:none;' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
 	<div id='face_box' class='grow'><canvas id='face'></canvas></div>
 	<div id='button_box' class='row'>
 		<select id='theme' class='grow' title='Theme' onChange='setTheme(this.value)'></select>
