@@ -66,7 +66,7 @@
 
 <script type='text/javascript'>
 const {abs, cos, floor, min, sin} = Math
-const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUNE', 'JULY', 'AUG.', 'SEPT', 'OCT', 'NOV', 'DEC']
+const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEPT', 'OCT', 'NOV', 'DEC']
 const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
 const city_info = [
@@ -520,11 +520,11 @@ function display(t){
 
 	c.fillStyle = palettes.color
 	c.clearRect(0, 0, width*z, height*z)
-	let x = 0, y = pad_v, m = .25
-	draw_str(month_name, x = pad_h/m + grid_w*9.25, y/m, m, char_paths_sixteen)
+	let x = 0, y = pad_v, m = .25, m_scale = 2
+	draw_str(month_name, x = pad_h/(m*m_scale) + grid_w*9.5, y/m, m, char_paths_sixteen)
 	draw_str(weekday, x += grid_w*6.5, y/m, m, char_paths_sixteen)
 	y += 6
-	m = .5
+	m *= m_scale
 	draw_str(year, x = pad_h/m, y/m, m)
 	draw_str(month, x += 4.75*grid_w, y/m, m)
 	draw_str(day_of_month, x += 2.75*grid_w, y/m, m)
