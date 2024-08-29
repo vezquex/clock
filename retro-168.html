@@ -9,8 +9,8 @@
 		box-sizing: border-box;
 	}
 	:root {
-		--accent: #808080;
-		accent-color: var(--accent);
+		--segment: #808080;
+		accent-color: var(--segment);
 		color-scheme: dark;
 	}
 	body, option {
@@ -21,7 +21,7 @@
 	}
 	body, input, select {
 		color: #FFF;
-		font-family: sans-serif;
+		font-family: 'Roboto', sans-serif;
 		font-size: 1em;
 		margin: 0;
 	}
@@ -73,7 +73,7 @@
 		letter-spacing:10px;
 	}
 </style>
-<div contenteditable spellcheck="false" style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
+<div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
 <svg version="1.1" viewBox="0 0 3200 3200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class='svg'>
 <filter id='inset-shadow'>
 	<feOffset dx='-20' dy='20'/>
@@ -83,11 +83,11 @@
 	<feComposite result='shadow' operator='in' in='color' in2='inverse'/>
 	<feComposite operator='over' in='shadow' in2='SourceGraphic'/>
 </filter>
-<g id="Vectors">
+<!-- Vectors -->
 <path id="Outer_Ring" style="fill:var(--bg);stroke:var(--outer_ring);" stroke-width="48" d="m654 84c-107.9 0-125.6 10.86-178 42-99.24 58.97-169.5 160.3-231 258-55.99 88.89-97.35 188.6-121 291-47.44 205.3-38 631-38 631s-15.02 543.3 33.83 771.4c23.81 111.2 51.72 164.5 68.18 192.3 81.62 137.7 135.8 290.9 288 384.3 5.375 3.302 62.14 42 178 42h1892c115.9 0 172.6-38.7 178-42 152.1-93.45 206.4-246.6 288-384.3 16.46-27.77 44.37-81.13 68.18-192.3 48.85-228.1 33.83-771.4 33.83-771.4s9.444-425.7-38-631c-23.65-102.4-65.01-202.1-121-291-61.53-97.67-131.8-199-231-258-52.41-31.14-70.14-42-178-42h-946z"/>
 <path id="Inner_Ring" style="stroke:var(--inner_ring);" transform="matrix(.9553 0 0 .9553 71.58 62.19)" d="m654 84c-107.9 0-125.6 10.86-178 42-99.24 58.97-169.5 160.3-231 258-55.99 88.89-97.35 188.6-121 291-47.44 205.3-38 631-38 631s-15.02 543.3 33.83 771.4c23.81 111.2 51.72 164.5 68.18 192.3 81.62 137.7 135.8 290.9 288 384.3 5.375 3.302 62.14 42 178 42h1892c115.9 0 172.6-38.7 178-42 152.1-93.45 206.4-246.6 288-384.3 16.46-27.77 44.37-81.13 68.18-192.3 48.85-228.1 33.83-771.4 33.83-771.4s9.444-425.7-38-631c-23.65-102.4-65.01-202.1-121-291-61.53-97.67-131.8-199-231-258-52.41-31.14-70.14-42-178-42h-946z" fill="none" stroke-width="24"/>
 <path id="Banner" d="m610 520h2074v226h-2074l-134-113z" style="fill:var(--banner);"/>
-<rect id="LCD" style="filter:url(#inset-shadow);" x="540" y="850" width="2130" height="1050" rx="100"/>
+<rect id="LCD" style="fill:var(--background); filter:url(#inset-shadow);" x="540" y="850" width="2130" height="1050" rx="100"/>
 <path id="Rule" d="m420 2250h2366l-24 34h-2314z" style="fill:var(--gray);"/>
 <g style="fill:var(--highlight);">
 <path id="LPoint" d="m764 2078 129-32-20 114-117-40z"/>
@@ -96,7 +96,7 @@
 <circle id="DRCircle" cx="2850" cy="2050" r="50"/>
 <circle id="DLCircle" cx="370" cy="2050" r="50"/>
 </g>
-</g>
+<!-- Dial Text -->
 <text x="620" y="440" style="fill:var(--brand);font-size:200px;font-weight:700;letter-spacing:45px;">
 	OASIS
 </text>
@@ -121,7 +121,7 @@
 <text style="fill:var(--gray);transform: translate(2900px, 1922px) rotate(-90deg);font-size:140px;letter-spacing:16px;" class="button-label">
 	START/STOP
 </text>
-<text x="920" y="1186" style="fill:var(--accent);font-size:120px;font-weight:700;letter-spacing:8px;">
+<text x="920" y="1186" style="fill:var(--segment);font-size:120px;font-weight:700;letter-spacing:8px;">
 	24H
 </text>
 </svg>
@@ -146,7 +146,7 @@ const _ = void 0
 
 let palettes
 const color_palettes = {
-	accent: '#242224',
+	segment: '#242224',
 	alchro: '#8E7853',
 	background: '#BFD4D5',
 	banner: '#034A82',
@@ -188,7 +188,7 @@ const themes = {
 		water: color_palettes.gray,
 	},
 	'Dark_Negative': {
-		accent: '#98A29A',
+		segment: '#98A29A',
 		alchro: color_palettes.dark_label,
 		background: '#2D2C31',
 		banner: '#000',
@@ -200,7 +200,7 @@ const themes = {
 		water: color_palettes.dark_label,
 	},
 	'Gold': {
-		accent: '#202020',
+		segment: '#202020',
 		alchro: '#000',
 		background: '#A2A79A',
 		banner: 'rgba(0,0,0,.2)',
@@ -274,7 +274,6 @@ const offset_el = document.getElementById('offset')
 function setTheme(theme){
 	palettes = themes[theme]
 	const lcd_el = document.getElementById('LCD')
-	lcd_el.style.fill = palettes.background
 	document.querySelector(`#theme [value=${theme}]`).selected = true
 	colors.forEach(color => {
 		document.documentElement.style.setProperty('--'+color, palettes[color])
@@ -428,7 +427,7 @@ function display(t){
 	const seconds = zeropad2(t.getSeconds())
 	const day_of_month = (t.getDate()+'').padStart(2)
 
-	c.fillStyle = palettes.accent
+	c.fillStyle = palettes.segment
 	c.clearRect(0, 0, width*z, height*z)
 	let x, y, m
 	m = 0.75
