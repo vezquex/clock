@@ -68,9 +68,26 @@
 	.bold {
 		font-weight:700;
 	}
+	button {
+		border-color: rgba(0, 0, 0, .25);
+		border-width: 1px;
+		border-radius: 0;
+		background: 0;
+		color: #808080;
+		cursor: pointer;
+		line-height: 2;
+	}
 	.button-label {
 		font-size:140px;
 		letter-spacing:10px;
+	}
+	#btn_a {
+		border-width: 1px 1px 1px 0;
+		position: absolute;
+		top: 3em;
+		height: calc(50% - 3em);
+		writing-mode: vertical-lr;
+		text-orientation: mixed;
 	}
 </style>
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
@@ -126,6 +143,7 @@
 </text>
 </svg>
 </div>
+<button id='btn_a' onClick='button("A")'>LIGHT</button>
 <details class='abs flex wide'>
 	<summary title='Settings'>☰</summary>
 	<label>
@@ -156,6 +174,7 @@ const color_palettes = {
 	gray: '#B0B0B0',
 	highlight: '#C6311B',
 	inner_ring: '#B0B0B0',
+	light: '#05B3E6',
 	outer_ring: '#034A82',
 	water: '#8E7853',
 }
@@ -196,6 +215,7 @@ const themes = {
 		gray: color_palettes.dark_label,
 		highlight: color_palettes.dark_label,
 		inner_ring: color_palettes.dark_label,
+		light: '#161618',
 		outer_ring: 'none',
 		water: color_palettes.dark_label,
 	},
@@ -225,9 +245,6 @@ const themes = {
 	},
 	'Standard': {
 	},
-	'Standard_Light': {
-		background: '#05B3E6',
-	},
 }
 for(k in themes){
 	themes[k] = Object.assign({}, color_palettes, themes[k])
@@ -249,8 +266,8 @@ const grid_w2 = grid_w * 2
 // zoom
 let z = 1
 
+const lcd_el = document.getElementById('LCD')
 function resize(){
-	const lcd_el = document.getElementById('LCD')
 	const rect = lcd_el.getBoundingClientRect()
 	const scale = window.devicePixelRatio || 1
 	z = Math.min(
@@ -446,7 +463,16 @@ function display(t){
 	draw_str(seconds, x+39, y+9.5, m, char_paths_narrow, grid_w-4)
 }
 
-setTheme('Standard_Light')
+setTheme('Standard')
 resize()
 
+function button(sig){
+	switch(sig){
+		case 'A':
+			const l_s = 'var(--light)'
+			const a = lcd_el.style.fill
+			lcd_el.style.fill = (a === l_s) ? 'var(--background)' : 'var(--light)'
+			break
+	}
+}
 </script>
