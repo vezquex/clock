@@ -8,14 +8,14 @@
 	:root {
 		--accent: #808080;
 		accent-color: var(--accent);
-		color-scheme: dark;
+		/* color-scheme: dark; */
 	}
 	* {
 		box-sizing: border-box;
 	}
-	body, button, input, select {
-		background: #000;
-		color: #FFF;
+	body, .btn, input, select {
+		background-color: var(--bg);
+		color: var(--color);
 		font-family: monospace;
 		font-size: 1rem;
 		margin: 0;
@@ -23,7 +23,8 @@
 	body {
 		overflow-x: hidden;
 	}
-	button, select {
+	.btn, select {
+		border-color: rgba(0, 0, 0, .5);
 		border-style: outset;
 		border-width: 1px;
 		cursor: pointer;
@@ -31,13 +32,19 @@
 		opacity: .5;
 		padding: 0 .5em;
 	}
-	button {
+	.btn:active {
+		border-style: inset;
+	}
+	.btn {
 		align-items: center;
 		justify-content: center;
-		flex-grow: 2;
+		text-decoration: none;
 	}
 	.grow {
 		flex-grow: 1;
+	}
+	.grow2 {
+		flex-grow: 2;
 	}
 	.column {
 		display: flex;
@@ -47,8 +54,14 @@
 		display: flex;
 		flex-direction: row;
 	}
+	.row > .btn {
+		border-right-width: 0px;
+	}
+	.row > .btn:first-child {
+		border-left-width: 0px;
+	}
 	@media(hover: none){
-		button, select {
+		.btn, select {
 			font-size: 2rem;
 		}
 	}
@@ -58,9 +71,10 @@
 	<input id='offset' style='display:none;' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
 	<div id='face_box' class='grow'><canvas id='face'></canvas></div>
 	<div id='button_box' class='row'>
+		<a href='..' title='Home' class='btn'>⌂</a>
 		<select id='theme' class='grow' title='Theme' onChange='setTheme(this.value)'></select>
-		<button id='zone_dec'><span>-</span></button>
-		<button id='zone_inc'><span>+</span></button>
+		<button id='zone_dec' class='grow2 btn'><span>-</span></button>
+		<button id='zone_inc' class='grow2 btn'><span>+</span></button>
 	</div>
 </div>
 
@@ -140,13 +154,13 @@ const themes = {
 	Dark: {
 		_scale: four_negative,
 		_body: '3',
-		background: color_palettes.black,
+		bg: color_palettes.black,
 		color: color_palettes.white,
 	},
 	Light: {
 		_scale: four_positive,
 		_body: '3',
-		background: color_palettes.white,
+		bg: color_palettes.white,
 		color: color_palettes.black,
 	},
 }
@@ -155,6 +169,7 @@ for(k in themes){
 	;(theme._scale||[]).forEach((color, i)=>theme[i] = color_palettes[color])
 	Object.assign(theme, color_palettes)
 }
+const colors = ['bg', 'color'].concat(Object.keys(color_palettes))
 document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
 
 
@@ -187,9 +202,10 @@ const offset_el = document.getElementById('offset')
 
 function setTheme(theme){
 	palettes = themes[theme]
-	can.style.backgroundColor = palettes.background
 	document.querySelector(`#theme [value=${theme}]`).selected = true
-	document.documentElement.style.setProperty('--accent', palettes.color)
+	colors.forEach(color => {
+		document.documentElement.style.setProperty('--'+color, palettes[color])
+	})
 	synchronize()
 }
 
@@ -203,7 +219,7 @@ function on_button(event, callback){
 	let timeout = null
 
 	callback()
-	event.preventDefault()
+	// event.preventDefault()
 
 	// cancel interval and timeout; unbind listeners
 	function cancel(event){

@@ -62,6 +62,7 @@
 		color: #808080;
 		cursor: pointer;
 		list-style: none;
+		text-decoration: none;
 		user-select: none;
 	}
 	button:active, .button:active {
@@ -85,9 +86,6 @@
 		padding: 1em 0;
 		writing-mode: vertical-lr;
 	}
-	#btn_a {
-		padding-top: 22vh;
-	}
 </style>
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
 <div style='flex-direction:column; display:flex;'>
@@ -104,7 +102,13 @@
 			</label>
 		</div>
 	</details>
-	<button id='btn_a' class='sideways btn-left grow' onMouseDown='button("A")'>● 	LIGHT</button>
+	<button id='btn_a' class='sideways btn-left grow'
+		style='padding-top: 22vh;'
+		onMouseDown='button("A")'
+	>
+		● LIGHT
+	</button>
+	<a href='..' title='Home' class='button'>⌂</a>
 </div>
 <svg version="1.1" viewBox="0 0 3200 3200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class='svg'>
 <filter id='inset-shadow'>
@@ -292,7 +296,6 @@ const offset_el = document.getElementById('offset')
 
 function setTheme(theme){
 	palettes = themes[theme]
-	const lcd_el = document.getElementById('LCD')
 	document.querySelector(`#theme [value=${theme}]`).selected = true
 	colors.forEach(color => {
 		document.documentElement.style.setProperty('--'+color, palettes[color])
