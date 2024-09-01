@@ -23,16 +23,15 @@
 		color: #FFF;
 		font-family: 'Roboto', sans-serif;
 		font-size: 1em;
+		line-height: 2;
 		margin: 0;
 	}
 	.btn, input, select, .label {
-		padding: .5em;
+		display: block;
+		padding: 0 .5em;
 	}
 	input {
 		width: 100%;
-	}
-	label {
-		display: flex;
 	}
 	select {
 		min-width: 8rem;
@@ -46,6 +45,10 @@
 	}
 	.flex {
 		display: flex;
+	}
+	.column {
+		display:flex;
+		flex-direction:column;
 	}
 	.grow {
 		flex-grow: 1;
@@ -62,9 +65,16 @@
 		color: #808080;
 		cursor: pointer;
 		list-style: none;
+		min-width: 2em;
 		text-align: center;
 		text-decoration: none;
 		user-select: none;
+	}
+	.accesskey {
+		text-decoration: underline dotted;
+	}
+	.round {
+		border-radius: 100%;
 	}
 	.btn:active {
 		border-style: inset;
@@ -75,43 +85,50 @@
 	}
 	.btn-left {
 		border-width: 1px 1px 0 0;
-		line-height: 0;
-		padding: 1em .5em;
-		text-align: left;
+		padding: 0;
 		width: 2em;
 	}
 	.btn-left:first-child {
 		border-top-width: 0;
 	}
+	.fade {
+		opacity: 0.5;
+	}
+	.margin-bottom {
+		margin-bottom: .5em;
+	}
+	.margin-top {
+		margin-top: .5em;
+	}
 	.sideways {
-		padding: 1em 0;
 		writing-mode: vertical-lr;
 	}
 </style>
-<div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
-<div style='flex-direction:column; display:flex;'>
+<div class='flex' style='position:absolute;top:0;bottom:0;left:0;right:0;align-content: center;'>
+<div class='column'>
 	<details>
 		<summary title='Settings' class='btn btn-left'>☰</summary>
-		<div style="opacity: 0.5; top:0; left:2em; right: 2em; position:absolute;">
-			<label>
+		<div class='fade column' style="top:0; left:2em; right: 2em; position:absolute;">
+			<label class='flex pad margin-bottom'>
 				<span class='label'>Offset</span>
 				<input id='offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
 			</label>
-			<label>
+			<label class='flex pad margin-bottom'>
 				<span class='label'>Theme</span>
 				<select id='theme' onChange='setTheme(this.value)'></select>
 			</label>
 		</div>
 	</details>
-	<button id='btn_a' class='sideways btn btn-left grow'
-		style='padding-top: 22vh;'
-		onKeyDown='button("A")'
-		onMouseDown='button("A")'
-		onTouchStart='button("A")'
+	<button id='btn_a' class='btn btn-left grow column'
+		accesskey='a'
+		onPointerDown='button("A")'
 	>
-		● LIGHT
+	<span class='btn margin-top accesskey round'>A</span>
+	<span class='sideways margin-top'>
+		LIGHT
+	</span>
 	</button>
-	<a href='..' title='Home' class='btn btn-left'>⌂</a>
+	<a href='..' title='Home' accesskey='h' class='btn btn-left accesskey'>H</a>
 </div>
 <svg version="1.1" viewBox="0 0 3200 3200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class='svg'>
 <filter id='inset-shadow'>
@@ -294,6 +311,21 @@ function resize(){
 	synchronize()
 }
 window.addEventListener('resize', resize)
+const btn_a = document.getElementById('btn_a')
+document.addEventListener('keydown', function(event){
+	const k = event.key
+	const button = (k === ' ' || k === 'Enter') ?
+		document.activeElement
+		: document.querySelector(`[accesskey='${k}']`)
+	button &&
+	button.dispatchEvent(
+		new MouseEvent(
+			button.getAttribute('onPointerDown') ?
+				'pointerdown'
+				: 'click'
+			)
+	)	&& event.preventDefault()
+})
 
 const offset_el = document.getElementById('offset')
 
@@ -475,6 +507,9 @@ setTheme('Standard')
 resize()
 
 function button(sig){
+	if(event && event.which && (event.which !== 1)){
+		return
+	}
 	switch(sig){
 		case 'A':
 			const l_s = 'var(--light)'
