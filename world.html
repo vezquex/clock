@@ -23,22 +23,26 @@
 	body {
 		overflow-x: hidden;
 	}
-	.btn, select {
+	.btn {
 		border-color: rgba(0, 0, 0, .5);
 		border-style: outset;
 		border-width: 1px;
 		cursor: pointer;
-		height: 2em;
+		line-height: 2;
 		opacity: .5;
 		padding: 0 .5em;
+		min-width: 2em;
+		text-decoration: none;
 	}
 	.btn:active {
 		border-style: inset;
 	}
-	.btn {
-		align-items: center;
-		justify-content: center;
-		text-decoration: none;
+	.btn:focus {
+		outline: none;
+		box-shadow: 0px 0px .5em var(--accent);
+	}
+	.center-text {
+		text-align: center;
 	}
 	.grow {
 		flex-grow: 1;
@@ -61,18 +65,18 @@
 		border-left-width: 0px;
 	}
 	@media(hover: none){
-		.btn, select {
+		.btn {
 			font-size: 2rem;
 		}
 	}
 </style>
 
 <div class='column' style='min-height:100vh;'>
-	<input id='offset' style='display:none;' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
+	<input hidden id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
 	<div id='face_box' class='grow'><canvas id='face'></canvas></div>
 	<div id='button_box' class='row'>
-		<a href='..' title='Home' class='btn'>⌂</a>
-		<select id='theme' class='grow' title='Theme' onChange='setTheme(this.value)'></select>
+		<a href='..' title='Home' class='btn center-text'>⌂</a>
+		<select id='theme' class='grow btn' title='Theme' onChange='setTheme(this.value)'></select>
 		<button id='zone_dec' class='grow2 btn'><span>-</span></button>
 		<button id='zone_inc' class='grow2 btn'><span>+</span></button>
 	</div>

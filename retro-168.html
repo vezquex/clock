@@ -19,13 +19,13 @@
 	body {
 		overflow: hidden;
 	}
-	body, button, .button, input, select {
+	body, .btn, input, select {
 		color: #FFF;
 		font-family: 'Roboto', sans-serif;
 		font-size: 1em;
 		margin: 0;
 	}
-	button, .button, input, select, .label {
+	.btn, input, select, .label {
 		padding: .5em;
 	}
 	input {
@@ -53,7 +53,7 @@
 	.bold {
 		font-weight:700;
 	}
-	button, .button {
+	.btn {
 		border-color: rgba(0, 0, 0, .25);
 		border-radius: 0;
 		border-style: outset;
@@ -62,10 +62,11 @@
 		color: #808080;
 		cursor: pointer;
 		list-style: none;
+		text-align: center;
 		text-decoration: none;
 		user-select: none;
 	}
-	button:active, .button:active {
+	.btn:active {
 		border-style: inset;
 	}
 	.button-label {
@@ -90,7 +91,7 @@
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
 <div style='flex-direction:column; display:flex;'>
 	<details>
-		<summary title='Settings' class='button btn-left'>☰</summary>
+		<summary title='Settings' class='btn btn-left'>☰</summary>
 		<div style="opacity: 0.5; top:0; left:2em; right: 2em; position:absolute;">
 			<label>
 				<span class='label'>Offset</span>
@@ -102,13 +103,14 @@
 			</label>
 		</div>
 	</details>
-	<button id='btn_a' class='sideways btn-left grow'
+	<button id='btn_a' class='sideways btn btn-left grow'
 		style='padding-top: 22vh;'
 		onMouseDown='button("A")'
+		onKeyDown='button("A")'
 	>
 		● LIGHT
 	</button>
-	<a href='..' title='Home' class='button'>⌂</a>
+	<a href='..' title='Home' class='btn btn-left'>⌂</a>
 </div>
 <svg version="1.1" viewBox="0 0 3200 3200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class='svg'>
 <filter id='inset-shadow'>
