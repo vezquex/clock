@@ -19,16 +19,13 @@
 	body {
 		overflow: hidden;
 	}
-	body, input, select {
+	body, button, .button, input, select {
 		color: #FFF;
 		font-family: 'Roboto', sans-serif;
 		font-size: 1em;
 		margin: 0;
 	}
-	details {
-		opacity: 0.5;
-	}
-	input, select, .label, summary {
+	button, .button, input, select, .label {
 		padding: .5em;
 	}
 	input {
@@ -40,19 +37,8 @@
 	select {
 		min-width: 8rem;
 	}
-	summary {
-		cursor:pointer;
-		list-style: none;
-		user-select: none;
-	}
 	.abs {
 		position:absolute;
-	}
-	.img-full {
-		display: block;
-		height: auto;
-		position: absolute;
-		width: auto;
 	}
 	.svg {
 		margin: 0 auto;
@@ -60,37 +46,66 @@
 	}
 	.flex {
 		display: flex;
-		flex-direction: column;
 	}
-	.wide {
-		width: 100vw;
+	.grow {
+		flex-grow: 1;
 	}
 	.bold {
 		font-weight:700;
 	}
-	button {
+	button, .button {
 		border-color: rgba(0, 0, 0, .25);
-		border-width: 1px;
 		border-radius: 0;
+		border-style: outset;
+		border-width: 1px;
 		background: 0;
 		color: #808080;
 		cursor: pointer;
-		line-height: 2;
+		list-style: none;
+		user-select: none;
+	}
+	button:active, .button:active {
+		border-style: inset;
 	}
 	.button-label {
 		font-size:140px;
 		letter-spacing:10px;
 	}
-	#btn_a {
-		border-width: 1px 1px 1px 0;
-		position: absolute;
-		top: 3em;
-		height: calc(50% - 3em);
+	.btn-left {
+		border-width: 1px 1px 0 0;
+		line-height: 0;
+		padding: 1em .5em;
+		text-align: left;
+		width: 2em;
+	}
+	.btn-left:first-child {
+		border-top-width: 0;
+	}
+	.sideways {
+		padding: 1em 0;
 		writing-mode: vertical-lr;
-		text-orientation: mixed;
+	}
+	#btn_a {
+		padding-top: 22vh;
 	}
 </style>
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
+<div style='flex-direction:column; display:flex;'>
+	<details>
+		<summary title='Settings' class='button btn-left'>☰</summary>
+		<div style="opacity: 0.5; top:0; left:2em; right: 2em; position:absolute;">
+			<label>
+				<span class='label'>Offset</span>
+				<input id='offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
+			</label>
+			<label>
+				<span class='label'>Theme</span>
+				<select id='theme' onChange='setTheme(this.value)'></select>
+			</label>
+		</div>
+	</details>
+	<button id='btn_a' class='sideways btn-left grow' onMouseDown='button("A")'>● 	LIGHT</button>
+</div>
 <svg version="1.1" viewBox="0 0 3200 3200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class='svg'>
 <filter id='inset-shadow'>
 	<feOffset dx='-20' dy='20'/>
@@ -143,19 +158,6 @@
 </text>
 </svg>
 </div>
-<button id='btn_a' onClick='button("A")'>LIGHT</button>
-<details class='abs flex wide'>
-	<summary title='Settings'>☰</summary>
-	<label>
-		<span class='label'>Offset</span>
-		<input id='offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
-	</label>
-	<label>
-		<span class='label'>Theme</span>
-		<select id='theme' onChange='setTheme(this.value)'></select>
-	</label>
-</details>
-
 
 <canvas id='face' class='abs'></canvas>
 
