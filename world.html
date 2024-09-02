@@ -90,7 +90,7 @@
 		<a href='..' title='Home' accesskey='h' class='btn center-text'>
 			<span class='hotkey'>H</span>ome
 		</a>
-		<select id='theme' class='grow btn' title='Theme' onChange='setTheme(this.value)'></select>
+		<select id='theme' class='grow btn' title='Theme' onChange='setTheme(this.value)' accesskey='t'></select>
 		<button id='zone_dec' class='grow2 btn'>
 			<span class='btn round hotkey'>
 				-
@@ -287,15 +287,18 @@ document.addEventListener('keydown', function(event){
 	if(k === ' ' || k === 'Enter'){
 		return
 	}
-	const button = Hotkeys[k]
+	const el = Hotkeys[k]
 	|| document.querySelector(`[accesskey='${k}']`)
-	button?.dispatchEvent(
-		new MouseEvent(
-			button.hasAttribute('onPointerDown') ?
-				'pointerdown'
-				: 'click'
-			)
-	) && event.preventDefault()
+	if(!el){ return }
+	const tag = el.tagName
+	let ev
+	if(el.hasAttribute('onPointerDown')){ ev = new MouseEvent('pointerdown') }
+	else if(tag === 'A'){ ev = new MouseEvent('click') }
+	else {
+		el.focus()
+		return
+	}
+	el.dispatchEvent(ev)
 })
 document.addEventListener('keyup', function(event){
 	if(event.repeat){ return }
