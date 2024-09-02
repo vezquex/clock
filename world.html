@@ -297,6 +297,9 @@ document.addEventListener('keydown', function(event){
 	const tag = el.tagName
 	let ev
 	if(el.hasAttribute('onPointerDown')){
+		if(document.activeElement.tagName === 'SELECT'){
+			return
+		}
 		ev = new KeyboardEvent('keydown', {key: event.key})
 	}
 	else if(tag === 'A'){
@@ -323,12 +326,12 @@ document.addEventListener('keyup', function(event){
 bind_on_button(
 	document.getElementById('zone_dec'),
 	zone_dec,
-	['ArrowLeft','ArrowUp','a','w','h','k','-','_',',','<','[','{','('],
+	['ArrowLeft','ArrowUp','a','h','k','n','u','w','-','_',',','<','[','{','('],
 )
 bind_on_button(
 	document.getElementById('zone_inc'),
 	zone_inc,
-	['ArrowRight','ArrowDown','d','s','l','j','+','=','.','>',']','}',')'],
+	['ArrowRight','ArrowDown','b','d','j','l','p','s','+','=','.','>',']','}',')'],
 )
 
 function zone_dec(){
