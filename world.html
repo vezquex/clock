@@ -236,31 +236,33 @@ function setTheme(theme){
 }
 
 function on_button(event, callback){
-	// left mouse button, touch, enter, spacebar
-	if (!((event.which === 1) || (event.type === 'touchstart') || (event.keyCode === 13) || (event.keyCode === 32))){
-		return
-	}
 	const self = this
 	let interval = null
 	let timeout = null
-
+	const left_click = event.which === 1
+	const tap = event.type === 'touchstart'
+	const k = event.key
+	const enter_spacebar = (k === 'Enter') || (k === ' ')
+	const keyboard = enter_spacebar || self.dataset.hotkeys.split(separator).includes(event.key)
+	if(!(left_click || tap || keyboard)){
+		return
+	}
 	callback()
 
 	// cancel interval and timeout; unbind listeners
 	function cancel(event){
 		window.clearInterval(interval)
 		window.clearTimeout(timeout)
-		// self.blur()
-		self.removeEventListener('keydown', cancel)
-		self.removeEventListener('keyup', cancel)
-		self.removeEventListener('mouseout', cancel)
-		self.removeEventListener('pointerup', cancel)
+		left_click && document.removeEventListener('mouseup', cancel)
+		tap && self.removeEventListener('pointerup', cancel)
+		keyboard && self.removeEventListener('keydown', cancel)
+		keyboard && self.removeEventListener('keyup', cancel)
 		event.preventDefault()
 	}
-	self.addEventListener('keydown', cancel)
-	self.addEventListener('keyup', cancel)
-	self.addEventListener('mouseout', cancel)
-	self.addEventListener('pointerup', cancel)
+	left_click && document.addEventListener('mouseup', cancel)
+	tap && self.addEventListener('pointerup', cancel)
+	keyboard && self.addEventListener('keydown', cancel)
+	keyboard && self.addEventListener('keyup', cancel)
 
 	// long press: repeat
 	timeout = window.setTimeout(function(){
@@ -269,6 +271,7 @@ function on_button(event, callback){
 }
 
 const Hotkeys = {}
+const separator = '•'
 function bind_on_button(el, cb, hotkeys){
 	el.addEventListener('keydown', function(event){
 		on_button.call(this, event, cb)
@@ -280,6 +283,7 @@ function bind_on_button(el, cb, hotkeys){
 	;(hotkeys||[]).forEach(
 		key => Hotkeys[key] = el
 	)
+	el.dataset.hotkeys = hotkeys.join(separator)
 }
 document.addEventListener('keydown', function(event){
 	if(event.repeat){ return }
@@ -292,8 +296,12 @@ document.addEventListener('keydown', function(event){
 	if(!el){ return }
 	const tag = el.tagName
 	let ev
-	if(el.hasAttribute('onPointerDown')){ ev = new MouseEvent('pointerdown') }
-	else if(tag === 'A'){ ev = new MouseEvent('click') }
+	if(el.hasAttribute('onPointerDown')){
+		ev = new KeyboardEvent('keydown', {key: event.key})
+	}
+	else if(tag === 'A'){
+		ev = new MouseEvent('click')
+	}
 	else {
 		el.focus()
 		return
@@ -305,22 +313,22 @@ document.addEventListener('keyup', function(event){
 	const k = event.key
 	const button = (k === ' ' || k === 'Enter') ?
 		document.activeElement
-		: 	Hotkeys[k]
+		: Hotkeys[k]
 	|| document.querySelector(`[accesskey='${k}']`)
 	button?.dispatchEvent(
-		new KeyboardEvent('keyup')
+		new KeyboardEvent('keyup', {key: event.key})
 	)
 })
 
 bind_on_button(
 	document.getElementById('zone_dec'),
 	zone_dec,
-	['-','_',',','<'],
+	['ArrowLeft','ArrowUp','a','w','h','k','-','_',',','<','[','{','('],
 )
 bind_on_button(
 	document.getElementById('zone_inc'),
 	zone_inc,
-	['+','=','.','>'],
+	['ArrowRight','ArrowDown','d','s','l','j','+','=','.','>',']','}',')'],
 )
 
 function zone_dec(){
