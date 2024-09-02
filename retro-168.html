@@ -39,20 +39,6 @@
 	.abs {
 		position:absolute;
 	}
-	.svg {
-		margin: 0 auto;
-		max-height: 100vh;
-	}
-	.flex {
-		display: flex;
-	}
-	.column {
-		display:flex;
-		flex-direction:column;
-	}
-	.grow {
-		flex-grow: 1;
-	}
 	.bold {
 		font-weight:700;
 	}
@@ -70,12 +56,6 @@
 		text-decoration: none;
 		user-select: none;
 	}
-	.accesskey {
-		text-decoration: underline dotted;
-	}
-	.round {
-		border-radius: 100%;
-	}
 	.btn:active {
 		border-style: inset;
 	}
@@ -91,8 +71,21 @@
 	.btn-left:first-child {
 		border-top-width: 0;
 	}
+	.column {
+		display:flex;
+		flex-direction:column;
+	}
 	.fade {
 		opacity: 0.5;
+	}
+	.flex {
+		display: flex;
+	}
+	.grow {
+		flex-grow: 1;
+	}
+	.hotkey {
+		text-decoration: underline dotted;
 	}
 	.margin-bottom {
 		margin-bottom: .5em;
@@ -100,35 +93,51 @@
 	.margin-top {
 		margin-top: .5em;
 	}
+	.pad-v {
+		padding-bottom: .5em;
+		padding-top: .5em;
+	}
+	.round {
+		border-radius: 100%;
+	}
 	.sideways {
 		writing-mode: vertical-lr;
+	}
+	.svg {
+		margin: 0 auto;
+		max-height: 100vh;
 	}
 </style>
 <div class='flex' style='position:absolute;top:0;bottom:0;left:0;right:0;align-content: center;'>
 <div class='column'>
 	<details>
-		<summary title='Settings' class='btn btn-left'>☰</summary>
+		<summary title='Settings' class='btn btn-left hotkey round'
+			accesskey='s'>
+			S
+		</summary>
 		<div class='fade column' style="top:0; left:2em; right: 2em; position:absolute;">
 			<label class='flex pad margin-bottom'>
-				<span class='label'>Offset</span>
-				<input id='offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
+				<span class='label'><span class='hotkey'>O</span>ffset</span>
+				<input id='offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()' accesskey='o'>
 			</label>
 			<label class='flex pad margin-bottom'>
-				<span class='label'>Theme</span>
-				<select id='theme' onChange='setTheme(this.value)'></select>
+				<span class='label'><span class='hotkey'>T</span>heme</span>
+				<select id='theme' onChange='setTheme(this.value)' accesskey='t'></select>
 			</label>
 		</div>
 	</details>
-	<button id='btn_a' class='btn btn-left grow column'
+	<button class='btn btn-left grow column'
 		accesskey='a'
 		onPointerDown='button("A")'
 	>
-	<span class='btn margin-top accesskey round'>A</span>
+	<span class='btn margin-top hotkey round'>A</span>
 	<span class='sideways margin-top'>
 		LIGHT
 	</span>
 	</button>
-	<a href='..' title='Home' accesskey='h' class='btn btn-left accesskey'>H</a>
+	<a href='..' accesskey='h' class='btn btn-left hotkey pad-v'>
+		<span class='hotkey'>H</span>
+	</a>
 </div>
 <svg version="1.1" viewBox="0 0 3200 3200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class='svg'>
 <filter id='inset-shadow'>
@@ -311,20 +320,23 @@ function resize(){
 	synchronize()
 }
 window.addEventListener('resize', resize)
-const btn_a = document.getElementById('btn_a')
 document.addEventListener('keydown', function(event){
+	if(event.repeat){ return }
 	const k = event.key
-	const button = (k === ' ' || k === 'Enter') ?
+	const el = (k === ' ' || k === 'Enter') ?
 		document.activeElement
 		: document.querySelector(`[accesskey='${k}']`)
-	button &&
-	button.dispatchEvent(
-		new MouseEvent(
-			button.getAttribute('onPointerDown') ?
-				'pointerdown'
-				: 'click'
-			)
-	)	&& event.preventDefault()
+	if(!el){ return }
+	const tag = el.tagName
+	let ev
+	if(el.hasAttribute('onPointerDown')){ ev = new MouseEvent('pointerdown') }
+	else if(tag === 'A' || tag === 'SUMMARY'){ ev = new MouseEvent('click') }
+	else {
+		el.focus()
+		return
+	}
+	console.log(k, el, ev)
+	el.dispatchEvent(ev)
 })
 
 const offset_el = document.getElementById('offset')

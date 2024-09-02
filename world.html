@@ -23,13 +23,15 @@
 	body {
 		overflow-x: hidden;
 	}
+	.hotkey {
+		text-decoration: underline dotted;
+	}
 	.btn {
 		border-color: rgba(0, 0, 0, .5);
 		border-style: outset;
 		border-width: 1px;
 		cursor: pointer;
 		line-height: 2;
-		opacity: .5;
 		padding: 0 .5em;
 		min-width: 2em;
 		text-decoration: none;
@@ -43,6 +45,9 @@
 	}
 	.center-text {
 		text-align: center;
+	}
+	.fade {
+		opacity: 0.5;
 	}
 	.grow {
 		flex-grow: 1;
@@ -64,6 +69,13 @@
 	.row > .btn:first-child {
 		border-left-width: 0px;
 	}
+	.round {
+		border-radius: 100%;
+		display: inline-block;
+		margin: -1px 0;
+		min-width: calc(2em + 2px);
+		padding: 0;
+	}
 	@media(hover: none){
 		.btn {
 			font-size: 2rem;
@@ -74,11 +86,21 @@
 <div class='column' style='min-height:100vh;'>
 	<input hidden id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
 	<div id='face_box' class='grow'><canvas id='face'></canvas></div>
-	<div id='button_box' class='row'>
-		<a href='..' title='Home' class='btn center-text'>⌂</a>
+	<div id='button_box' class='fade row'>
+		<a href='..' title='Home' accesskey='h' class='btn center-text'>
+			<span class='hotkey'>H</span>ome
+		</a>
 		<select id='theme' class='grow btn' title='Theme' onChange='setTheme(this.value)'></select>
-		<button id='zone_dec' class='grow2 btn'><span>-</span></button>
-		<button id='zone_inc' class='grow2 btn'><span>+</span></button>
+		<button id='zone_dec' class='grow2 btn'>
+			<span class='btn round hotkey'>
+				-
+			</span>
+		</button>
+		<button id='zone_inc' class='grow2 btn'>
+			<span class='btn round hotkey'>
+				+
+			</span>
+		</button>
 	</div>
 </div>
 
@@ -223,7 +245,6 @@ function on_button(event, callback){
 	let timeout = null
 
 	callback()
-	// event.preventDefault()
 
 	// cancel interval and timeout; unbind listeners
 	function cancel(event){
@@ -233,41 +254,70 @@ function on_button(event, callback){
 		self.removeEventListener('keydown', cancel)
 		self.removeEventListener('keyup', cancel)
 		self.removeEventListener('mouseout', cancel)
-		self.removeEventListener('mouseup', cancel)
-		self.removeEventListener('touchend', cancel)
+		self.removeEventListener('pointerup', cancel)
 		event.preventDefault()
 	}
 	self.addEventListener('keydown', cancel)
 	self.addEventListener('keyup', cancel)
 	self.addEventListener('mouseout', cancel)
-	self.addEventListener('mouseup', cancel)
-	self.addEventListener('touchend', cancel)
+	self.addEventListener('pointerup', cancel)
 
 	// long press: repeat
 	timeout = window.setTimeout(function(){
-		interval = window.setInterval(callback, 100)
+		interval = window.setInterval(callback, 50)
 	}, 300)
 }
 
-function bind_on_button(el, cb){
+const Hotkeys = {}
+function bind_on_button(el, cb, hotkeys){
 	el.addEventListener('keydown', function(event){
 		on_button.call(this, event, cb)
 	})
-	el.addEventListener('mousedown', function(event){
+	el.setAttribute('onPointerDown', '')
+	el.addEventListener('pointerdown', function(event){
 		on_button.call(this, event, cb)
 	})
-	el.addEventListener('touchstart', function(event){
-		on_button.call(this, event, cb)
-	})
+	;(hotkeys||[]).forEach(
+		key => Hotkeys[key] = el
+	)
 }
+document.addEventListener('keydown', function(event){
+	if(event.repeat){ return }
+	const k = event.key
+	if(k === ' ' || k === 'Enter'){
+		return
+	}
+	const button = Hotkeys[k]
+	|| document.querySelector(`[accesskey='${k}']`)
+	button?.dispatchEvent(
+		new MouseEvent(
+			button.hasAttribute('onPointerDown') ?
+				'pointerdown'
+				: 'click'
+			)
+	) && event.preventDefault()
+})
+document.addEventListener('keyup', function(event){
+	if(event.repeat){ return }
+	const k = event.key
+	const button = (k === ' ' || k === 'Enter') ?
+		document.activeElement
+		: 	Hotkeys[k]
+	|| document.querySelector(`[accesskey='${k}']`)
+	button?.dispatchEvent(
+		new KeyboardEvent('keyup')
+	)
+})
 
 bind_on_button(
 	document.getElementById('zone_dec'),
-	zone_dec
+	zone_dec,
+	['-','_',',','<'],
 )
 bind_on_button(
 	document.getElementById('zone_inc'),
-	zone_inc
+	zone_inc,
+	['+','=','.','>'],
 )
 
 function zone_dec(){
