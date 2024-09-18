@@ -87,7 +87,7 @@
 	<input hidden id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
 	<div id='face_box' class='grow'><canvas id='face'></canvas></div>
 	<div id='button_box' class='fade row'>
-		<a href='..' title='Home' accesskey='h' class='btn center-text'>
+		<a href='..' accesskey='h' class='btn center-text'>
 			<span class='hotkey'>H</span>ome
 		</a>
 		<select id='theme' class='grow btn' title='Theme' onChange='setTheme(this.value)' accesskey='t'></select>
@@ -326,12 +326,12 @@ document.addEventListener('keyup', function(event){
 bind_on_button(
 	document.getElementById('zone_dec'),
 	zone_dec,
-	['ArrowLeft','ArrowUp','a','k','n','u','w','-','_',',','<','[','{','('],
+	['ArrowLeft','ArrowUp', ...'bkpuw,-_,<[{('],
 )
 bind_on_button(
 	document.getElementById('zone_inc'),
 	zone_inc,
-	['ArrowRight','ArrowDown','b','d','j','p','s','+','=','.','>',']','}',')'],
+	['ArrowRight','ArrowDown',...'dfjns+=.>]})'],
 )
 
 function zone_dec(){

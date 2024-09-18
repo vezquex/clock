@@ -107,14 +107,14 @@
 		max-height: 100vh;
 	}
 </style>
-<div class='flex' style='position:absolute;top:0;bottom:0;left:0;right:0;align-content: center;'>
+<div class='abs flex' style='top:0;bottom:0;left:0;right:0;align-content:center;'>
 <div class='column'>
 	<details>
 		<summary title='Settings' class='btn btn-left hotkey tall'
 			accesskey='s'>
 			S
 		</summary>
-		<div class='fade column' style="top:0; left:2em; right: 2em; position:absolute;">
+		<div class='abs fade column' style="top:0; left:2em; right:2em;">
 			<label class='flex pad margin-bottom'>
 				<span class='label'><span class='hotkey'>O</span>ffset</span>
 				<input id='offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()' accesskey='o'>
@@ -319,6 +319,7 @@ function resize(){
 	synchronize()
 }
 window.addEventListener('resize', resize)
+
 document.addEventListener('keydown', function(event){
 	if(event.repeat){ return }
 	const k = event.key
