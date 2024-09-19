@@ -399,7 +399,6 @@ function display(t){
 	const suffix = (hours < 12 ? 'A' : 'P') + 'M'
 	hours = hours % 12
 	if(hours === 0){ hours = 12 }
-	if(hours === 0){ hours = 12 }
 	const time = (hours + suffix).padStart(4, ' ')
 
 	c.fillStyle = palettes.color
