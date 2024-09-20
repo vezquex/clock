@@ -1,6 +1,7 @@
 <!doctype html>
 <meta charset='utf-8'/>
 <meta name='viewport' content='width=device-width, initial-scale=1'/>
+<meta name='theme-color' content='#000000'/>
 <title>
 	Eminem - 3 a.m. - Segmented Clock
 </title>
@@ -9,26 +10,25 @@
 		box-sizing: border-box;
 	}
 	:root {
-		--segment: #808080;
-		accent-color: var(--segment);
+		accent-color: var(--accent);
 		color-scheme: dark;
-	}
-	body, option {
-		background: #000;
 	}
 	body {
 		overflow: hidden;
 	}
 	body, .btn, input, select {
-		color: #FFF;
 		font-family: 'Roboto', sans-serif;
-		font-size: 1em;
-		line-height: 2;
+		font-size: 1rem;
 		margin: 0;
+	}
+	body, .btn, select {
+		background-color: var(--bg);
+		color: var(--text);
 	}
 	.btn, input, select, .label {
 		display: block;
-		padding: 0 .5em;
+		padding: .5em;
+		border-width: 1px;
 	}
 	input {
 		width: 100%;
@@ -109,7 +109,7 @@
 
 <div class='abs flex' style='top:0;bottom:0;left:0;right:0;'>
 	<div class='column'>
-		<details class='grow'>
+		<details open class='grow'>
 			<summary title='Settings' class='btn btn-left hotkey' style='height:100%;'
 				accesskey='s'>
 				S
@@ -150,39 +150,40 @@ const color_palettes = {
 }
 const themes = {
 	Dark: {
-		background: color_palettes.black,
+		bg: color_palettes.black,
 		color: color_palettes.white,
 	},
 	Light: {
-		background: color_palettes.white,
+		bg: color_palettes.white,
 		color: color_palettes.black,
+		text: color_palettes.black,
 	},
 	Amber: {
-		background: color_palettes.black,
+		bg: color_palettes.black,
 		color: color_palettes.amber,
 	},
 	Blue: {
-		background: color_palettes.black,
+		bg: color_palettes.black,
 		color: color_palettes.blue,
 	},
 	Cyan: {
-		background: color_palettes.black,
+		bg: color_palettes.black,
 		color: color_palettes.cyan,
 	},
 	Green: {
-		background: color_palettes.black,
+		bg: color_palettes.black,
 		color: color_palettes.green,
 	},
 	Magenta: {
-		background: color_palettes.black,
+		bg: color_palettes.black,
 		color: color_palettes.magenta,
 	},
 	Red: {
-		background: color_palettes.black,
+		bg: color_palettes.black,
 		color: color_palettes.red,
 	},
 	Yellow: {
-		background: color_palettes.black,
+		bg: color_palettes.black,
 		color: color_palettes.yellow,
 	},
 }
@@ -190,6 +191,7 @@ for(k in themes){
 	const theme = themes[k]
 	Object.assign(theme, color_palettes)
 }
+const colors = ['accent', 'bg', 'color', 'text'].concat(Object.keys(color_palettes))
 document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
 
 
@@ -250,9 +252,12 @@ document.addEventListener('keydown', function(event){
 
 function setTheme(theme){
 	palettes = themes[theme]
-	can.style.backgroundColor = palettes.background
 	document.querySelector(`#theme [value=${theme}]`).selected = true
-	document.documentElement.style.setProperty('--accent', palettes.color)
+	palettes.accent = palettes.color
+	colors.forEach(color => {
+		document.documentElement.style.setProperty('--'+color, palettes[color])
+	})
+	document.querySelector(`meta[name='theme-color']`).setAttribute('content', palettes.bg)
 	synchronize()
 }
 
