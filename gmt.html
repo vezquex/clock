@@ -44,27 +44,36 @@
 		list-style: none;
 		user-select: none;
 	}
+	text {text-anchor:middle;}
 	.abs {
 		position:absolute;
 	}
-	.svg {
-		margin: 0 auto;
-		max-height: 100vh;
+	.btn {
+		border-color: rgba(0, 0, 0, .5);
+		border-style: outset;
+		border-width: 0px;
+		cursor: pointer;
+		display: flex;
+		line-height: 2;
+		padding: 0 .5em;
+		min-width: 2em;
+		text-decoration: none;
 	}
+	.condensed {font-family:'Roboto Condensed';}
 	.flex {
 		display: flex;
 		flex-direction: column;
 	}
+	.hotkey { text-decoration: underline dotted; }
+	.mono {font-family: 'Roboto Mono', monospace;}
+	.svg {
+		margin: 0 auto;
+		max-height: 100vh;
+	}
+	.ten {letter-spacing: -.051em; font-size: .0833em; }
 	.wide {
 		width: 100vw;
 	}
-	.bold {
-		font-weight:700;
-	}
-	.condensed {font-family:'Roboto Condensed';}
-	.ten {letter-spacing: -.051em; font-size: .0833em; }
-	.mono {font-family: 'Roboto Mono', monospace;}
-	text {text-anchor:middle;}
 	/* #face {opacity:.5} */
 	/* #face-static {opacity:.5} */
 </style>
@@ -77,7 +86,7 @@
 <circle style="fill:var(--dial);" r="700" cx="1024" cy="1024"/>
 
 <path id="twelve" style="fill:var(--lume);stroke:var(--edge);stroke-width:12px;" d="M 942,392 l 84,192 84,-192z"/>
-<g class="bold" style="fill:var(--bezel_text);font-size:100px;">
+<g style="fill:var(--bezel_text);font-size:100px;font-weight:bold;">
 	<text class="ten" transform="rotate(30 1024 1024) translate(1024 192) scale(27 16)">
 		2
 	</text>
@@ -189,6 +198,11 @@ a 700,700 0 1,0 5,0
 		<span class='label'>Theme</span>
 		<select id='theme' onChange='setTheme(this.value)'></select>
 	</label>
+	<div>
+		<a href='..' accesskey='h' class='btn'>
+			<span class='hotkey'>H</span>ome
+		</a>
+	</div>
 </details>
 
 <script type='text/javascript'>
