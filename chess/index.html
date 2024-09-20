@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset='utf-8'/>
-<meta name='viewport' content='width=device-width, initial-scale=1'/>
+<meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0'/>
 <style type='text/css'>
 	:root {
 		--accent: #808080;
@@ -17,7 +17,7 @@
 	body, .btn, input {
 		background: #000;
 		color: #FFF;
-		font-family: monospace;
+		font-family: 'Roboto Mono', 'Noto Sans Mono', monospace;
 		font-size: 1rem;
 		margin: 0;
 	}
@@ -46,6 +46,7 @@
 		border-style: outset;
 		border-width: 1px;
 		cursor: pointer;
+		display: flex;
 		line-height: 2;
 		padding: 0 .5em;
 		min-width: 2em;
@@ -58,10 +59,9 @@
 		outline: none;
 		box-shadow: 0px 0px .5em var(--accent);
 	}
-	.btn.disabled, .disabled .btn {
-		color: #808080;
+	.btn.disabled {
+		color: #606060;
 		cursor: default;
-		border-style: inset;
 	}
 	.center {
     justify-content: center;
@@ -72,6 +72,20 @@
 	}
 	.fade {
 		opacity: .5;
+	}
+	.glyph-box {
+		height: 3rem;
+		width: 3rem;
+		line-height: 0;
+		margin: 0;
+		padding: 0;
+		position: relative;
+	}
+	.arrow {
+		position: absolute;
+		top: 50%;
+		left: calc(50% - .5em);
+		width: 1em;
 	}
 	.grow {
 		flex-grow: 1;
@@ -104,6 +118,11 @@
 	.shrink {
 		flex-shrink: 1;
 	}
+	.solid {
+		border-width: 1px;
+		border-color: #606060;
+		border-style: solid;
+	}
 	#face {
 		border-width: 1px;
 	}
@@ -117,8 +136,8 @@
 		margin-right: 1em;
 	}
 	@media(pointer: coarse){
-		button {
-			font-size: 2rem;
+		.btn {
+			font-size: 1.5rem;
 		}
 	}
 </style>
@@ -127,9 +146,9 @@
 	<div id='face_box' class='row grow center'><canvas id='face'></canvas></div>
 	<div id='button_box' class='row'>
 		<button id='step_dec' class='grow btn nosel' tabindex='1'>
-			<span class='btn round hotkey'>
-				&#x276e;
-			</span>
+			<div class='glyph-box round solid hotkey'>
+				<div class='arrow'>&#x276e;</div>
+			</div>
 		</button>
 		<label class='grow border'>
 			<span class='label fade'>Step</span>
@@ -137,9 +156,9 @@
 			<span>Move <span id='move'></span></span>
 		</label>
 		<button id='step_inc' class='grow btn nosel' tabindex='2'>
-			<span class='btn round hotkey'>
-				&#x276f;
-			</span>
+			<div class='glyph-box round solid hotkey'>
+				<div class='arrow'>&#x276f;</div>
+			</div>
 		</button>
 	</div>
 </div>
