@@ -307,7 +307,7 @@ const offset_el = document.getElementById('offset')
 function setTheme(theme){
 	palettes = themes[theme]
 	document.querySelector(`#theme [value=${theme}]`).selected = true
-	document.documentElement.style.setProperty('--accent', palettes.dial)
+	document.documentElement.style.setProperty('--accent', palettes.highlight)
 	colors.forEach(color => {
 		document.documentElement.style.setProperty('--'+color, palettes[color])
 	})
