@@ -1,9 +1,6 @@
 <!doctype html>
 <meta charset='utf-8'/>
 <meta name='viewport' content='width=device-width, initial-scale=1'/>
-<title>
-	Chess
-</title>
 <style type='text/css'>
 	:root {
 		--accent: #808080;
@@ -17,7 +14,7 @@
 		border-color: #404040;
 		border-style: solid;
 	}
-	body, button, input {
+	body, .btn, input {
 		background: #000;
 		color: #FFF;
 		font-family: monospace;
@@ -27,63 +24,63 @@
 	body {
 		overflow-x: hidden;
 	}
-	button, label {
-		align-items: center;
-		cursor: pointer;
-		justify-content: center;
-		line-height: 1.75;
-		padding: 0 .5em;
-	}
-	button {
-		border-style: outset;
-		border-width: 1px;
-	}
-	.active {
-		border-style: inset;
+	input {
+		border: 0;
 	}
 	label {
 		border-width: 1px 0;
 		display: flex;
 		flex-wrap: wrap;
 	}
-	button[disabled] {
+	.btn, label, input {
+		cursor: pointer;
+	}
+	.btn, label {
+		align-items: center;
+		justify-content: center;
+		line-height: 1.75;
+		padding: 0 .5em;
+	}
+	.btn {
+		border-color: rgba(0, 0, 0, .5);
+		border-style: outset;
+		border-width: 1px;
+		cursor: pointer;
+		line-height: 2;
+		padding: 0 .5em;
+		min-width: 2em;
+		text-decoration: none;
+	}
+	.btn:active {
+		border-style: inset;
+	}
+	.btn:focus {
+		outline: none;
+		box-shadow: 0px 0px .5em var(--accent);
+	}
+	.btn.disabled, .disabled .btn {
 		color: #808080;
 		cursor: default;
-		border-style: solid;
-	}
-	input {
-		border: 0;
-	}
-	.label {
-		margin-right: .5ch;
+		border-style: inset;
 	}
 	.center {
     justify-content: center;
-	}
-	.grow {
-		flex-grow: 1;
-	}
-	.shrink {
-		flex-shrink: 1;
-	}
-	#face {
-		border-width: 1px;
 	}
 	.column {
 		display: flex;
 		flex-direction: column;
 	}
-	.row {
-		display: flex;
-		flex-direction: row;
+	.fade {
+		opacity: .5;
 	}
-	#move {
-		display: inline-block;
-		min-width: 10.5ch;
+	.grow {
+		flex-grow: 1;
 	}
-	#step {
-		width: 3ch;
-		margin-right: 1em;
+	.label {
+		margin-right: .5ch;
+	}
+	.nosel {
+		user-select: none;
 	}
 	.nospin::-webkit-outer-spin-button,
 	.nospin::-webkit-inner-spin-button {
@@ -93,7 +90,33 @@
 	.nospin {
 		appearance: textfield;
 	}
-	@media(hover: none){
+	.round {
+		border-radius: 100%;
+		display: inline-block;
+		margin: -1px 0;
+		min-width: calc(2em + 2px);
+		padding: 0;
+	}
+	.row {
+		display: flex;
+		flex-direction: row;
+	}
+	.shrink {
+		flex-shrink: 1;
+	}
+	#face {
+		border-width: 1px;
+	}
+	#move {
+		display: inline-block;
+		min-width: 10.5ch;
+		white-space-collapse: preserve;
+	}
+	#step {
+		width: 3ch;
+		margin-right: 1em;
+	}
+	@media(pointer: coarse){
 		button {
 			font-size: 2rem;
 		}
@@ -103,13 +126,21 @@
 <div class='column' style='min-height:100vh;'>
 	<div id='face_box' class='row grow center'><canvas id='face'></canvas></div>
 	<div id='button_box' class='row'>
-		<button id='step_dec' class='grow' tabindex='1'><span>-</span></button>
+		<button id='step_dec' class='grow btn nosel' tabindex='1'>
+			<span class='btn round hotkey'>
+				&#x276e;
+			</span>
+		</button>
 		<label class='grow border'>
-			<span class='label'>Step</span>
-			<input id='step' class='nospin' tabindex='0' onChange='set_step(parseInt(this.value))' onFocus='this.select()' value='0' min='0' type='number' autocomplete='off'/>
+			<span class='label fade'>Step</span>
+			<input id='step' class='nospin fade' tabindex='0' onChange='set_step(parseInt(this.value))' onFocus='this.select()' value='0' min='0' type='number' autocomplete='off'/>
 			<span>Move <span id='move'></span></span>
 		</label>
-		<button id='step_inc' class='grow' tabindex='2'><span>+</span></button>
+		<button id='step_inc' class='grow btn nosel' tabindex='2'>
+			<span class='btn round hotkey'>
+				&#x276f;
+			</span>
+		</button>
 	</div>
 </div>
 
@@ -169,69 +200,110 @@ for(k in themes){
 	Object.assign(theme, color_palettes)
 }
 
-const can = document.getElementById('face')
+const doc = document
+const can = doc.getElementById('face')
 const c = can.getContext('2d')
 
-function on_button(event, callback){
-	// left mouse button, touch, enter, spacebar
-	if (!((event.which === 1) || (event.type === 'touchstart') || (event.keyCode === 13) || (event.keyCode === 32))){
-		return
-	}
+function on_button(ev, callback){
+	if(ev.repeat){ return }
 	const self = this
 	let interval = null
-	let timeout = null
+	let long_press_repeat = null
+	const pointerdown = ev.type === 'pointerdown'
+	const k = ev.key
+	const enter_spacebar = ((k === 'Enter') || (k === ' '))
+	const keyboard = enter_spacebar
+	|| self.dataset.hotkeys.split(separator).includes(ev.key)
+	if(!(keyboard || pointerdown)){ return }
 	callback()
-	event.preventDefault()
-	// cancel interval and timeout; unbind listeners
-	function cancel(event){
+	function cancel(evc){
+		if((ev.type === evc.type) && (ev.key === evc.key)){ return }
 		window.clearInterval(interval)
-		window.clearTimeout(timeout)
-		// self.blur()
-		self.removeEventListener('keydown', cancel)
-		self.removeEventListener('keyup', cancel)
-		self.removeEventListener('mouseout', cancel)
-		self.removeEventListener('mouseup', cancel)
-		self.removeEventListener('touchend', cancel)
-		self.classList.remove('active')
-		event.preventDefault()
+		window.clearTimeout(long_press_repeat)
+		pointerdown && doc.removeEventListener('pointerup', cancel)
+		keyboard && self.removeEventListener('keydown', cancel)
+		keyboard && self.removeEventListener('keyup', cancel)
+		doc.removeEventListener('touchcancel', cancel)
+		doc.removeEventListener('touchend', cancel)
 	}
-	self.addEventListener('keydown', cancel)
-	self.addEventListener('keyup', cancel)
-	self.addEventListener('mouseout', cancel)
-	self.addEventListener('mouseup', cancel)
-	self.addEventListener('touchend', cancel)
-	self.classList.add('active')
-	// long press: repeat
-	timeout = window.setTimeout(function(){
-		interval = window.setInterval(callback, 100)
+	pointerdown && doc.addEventListener('pointerup', cancel)
+	doc.addEventListener('touchcancel', cancel)
+	doc.addEventListener('touchend', cancel)
+	keyboard && self.addEventListener('keydown', cancel)
+	keyboard && self.addEventListener('keyup', cancel)
+	long_press_repeat = window.setTimeout(function(){
+		interval = window.setInterval(callback, 50)
 	}, 300)
 }
 
-function bind_on_button(el, cb){
+const Hotkeys = {}
+const separator = '•'
+function bind_on_button(el, cb, hotkeys=[]){
 	el.addEventListener('keydown', function(event){
 		on_button.call(this, event, cb)
 	})
-	el.addEventListener('mousedown', function(event){
+	el.setAttribute('onPointerDown', '')
+	el.addEventListener('pointerdown', function(event){
 		on_button.call(this, event, cb)
 	})
-	el.addEventListener('touchstart', function(event){
-		on_button.call(this, event, cb)
-	})
+	;(hotkeys).forEach(
+		key => Hotkeys[key] = el
+	)
+	el.dataset.hotkeys = hotkeys.join(separator)
 }
+doc.addEventListener('keydown', function(event){
+	if(event.repeat){ return }
+	const k = event.key
+	if(k === ' ' || k === 'Enter'){
+		return
+	}
+	const el = Hotkeys[k]
+	|| doc.querySelector(`[accesskey='${k}']`)
+	if(!el){ return }
+	const tag = el.tagName
+	let ev
+	if(el.hasAttribute('onPointerDown')){
+		if(el === doc.activeElement){ return }
+		if(doc.activeElement.tagName === 'SELECT'){ return }
+		ev = new KeyboardEvent('keydown', {key: event.key})
+	}
+	else if(tag === 'A'){
+		ev = new MouseEvent('click')
+	}
+	else {
+		el.focus()
+		return
+	}
+	el.dispatchEvent(ev)
+})
+doc.addEventListener('keyup', function(event){
+	if(event.repeat){ return }
+	const k = event.key
+	const button = (k === ' ' || k === 'Enter') ?
+		doc.activeElement
+		: Hotkeys[k]
+	|| doc.querySelector(`[accesskey='${k}']`)
+	button?.dispatchEvent(
+		new KeyboardEvent('keyup', {key: event.key})
+	)
+})
 
-const step_dec_el = document.getElementById('step_dec')
-const step_inc_el = document.getElementById('step_inc')
+const step_dec_el = doc.getElementById('step_dec')
+const step_inc_el = doc.getElementById('step_inc')
+
 bind_on_button(
 	step_dec_el,
-	() => set_step(step - 1)
+	() => set_step(step - 1),
+	['ArrowLeft','ArrowUp', ...'bkpuw,-_,<[{('],
 )
 bind_on_button(
 	step_inc_el,
-	() => set_step(step + 1)
+	() => set_step(step + 1),
+	['ArrowRight','ArrowDown',...'dfjns+=.>]})'],
 )
 
-const button_box = document.getElementById('button_box')
-const face_box = document.getElementById('face_box')
+const button_box = doc.getElementById('button_box')
+const face_box = doc.getElementById('face_box')
 function resize(event){
 	const scale = window.devicePixelRatio || 1
 	const face_box_height = floor(window.innerHeight  - button_box.offsetHeight) - 1
@@ -251,11 +323,15 @@ function resize(event){
 
 window.addEventListener('resize', resize)
 
-const move_el = document.getElementById('move')
-const step_el = document.getElementById('step')
+const move_el = doc.getElementById('move')
+const step_el = doc.getElementById('step')
+
+function pad2(s){
+	return (' ' + s).slice(-2)
+}
 
 function move_text(step){
-	return `${floor(step/2)+1}${step%2 ? '…' : '.'}`
+	return `${pad2(floor(step/2)+1)}${step%2 ? '…' : '.'}`
 }
 
 function set_step(n){
@@ -264,8 +340,10 @@ function set_step(n){
 	step_el.value = step
 	move_el.innerText = `${move_text(step)} of ${move_text(count)}`
 
-	step_dec_el.disabled = step === 0
-	step_inc_el.disabled = step === count
+	const begin = step === 0
+	const end = step === count
+	step_dec_el.classList[step === 0 ? 'add' : 'remove']('disabled')
+	step_inc_el.classList[step === count ? 'add' : 'remove']('disabled')
 	display()
 }
 
@@ -740,7 +818,7 @@ const chess_positions = []
 chess_positions.push(chess_initial_position.concat())
 
 const chess_game = chess_games[0]
-document.title = `Chess | ${Object.values(chess_game.tags).join(' | ')}`
+doc.title = `Chess | ${Object.values(chess_game.tags).join(' | ')}`
 
 for(let i = 0; i < chess_game.moves.length; ++i){
 	chess_positions.push(

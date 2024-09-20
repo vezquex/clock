@@ -1,6 +1,7 @@
 <!doctype html>
 <meta charset='utf-8'/>
 <meta name='viewport' content='width=device-width, initial-scale=1'/>
+<meta name='theme-color' content='#000000'/>
 <title>
 	World Time
 </title>
@@ -8,7 +9,6 @@
 	:root {
 		--accent: #808080;
 		accent-color: var(--accent);
-		/* color-scheme: dark; */
 	}
 	* {
 		box-sizing: border-box;
@@ -31,6 +31,7 @@
 		border-style: outset;
 		border-width: 1px;
 		cursor: pointer;
+		display: flex;
 		line-height: 2;
 		padding: 0 .5em;
 		min-width: 2em;
@@ -46,8 +47,15 @@
 	.center-text {
 		text-align: center;
 	}
+	.collapse {
+		white-space-collapse: collapse;
+	}
+	.column {
+		display: flex;
+		flex-direction: column;
+	}
 	.fade {
-		opacity: 0.5;
+		opacity: .5;
 	}
 	.grow {
 		flex-grow: 1;
@@ -55,9 +63,15 @@
 	.grow2 {
 		flex-grow: 2;
 	}
-	.column {
-		display: flex;
-		flex-direction: column;
+	.nosel {
+		user-select: none;
+	}
+	.round {
+		border-radius: 100%;
+		display: inline-block;
+		margin: -1px 0;
+		min-width: calc(2em + 2px);
+		padding: 0;
 	}
 	.row {
 		display: flex;
@@ -69,39 +83,33 @@
 	.row > .btn:first-child {
 		border-left-width: 0px;
 	}
-	.round {
-		border-radius: 100%;
-		display: inline-block;
-		margin: -1px 0;
-		min-width: calc(2em + 2px);
-		padding: 0;
-	}
-	@media(hover: none){
+	@media(pointer: coarse){
 		.btn {
-			font-size: 2rem;
+			font-size: 1.5rem;
 		}
 	}
 </style>
 
 <div class='column' style='min-height:100vh;'>
 	<input hidden id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
-	<div id='face_box' class='grow'><canvas id='face'></canvas></div>
-	<div id='button_box' class='fade row'>
-		<a href='..' accesskey='h' class='btn center-text'>
+	<div id='LCD' class='grow'><canvas id='face'></canvas></div>
+	<div class='fade row'>
+		<a href='..' accesskey='h' class='btn collapse'>
 			<span class='hotkey'>H</span>ome
 		</a>
 		<select id='theme' class='grow btn' title='Theme' onChange='setTheme(this.value)' accesskey='t'></select>
-		<button id='zone_dec' class='grow2 btn'>
+		<button id='zone_dec' class='grow2 btn nosel center-text'>
 			<span class='btn round hotkey'>
 				-
 			</span>
 		</button>
-		<button id='zone_inc' class='grow2 btn'>
+		<button id='zone_inc' class='grow2 btn nosel center-text'>
 			<span class='btn round hotkey'>
 				+
 			</span>
 		</button>
 	</div>
+	<!-- <p>XXX</p> -->
 </div>
 
 <script type='text/javascript'>
@@ -232,47 +240,45 @@ function setTheme(theme){
 	colors.forEach(color => {
 		document.documentElement.style.setProperty('--'+color, palettes[color])
 	})
+	document.querySelector(`meta[name='theme-color']`).setAttribute('content', palettes.bg)
 	synchronize()
 }
 
-function on_button(event, callback){
+function on_button(ev, callback){
+	if(ev.repeat){ return }
 	const self = this
 	let interval = null
-	let timeout = null
-	const left_click = event.which === 1
-	const tap = event.type === 'touchstart'
-	const k = event.key
-	const enter_spacebar = (k === 'Enter') || (k === ' ')
-	const keyboard = enter_spacebar || self.dataset.hotkeys.split(separator).includes(event.key)
-	if(!(left_click || tap || keyboard)){
-		return
-	}
+	let long_press_repeat = null
+	const pointerdown = ev.type === 'pointerdown'
+	const k = ev.key
+	const enter_spacebar = ((k === 'Enter') || (k === ' '))
+	const keyboard = enter_spacebar
+	|| self.dataset.hotkeys.split(separator).includes(ev.key)
+	if(!(keyboard || pointerdown)){ return }
 	callback()
-
-	// cancel interval and timeout; unbind listeners
-	function cancel(event){
+	function cancel(evc){
+		if((ev.type === evc.type) && (ev.key === evc.key)){ return }
 		window.clearInterval(interval)
-		window.clearTimeout(timeout)
-		left_click && document.removeEventListener('mouseup', cancel)
-		tap && self.removeEventListener('pointerup', cancel)
+		window.clearTimeout(long_press_repeat)
+		pointerdown && document.removeEventListener('pointerup', cancel)
 		keyboard && self.removeEventListener('keydown', cancel)
 		keyboard && self.removeEventListener('keyup', cancel)
-		event.preventDefault()
+		document.removeEventListener('touchcancel', cancel)
+		document.removeEventListener('touchend', cancel)
 	}
-	left_click && document.addEventListener('mouseup', cancel)
-	tap && self.addEventListener('pointerup', cancel)
+	pointerdown && document.addEventListener('pointerup', cancel)
+	document.addEventListener('touchcancel', cancel)
+	document.addEventListener('touchend', cancel)
 	keyboard && self.addEventListener('keydown', cancel)
 	keyboard && self.addEventListener('keyup', cancel)
-
-	// long press: repeat
-	timeout = window.setTimeout(function(){
+	long_press_repeat = window.setTimeout(function(){
 		interval = window.setInterval(callback, 50)
 	}, 300)
 }
 
 const Hotkeys = {}
 const separator = '•'
-function bind_on_button(el, cb, hotkeys){
+function bind_on_button(el, cb, hotkeys=[]){
 	el.addEventListener('keydown', function(event){
 		on_button.call(this, event, cb)
 	})
@@ -280,7 +286,7 @@ function bind_on_button(el, cb, hotkeys){
 	el.addEventListener('pointerdown', function(event){
 		on_button.call(this, event, cb)
 	})
-	;(hotkeys||[]).forEach(
+	;(hotkeys).forEach(
 		key => Hotkeys[key] = el
 	)
 	el.dataset.hotkeys = hotkeys.join(separator)
@@ -297,9 +303,8 @@ document.addEventListener('keydown', function(event){
 	const tag = el.tagName
 	let ev
 	if(el.hasAttribute('onPointerDown')){
-		if(document.activeElement.tagName === 'SELECT'){
-			return
-		}
+		if(el === document.activeElement){ return }
+		if(document.activeElement.tagName === 'SELECT'){ return }
 		ev = new KeyboardEvent('keydown', {key: event.key})
 	}
 	else if(tag === 'A'){
@@ -567,17 +572,14 @@ function colon(x, y){
 	shape(colon_shape, x, y+9)
 }
 
-const button_box = document.getElementById('button_box')
-const face_box = document.getElementById('face_box')
+const lcd_el = document.getElementById('LCD')
 function resize(event){
+	const rect = lcd_el.getBoundingClientRect()
 	const scale = window.devicePixelRatio || 1
-	const face_box_height = floor(window.innerHeight  - button_box.offsetHeight) - 1
 	z = floor(min(
-		window.innerWidth / width,
-		face_box_height / height,
+		rect.width / width,
+		rect.height / height,
 	))
-	face_box.style.height = face_box_height + 'px'
-	button_box.style.width = window.innerWidth + 'px'
 	can.height = height * scale * z
 	can.width = width * scale * z
 	can.style.height = (height*z)+'px'
@@ -653,7 +655,15 @@ function display(t){
 	// draw_str('□KMNQRTVWXYZ', pad_h/m, y/m, m, char_paths_sixteen)
 }
 
-setTheme('Dark')
+function resetTheme(){
+	const light = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches
+	setTheme(light ? 'Light' : 'Dark')
+}
+resetTheme()
+window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', event => {
+	resetTheme()
+})
+
 resize()
 
 </script>
