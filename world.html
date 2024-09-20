@@ -23,9 +23,6 @@
 	body {
 		overflow-x: hidden;
 	}
-	.hotkey {
-		text-decoration: underline dotted;
-	}
 	.btn {
 		border-color: rgba(0, 0, 0, .5);
 		border-style: outset;
@@ -63,6 +60,9 @@
 	.grow2 {
 		flex-grow: 2;
 	}
+	.hotkey {
+		text-decoration: underline dotted;
+	}
 	.nosel {
 		user-select: none;
 	}
@@ -99,17 +99,16 @@
 		</a>
 		<select id='theme' class='grow btn' title='Theme' onChange='setTheme(this.value)' accesskey='t'></select>
 		<button id='zone_dec' class='grow2 btn nosel center-content'>
-			<span class='btn round hotkey'>
+			<span class='btn round'>
 				-
 			</span>
 		</button>
 		<button id='zone_inc' class='grow2 btn nosel center-content'>
-			<span class='btn round hotkey'>
+			<span class='btn round'>
 				+
 			</span>
 		</button>
 	</div>
-	<!-- <p>XXX</p> -->
 </div>
 
 <script type='text/javascript'>
