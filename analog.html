@@ -45,30 +45,33 @@
 		list-style: none;
 		user-select: none;
 	}
+	text {font-family: Roboto, sans-serif; text-anchor:middle;}
 	.abs {
 		position:absolute;
 	}
-	.img-full {
-		display: block;
-		height: auto;
-		position: absolute;
-		width: auto;
-	}
-	.svg {
-		margin: 0 auto;
-		max-height: 100vh;
+	.btn {
+		border-color: rgba(0, 0, 0, .5);
+		border-style: outset;
+		border-width: 0px;
+		cursor: pointer;
+		display: flex;
+		line-height: 2;
+		padding: 0 .5em;
+		min-width: 2em;
+		text-decoration: none;
 	}
 	.flex {
 		display: flex;
 		flex-direction: column;
 	}
+	.hotkey { text-decoration: underline dotted; }
+	.svg {
+		margin: 0 auto;
+		max-height: 100vh;
+	}
 	.wide {
 		width: 100vw;
 	}
-	.bold {
-		font-weight:700;
-	}
-	text {font-family: Roboto, sans-serif; text-anchor:middle;}
 </style>
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
 <svg version="1.1" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class='svg'>
@@ -79,7 +82,7 @@
 
 <path id="twelve_bezel" style="fill:var(--mark);" d="M 1024,220 l -108,-140 q 108,-16 216,0"/>
 <path id="twelve" style="fill:var(--mark);stroke:var(--edge);stroke-width:8px;" d="M 942,316 l 84,192 84,-192z"/>
-<g class="bold" style="fill:var(--mark);font-size:100px;">
+<g style="fill:var(--mark);font-size:100px;font-weight:bold;">
 	<text class="ten" transform="rotate(60 1024 1024) translate(1024 176)">
 		10
 	</text>
@@ -110,6 +113,11 @@
 		<span class='label'>Theme</span>
 		<select id='theme' onChange='setTheme(this.value)'></select>
 	</label>
+	<div>
+		<a href='..' accesskey='h' class='btn'>
+			<span class='hotkey'>H</span>ome
+		</a>
+	</div>
 </details>
 
 <script type='text/javascript'>
