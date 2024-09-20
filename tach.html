@@ -2,8 +2,9 @@
 <meta charset='utf-8'/>
 <meta name='viewport' content='width=device-width, initial-scale=1'/>
 <title>
-	Biel Dive Watch
+	Tachymeter Watch
 </title>
+<!-- Tachymètre -->
 <style type='text/css'>
 	*, *::before, *::after {
 		box-sizing: border-box;
@@ -21,7 +22,7 @@
 	}
 	body, .btn, input, select {
 		color: #FFF;
-		font-family: sans-serif;
+		font-family: Roboto, sans-serif;
 		font-size: 1em;
 		margin: 0;
 	}
@@ -49,7 +50,6 @@
 	.abs {
 		position:absolute;
 	}
-	.cursive {font-family: cursive; letter-spacing: -1px; font-style:italic; }
 	.btn {
 		border-color: rgba(0, 0, 0, .5);
 		border-style: outset;
@@ -61,6 +61,7 @@
 		min-width: 2em;
 		text-decoration: none;
 	}
+	.cursive {font-family: cursive; letter-spacing: -1px; font-style:italic; }
 	.flex {
 		display: flex;
 		flex-direction: column;
@@ -77,49 +78,15 @@
 		width: 100vw;
 	}
 </style>
+<!-- <img src="file:///C:/Users/r/Downloads/img/.png" -->
+<!-- style="display:block; height:auto; position:absolute; width:auto;"> -->
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
 <svg version="1.1" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class='svg'>
 <rect id="canvas" x="0" y="0" width="2048" height="2048" fill="none"/>
 <circle id="edge" style="fill:var(--edge);opacity:1.0;" r="1024" cx="1024" cy="1024"/>
-<circle id="bezel" style="fill:var(--bezel);opacity:1.0;" r="968" cx="1024" cy="1024"/>
+<circle id="bezel" style="fill:var(--bezel);opacity:1.0;" r="1012" cx="1024" cy="1024"/>
 <circle id="dial" style="fill:var(--dial);" r="780" cx="1024" cy="1024"/>
 
-<g id="bezel_group">
-<path id="twelve_bezel" style="stroke:var(--mark);stroke-width:16;fill:none;" d="M 1024,224 l -118,-140 q 118,-16 236,0z"/>
-<circle id="twelve_pip" style="fill:var(--mark);stroke:var(--edge);stroke-width:8;" r="32" cx="1024" cy="132"/>
-<g style="fill:var(--mark);font:120px sans-serif;">
-	<text class="ten" transform="rotate(55 1024 1024) translate(1024 176) scale(2.5 1)">
-		1
-	</text>
-	<text class="ten" transform="rotate(63 1024 1024) translate(1024 176) scale(3 1)">
-		0
-	</text>
-	<text class="ten" transform="rotate(114 1024 1024) translate(1024 176) scale(2.5 1)">
-		2
-	</text>
-	<text class="ten" transform="rotate(125 1024 1024) translate(1024 176) scale(3 1)">
-		0
-	</text>
-	<text class="ten" transform="rotate(174 1024 1024) translate(1024 176) scale(3 1)">
-		3
-	</text>
-	<text class="ten" transform="rotate(186 1024 1024) translate(1024 176) scale(3 1)">
-		0
-	</text>
-	<text class="ten" transform="rotate(234 1024 1024) translate(1024 176) scale(3 1)">
-		4
-	</text>
-	<text class="ten" transform="rotate(246 1024 1024) translate(1024 176) scale(3 1)">
-		0
-	</text>
-	<text class="ten" transform="rotate(294 1024 1024) translate(1024 176) scale(3 1)">
-		5
-	</text>
-	<text class="ten" transform="rotate(306 1024 1024) translate(1024 176) scale(3 1)">
-		0
-	</text>
-</g>
-</g>
 <text x="1024" y="700" style="font:bold 110px Times, serif;">
 	Θ
 </text>
@@ -129,34 +96,22 @@ style="font-size:80px;">
 THETA
 </text>
 <text class="cursive"
-style="fill:var(--highlight);font-size:50px;"
+style="font-size:50px;"
 transform="translate(1030 845) scale(1.5 1)">
-	<tspan style="font-size:1.5em;">S</tspan><tspan dy="-10">uperstar</tspan>
-</text>
-<text x="1032" y="1138" class="sans info" style="opacity:.3;font-weight:lighter;font-size:44px;">
-	[SiO<tspan dy="10">2</tspan><tspan dy="-10">]</tspan>
+<tspan style="font-size:1.5em;">S</tspan><tspan dy="-10">pacewalker</tspan>
 </text>
 <text x="1024" y="890" class="sans info">
-	PROFESSIONAL
-</text>
-<text x="1032" y="1236" class="sans info">
-	JAVASCRIPT
-</text>
-<text x="1024" y="1282" class="sans info">
-	VIRTUAL CHRONOMETER
-</text>
-<text x="1028" y="1328" class="sans info">
-	300m ≈ 1000ft
+	CHRONOGRAPH
 </text>
 <path id="curve"
 pathLength="2"
 d="
-M 1024, 254
+M 1024, 294
 a 746,746 0 1,0 5,0
 " fill='none'/>
 <text class="mono" style="font-size:24px;">
 	<textPath xlink:href="#curve"	startOffset="1"
-	>HTML<tspan style="font-size:180px;"> </tspan>MADE</textPath>
+	>HTML<tspan style="font-size:12px;"> </tspan>MADE</textPath>
 </text>
 </svg>
 <canvas id='face-static' class='abs'></canvas>
@@ -166,25 +121,21 @@ a 746,746 0 1,0 5,0
 	<summary title='Settings'>☰</summary>
 	<label>
 		<span class='label'><span class='hotkey'>O</span>ffset</span>
-		<input id='offset' accesskey='o' value='0' type='range' max='86400000' step='60000' onInput='synchronize()'>
+		<input id='offset' value='0' type='range' max='86400000' step='60000' onInput='synchronize()'>
 	</label>
 	<label>
-		<span class='label'><span class='hotkey'>B</span>ezel</span>
-		<input id='bezel_offset' accesskey='b' value='120' type='range' max='120' step='1' onInput='display_static()'>
-	</label>
-	<label>
-		<span class='label'><span class='hotkey'>T</span>heme</span>
-		<select id='theme' accesskey='t' onChange='setTheme(this.value)'></select>
+		<span class='label'>Theme</span>
+		<select id='theme' onChange='setTheme(this.value)'></select>
 	</label>
 	<div>
 		<a href='..' accesskey='h' class='btn'>
 			<span class='hotkey'>H</span>ome
 		</a>
 	</div>
-	</details>
+</details>
 
 <script type='text/javascript'>
-const bps = 4
+const bps = 3
 const _ = void 0
 
 let palettes
@@ -192,7 +143,7 @@ const color_palettes = {
 	bezel: '#000000',
 	dial: '#000000',
 	edge: '#C0C0C0',
-	highlight: '#C00000',
+	highlight: '#9DE5B3',
 	mark: '#FFFFFF',
 	text: '#FFFFFF',
 }
@@ -235,35 +186,30 @@ const width = height
 const half = width / 2
 const bezel_r = 50
 const bezel_mark_len = 9.5
-const bezel_mark_r = 1
-const bezel_minute_len = bezel_mark_r * 3
+const bezel_mark_r = .5
 const dash = 1.2
 const dial_r = half * 780/1024
-const hour_r = 35
-const hour_r_rect = 28
-const hour_len = 12
-const hour_radius = 4
-const hour_thick = 2.25
-const minute_len = 2.25
-const minute_len_five = minute_len * 1.5
+const hour_r_rect = 32
+const hour_len = 10
+const hour_thick = 1
+const minute_len = 10
+const minute_len_five = 2
 const minute_r = half * 720/1024
 const minute_thick = 0.2
-const minute_thick_five = minute_thick * 1.5
+const minute_thick_five = 0.3
+const tach_length = 4
+const tach_thick = .25
 const thick = .2
-const tw_gap = 3
+const tw_gap = .8
 
 // zoom
 let z = 1
 
 const {cos, sin, sqrt, tan} = Math
-const phi = (1 + sqrt(5)) * .5
 const tau = 2 * Math.PI
 const tau_4 = tau / 4
 const tau_12 = tau / 12
 const tau_60 = tau / 60
-const pent_cross = 2 * sin(tau/5)
-const pent_h = phi / 2 + 1
-const pent_tip = 1 - cos(tau/5)
 
 for(k in themes){
 	themes[k] = Object.assign({}, color_palettes, themes[k])
@@ -307,7 +253,6 @@ function resize(){
 }
 window.addEventListener('resize', resize)
 
-const bezel_el = document.getElementById('bezel_offset')
 const offset_el = document.getElementById('offset')
 
 function setTheme(theme){
@@ -326,10 +271,10 @@ function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(offset_el.value)
 	let t = new Date(Date.now() + offset)
-	// t = new Date(2020,0,8,10,15,0,0)
+	t = new Date(2000,0,1,10,9,43,500)
 	display(t)
 	const r = delay - (t % delay)
-	window.synchronizeTimeout = window.setTimeout(synchronize, r)
+	// window.synchronizeTimeout = window.setTimeout(synchronize, r)
 }
 
 function shapec(c, path, x = 0, y = 0, m = 1){
@@ -373,8 +318,8 @@ const rect_my = (y, h) => ([
 	[0, y],
 ])
 
-const bezel_index = rect_my(bezel_mark_r, bezel_mark_len)
-const bezel_minute = rect_my(bezel_mark_r, bezel_minute_len)
+const tach_long = rect_my(tach_thick, tach_length)
+const tach_short = rect_my(tach_thick, tach_length / 2)
 
 function polygon(sides, radius = 1, rot = tau_4){
 	return Array(sides).fill().map((_,i)=>([
@@ -388,7 +333,6 @@ const arm_w2 = 3
 const base_h = 1.5
 const base_w = 4
 const fudge = .25
-const hour_h = hour_r - hour_radius
 const lume_inset = 2
 const lume_inset_arm = .75
 const minute_h = minute_r - minute_len_five - 1.5
@@ -398,28 +342,6 @@ const stem_w = 1.5
 const arm_h = minute_h - stem_h - minute_head_h
 const minute_head_w = minute_head_h*4/3
 const hour_head_w = minute_head_w * 0.828633
-const pr = hour_head_w / phi
-const pc = hour_h - pr
-const cross = pr * pent_cross
-const tip = pr * pent_tip
-const hour_right_arm = [
-	[stem_h, base_w/2 - arm_w],
-	[hour_h - tip, cross/2 - arm_w2],
-	[hour_h - tip, cross/2],
-	[stem_h, base_w/2],
-]
-const hour_left_arm = hour_right_arm.map(([x,y])=>[x,-y])
-const hour_arm_slope_inner = (hour_right_arm[1][1] - hour_right_arm[0][1]) / (hour_right_arm[1][0] - hour_right_arm[0][0])
-const hour_arm_slope_outer = (hour_right_arm[3][1] - hour_right_arm[2][1]) / (hour_right_arm[3][0] - hour_right_arm[2][0])
-const hour_arm_lume_w_inner = hour_h - pr * pent_h - (stem_h + base_h)
-const hour_arm_lume_w_outer = stem_h + base_h - (hour_h - pr * pent_h)
-const hour_right_arm_lume = [
-	[stem_h + base_h, base_w/2 - arm_w + lume_inset_arm],
-	[hour_h - pr * pent_h, base_w/2 - arm_w + lume_inset_arm + hour_arm_slope_inner * hour_arm_lume_w_inner],
-	[hour_h - pr * pent_h, base_w/2 - lume_inset_arm - hour_arm_slope_outer * hour_arm_lume_w_outer],
-	[stem_h + base_h, base_w/2 - lume_inset_arm],
-]
-const hour_left_arm_lume = hour_right_arm_lume.map(([x,y])=>[x,-y])
 
 function display(t){
 	const hours = t.getHours()
@@ -429,7 +351,7 @@ function display(t){
 	// const weekday = t.toLocaleString(locale, {weekday:'short'}).toUpperCase().slice(0,2)
 
 	fc.fillStyle = palettes.mark
-	fc.strokeStyle = palettes.edge
+	fc.strokeStyle = palettes.mark
 	fc.save()
 	fc.lineWidth = .5*z
 	fc.clearRect(0, 0, width*z, height*z)
@@ -445,134 +367,73 @@ function display(t){
 	fc.rotate(
 		(hr / 12 + minutes / 720 + seconds / 43200) * tau,
 	)
-	fc.fillStyle = palettes.edge
-	shapec(fc, rect(stem_h + fudge, stem_w), 0, -stem_w/2)
-	shapec(fc, rect(base_h, base_w), stem_h, -base_w/2)
-	// hour head
-	shapec(fc, polygon(5, pr, 0), pc)
-	shapec(fc, hour_left_arm)
-	shapec(fc, hour_right_arm)
-	fc.fillStyle = palettes.mark
-	shapec(fc, hour_left_arm_lume)
-	shapec(fc, hour_right_arm_lume)
-	// hour hand lume
+	shapec(
+		fc,
+		[
+			[0, 0],
+			[23, 0],
+			[26, 2],
+			[23, 4],
+			[0, 4],
+			[0, 0],
+		],
+		0, -2,
+	)
+	// hour lume
 	fc.beginPath()
-	fc.arc(pc*z, 0, z*pr/phi, 0, tau)
-	fc.fill()
+	fc.moveTo(6*z, 0)
+	fc.lineTo(22*z, 0)
+	fc.lineWidth = 2*z
+	fc.strokeStyle = palettes.highlight
+	fc.stroke()
 	fc.restore()
 
 	// minute hand
 	fc.save()
 	fc.rotate((minutes / 60 + seconds / 3600) * tau)
-	fc.fillStyle = palettes.edge
-	shapec(fc, rect(stem_h, stem_w), 0, -stem_w/2)
-	// base
-	fc.fillStyle = palettes.edge
-	shapec(
-		fc,
-		rect(base_h, base_w),
-		stem_h, -base_w/2,
-	)
-	// left arm
-	shapec(
-		fc,
-		[
-			[0, arm_w - base_w/2],
-			[arm_h + fudge, arm_w2 - minute_head_w/2],
-			[arm_h, -minute_head_w/2],
-			[0, -base_w/2],
-		],
-		stem_h,
-	)
-	// right arm
-	shapec(
-		fc,
-		[
-			[0, -(arm_w - base_w/2)],
-			[arm_h + fudge, -(arm_w2 - minute_head_w/2)],
-			[arm_h, minute_head_w/2],
-			[0, base_w/2],
-		],
-		stem_h,
-	)
-	// head
 	shapec(
 		fc,
 		[
 			[0, 0],
-			[minute_head_h, minute_head_w/2],
-			[0, minute_head_w]
+			[40, 0],
+			[43.6, 2],
+			[40, 4],
+			[0, 4],
+			[0, 0],
 		],
-		minute_h - minute_head_h, -minute_head_w/2
+		0, -2,
 	)
-	fc.fillStyle = palettes.mark
-	// head lume
-	shapec(
-		fc,
-		[
-			[0, lume_inset],
-			[minute_head_h - 1.5*lume_inset, minute_head_w/2],
-			[0, minute_head_w - lume_inset]
-		],
-		stem_h + arm_h + lume_inset/2, -minute_head_w/2
-	)
-	// left arm lume
-	shapec(
-		fc,
-		[
-			[base_h, -(base_w/2 - arm_w + lume_inset_arm)],
-			[arm_h, -(minute_head_w/2 - arm_w2 + lume_inset_arm)],
-			[arm_h, -(minute_head_w/2 - lume_inset_arm)],
-			[base_h, -(base_w/2 - lume_inset_arm/2)],
-		],
-		stem_h,
-	)
-	// right arm lume
-	shapec(
-		fc,
-		[
-			[base_h, base_w/2 - arm_w + lume_inset_arm],
-			[arm_h, minute_head_w/2 - arm_w2 + lume_inset_arm],
-			[arm_h, minute_head_w/2 - lume_inset_arm],
-			[base_h, base_w/2 - lume_inset_arm/2],
-		],
-		stem_h,
-	)
-
+	// minute lume
+	fc.beginPath()
+	fc.moveTo(6*z, 0)
+	fc.lineTo(39*z, 0)
+	fc.lineWidth = 1.5*z
+	fc.strokeStyle = palettes.highlight
+	fc.stroke()
 	fc.restore()
 
 	// center post
 	fc.beginPath()
-	fc.arc(0, 0, 3.5*z, 0, tau)
-	fc.fillStyle = palettes.edge
+	fc.arc(0, 0, 4*z, 0, tau)
 	fc.fill()
 
 	// second hand
-	const second_hand_h = minute_r - minute_len
 	fc.save()
 	fc.lineWidth = .5*z
 	fc.rotate(seconds * tau_60)
 	
-	// body
+	// stick
 	fc.beginPath()
 	fc.moveTo(-15*z, 0)
-	fc.lineTo(second_hand_h*z, 0)
-	fc.strokeStyle = palettes.edge
+	fc.lineTo(23*z, 0)
+	fc.lineWidth = 1*z
 	fc.stroke()
 
 	// tip
 	fc.beginPath()
-	fc.moveTo(28*z, 0)
-	fc.lineTo(second_hand_h*z, 0)
-	fc.strokeStyle = palettes.highlight
-	fc.stroke()
-
-	// eye
-	fc.beginPath()
-	fc.arc(28*z, 0, 2.5*z, 0, tau, true)
-	fc.fillStyle = palettes.mark
-	fc.strokeStyle = palettes.edge
-	fc.fill()
+	fc.moveTo(30*z, 0)
+	fc.lineTo(43*z, 0)
+	fc.lineWidth = .5*z
 	fc.stroke()
 
 	// tail
@@ -580,21 +441,29 @@ function display(t){
 	fc.lineWidth = 2*z
 	fc.moveTo(-17.4*z, 0)
 	fc.lineTo(-7.4*z, 0)
-	fc.strokeStyle = palettes.edge
 	fc.stroke()
 
+	// arrowhead
+	fc.fillStyle = palettes.highlight
+	fc.lineWidth = .5*z
+	shapec(
+		fc,
+		[
+			[-2, 0],
+			[0, -2],
+			[11, 0],
+			[0, 2],
+			[-2, 0],
+		],
+		23, 0,
+	)
+	fc.stroke()
 	fc.restore()
+
 	fc.restore()
 }
 
 function display_static(){
-	const bezel_frac = Number(bezel_el.value) / 120
-	const bezel_angle = bezel_frac * tau
-	document.getElementById('bezel_group').setAttribute(
-		'transform',
-		`rotate(${360 * bezel_frac} 1024 1024)`,
-	)
-
 	c.clearRect(0, 0, width*z, height*z)
 
 	c.fillStyle = palettes.mark
@@ -602,37 +471,41 @@ function display_static(){
 	c.lineWidth = .5 * z
 
 	;[
-		1, 3, 5, 7, 9, 11,
+		60,65,70,75,80,85,90,
+		100,110,120,130,140,150,160,170,180,190,
+		200,225,250,275,
+		300,350,400,500,
 	].forEach(i => {
-		const a = -i * tau_12 + tau_4 - bezel_angle
-		shape(
-			bezel_index.map(v => rot(a, v)),
-			half + (bezel_r * cos(-a)),
-			half + (bezel_r * sin(-a)),
-		)
-	})
-	Array(60).fill().map((_, i) => i)
-	.filter(x => x % 5)
-	.forEach(i => {
-		const a = -i * tau_60 + tau_4 - bezel_angle
+		const a = -(60/i) * tau + tau_4
 		circle(
 			bezel_mark_r,
 			half + (bezel_r * cos(-a)),
 			half + (bezel_r * sin(-a)),
 		)}
 	)
-	Array(59).fill().map((_, i) => i)
-	.filter(x => !((x+1) % 5))
-	.forEach(i => {
-		const a = -(i + 1) * tau_60 + tau_4 - bezel_angle
+	;[
+		135,125,115,105,95,
+	].forEach(i => {
+		const a = -(60/i) * tau + tau_4
 		const r = bezel_r - bezel_mark_r
 		shape(
-			bezel_minute.map(v => rot(a, v)),
+			tach_long.map(v => rot(a, v)),
 			half + (r * cos(-a)),
 			half + (r * sin(-a)),
 		)
 	})
-	Array(12).fill().map((_, i) => i*5)
+	Array(40).fill().map((_, i) => i + 60)
+	.filter(x => x % 5)
+	.forEach(i => {
+		const a = -(60/i) * tau + tau_4
+		const r = bezel_r - bezel_mark_r
+		shape(
+			tach_short.map(v => rot(a, v)),
+			half + (r * cos(-a)),
+			half + (r * sin(-a)),
+		)
+	})
+	;Array(12).fill().map((_, i) => i*5)
 	.forEach(i => {
 		const a = -i * tau_60 + tau_4
 		shape(
@@ -641,20 +514,18 @@ function display_static(){
 			half + (minute_r * sin(-a)),
 		)
 	})
-	;[
-		1, 2, 3, 4,
-		6, 7, 8, 9,
-		11, 12, 13, 14,
-		16, 17, 18, 19,
-		21, 22, 23, 24,
-		26, 27, 28,
-		32, 33, 34,
-		36, 37, 38, 39,
-		41, 42, 43, 44,
-		46, 47, 48, 49,
-		51, 52, 53, 54,
-		56, 57, 58, 59,
-	]
+	;Array(180).fill().map((_, i) => i)
+	.filter(x => x % 3)
+	.forEach(i => {
+		const a = -(i/3) * tau_60 + tau_4
+		shape(
+			rect_my(minute_thick, -minute_len_five).map(v => rot(a, v)),
+			half + (minute_r * cos(-a)),
+			half + (minute_r * sin(-a)),
+		)
+	})
+	;Array(60).fill().map((_, i) => i)
+	.filter(x => x % 5)
 	.forEach(i => {
 		const a = -i * tau_60 + tau_4
 		shape(
@@ -663,33 +534,13 @@ function display_static(){
 			half + (minute_r * sin(-a)),
 		)
 	})
-	;[
-		29, 31,
-	].forEach(i => {
-		const a = -i * tau_60 + tau_4
-		const r = minute_r - minute_len
-		shape(
-			rect_my(minute_thick, 1).map(v => rot(a, v)),
-			half + (r * cos(-a)),
-			half + (r * sin(-a)),
-		)
-	})
 	c.fillStyle = palettes.mark
 	c.lineCap = 'square'
 	c.strokeStyle = palettes.edge
-	;[
-		1, 2, 4, 5, 7, 8, 10, 11,
-	].forEach(i => {
-		circle(
-			hour_radius,
-			half + (hour_r * cos(i*tau_12)),
-			half + (hour_r * sin(i*tau_12)),
-		)
-		c.stroke()
-	})
-	;[
-		3, 6, 9,
-	].forEach(i => {
+	// hour markers
+	c.fillStyle = palettes.highlight
+	;Array(12).fill().map((_, i) => i+1)
+	.forEach(i => {
 		const a = -i * tau_12 + tau_4
 		shape(
 			rect_my(hour_thick, hour_len).map(v => rot(a, v)),
@@ -697,41 +548,21 @@ function display_static(){
 			half + (hour_r_rect * sin(-a)),
 		)
 		c.closePath()
-		c.stroke()
+		c.fill()
 	})
 	;[-1,1].forEach(i => {
-		const a = -9/12*tau
+		const a = 3/12*tau
 		const gap = i * tw_gap
-		shape(
-			rect_my(hour_thick, hour_len).map(([x,y]) => rot(a, [x, y + gap])),
-			half + (hour_r_rect * cos(-a)),
-			half + (hour_r_rect * sin(-a)),
+		const r = z/4
+		const p = hour_r_rect + r/2
+		circle(r,
+			half + (p * cos(-a)) + gap*z,
+			half + (p * sin(-a)),
 		)
 		c.closePath()
-		c.stroke()
-	})
-	// minute arcs
-	c.lineWidth = 2 * minute_thick * z
-	c.strokeStyle = palettes.mark
-	;[
-		1, 6, 11, 16, 21, 36, 41, 46, 51, 56,
-	]
-	.forEach(i => {
-		const a = i * tau_60 - tau_4
-		c.beginPath()
-		c.arc(half*z, half*z, (minute_r - minute_thick)*z, a, a + tau / 20)
-		c.stroke()
-	})
-	;[
-		26, 32,
-	]
-	.forEach(i => {
-		const a = i * tau_60 - tau_4
-		c.beginPath()
-		c.arc(half*z, half*z, (minute_r - minute_thick)*z, a, a + tau / 30)
-		c.stroke()
+		c.fill()
 	})
 }
-setTheme('Blue')
+setTheme('Black')
 resize()
 </script>
