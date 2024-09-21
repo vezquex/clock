@@ -201,7 +201,7 @@ const minute_thick_five = 0.3
 const tach_length = 4
 const tach_thick = .25
 const thick = .2
-const tw_gap = .35
+const tw_gap = 3
 
 // zoom
 let z = 1
@@ -553,11 +553,11 @@ function display_static(){
 	})
 	;[-1,1].forEach(i => {
 		const a = 3/12*tau
-		const gap = i * tw_gap
-		const r = z/6
+		const gap = tw_gap * i
+		const r = 1
 		const p = hour_r_rect + r
 		circle(r,
-			half + (p * cos(-a)) + gap*z,
+			half + (p * cos(-a)) + gap,
 			half + (p * sin(-a)),
 		)
 		c.closePath()
