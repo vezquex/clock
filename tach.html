@@ -31,13 +31,10 @@
 		opacity: 0.5;
 	}
 	input, select, .label, summary {
-		padding: .5em;
+		padding: 0 .5em;
 	}
 	input {
 		width: 100%;
-	}
-	label {
-		display: flex;
 	}
 	select {
 		min-width: 8rem;
@@ -56,28 +53,31 @@
 		border-style: outset;
 		border-width: 0px;
 		cursor: pointer;
-		display: flex;
-		line-height: 2;
 		padding: 0 .5em;
-		min-width: 2em;
 		text-decoration: none;
 	}
+	.column { display: flex; flex-direction: column; }
 	.cursive {font-family: 'Dancing Script', cursive; letter-spacing: -1px; font-style:italic; }
-	.flex {
-		display: flex;
-		flex-direction: column;
+	.home {
+		border-color: inherit;
+		border-width: 1px 1px 0 0;
+		position: absolute;
+		right:0;
+		text-align: right;
+		top:0;
+		width: 50%;
 	}
 	.hotkey { text-decoration: underline dotted; }
-	.info {font-size: 34px; letter-spacing: 1px;}
+	.info {font-size: 34px; letter-spacing: 1px; text-transform: uppercase; }
 	.mono {font-family: 'Roboto Mono', monospace;}
+	.row { display: flex; }
 	.sans {font-family: Roboto, sans-serif; letter-spacing: 3px;}
 	.svg {
 		margin: 0 auto;
 		max-height: 100vh;
 	}
-	.wide {
-		width: 100vw;
-	}
+	.thick { line-height: 3em; }
+	.wide { width: 100vw;	}
 </style>
 <!-- <img src="file:///C:/Users/r/Downloads/img/.png" -->
 <!-- style="display:block; height:auto; position:absolute; width:auto;"> -->
@@ -102,7 +102,7 @@ transform="translate(1030 845) scale(1.5 1)">
 <tspan style="font-size:1.5em;">S</tspan><tspan dy="-10">pacewalker</tspan>
 </text>
 <text x="1024" y="890" class="sans info">
-	CHRONOGRAPH
+	Professional
 </text>
 <path id="curve"
 pathLength="2"
@@ -118,21 +118,19 @@ a 746,746 0 1,0 5,0
 <canvas id='face-static' class='abs'></canvas>
 <canvas id='face' class='abs'></canvas>
 </div>
-<details class='abs flex wide'>
-	<summary title='Settings'>☰</summary>
-	<label>
+<details class='abs column wide'>
+	<summary title='Settings' class='btn thick'>☰</summary>
+	<a href='..' accesskey='h' class='btn home thick'>
+		<span class='hotkey'>H</span>ome
+	</a>
+	<label class='row thick'>
 		<span class='label'><span class='hotkey'>O</span>ffset</span>
-		<input id='offset' value='0' type='range' max='86400000' step='60000' onInput='synchronize()'>
+		<input id='offset' accesskey='o' value='0' type='range' max='86400000' step='1000' onInput='synchronize()'>
 	</label>
-	<label>
-		<span class='label'>Theme</span>
-		<select id='theme' onChange='setTheme(this.value)'></select>
+	<label class='row thick'>
+		<span class='label'><span class='hotkey'>T</span>heme</span>
+		<select id='theme' accesskey='t' onChange='setTheme(this.value)'></select>
 	</label>
-	<div>
-		<a href='..' accesskey='h' class='btn'>
-			<span class='hotkey'>H</span>ome
-		</a>
-	</div>
 </details>
 
 <script type='text/javascript'>
@@ -259,7 +257,7 @@ const offset_el = document.getElementById('offset')
 function setTheme(theme){
 	palettes = themes[theme]
 	document.querySelector(`#theme [value=${theme}]`).selected = true
-	document.documentElement.style.setProperty('--accent', palettes.dial)
+	document.documentElement.style.setProperty('--accent', palettes.highlight)
 	colors.forEach(color => {
 		document.documentElement.style.setProperty('--'+color, palettes[color])
 	})
@@ -272,7 +270,7 @@ function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(offset_el.value)
 	let t = new Date(Date.now() + offset)
-	t = new Date(2000,0,1,10,9,43,500)
+	t = new Date(new Date(2000,0,1,10,9,44,333).getTime() + offset)
 	display(t)
 	const r = delay - (t % delay)
 	// window.synchronizeTimeout = window.setTimeout(synchronize, r)

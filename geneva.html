@@ -10,7 +10,6 @@
 		box-sizing: border-box;
 	}
 	:root {
-		--accent: #808080;
 		accent-color: var(--accent);
 		color-scheme: dark;
 	}
@@ -30,13 +29,10 @@
 		opacity: 0.5;
 	}
 	input, select, .label, summary {
-		padding: .5em;
+		padding: 0 .5em;
 	}
 	input {
 		width: 100%;
-	}
-	label {
-		display: flex;
 	}
 	select {
 		min-width: 8rem;
@@ -55,27 +51,34 @@
 		border-style: outset;
 		border-width: 0px;
 		cursor: pointer;
-		display: flex;
-		line-height: 2;
 		padding: 0 .5em;
-		min-width: 2em;
 		text-decoration: none;
 	}
+	.column { display: flex; flex-direction: column; }
 	.condensed {font-family:'Roboto Condensed';}
 	.flex {
 		display: flex;
 		flex-direction: column;
 	}
+	.home {
+		border-color: inherit;
+		border-width: 1px 1px 0 0;
+		position: absolute;
+		right:0;
+		text-align: right;
+		top:0;
+		width: 50%;
+	}
 	.hotkey { text-decoration: underline dotted; }
+	.row { display: flex; }
 	.sans {font-family: Roboto, sans-serif;}
 	.serif {font-family: 'Roboto Slab', serif;}
 	.svg {
 		margin: 0 auto;
 		max-height: 100vh;
 	}
-	.wide {
-		width: 100vw;
-	}
+	.thick { line-height: 3em; }
+	.wide { width: 100vw;	}
 </style>
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
 <svg version="1.1" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class='svg'>
@@ -142,29 +145,27 @@ a 770,770 0 1,0 5,0
 <canvas id='face-static' class='abs'></canvas>
 <canvas id='face' class='abs'></canvas>
 </div>
-<details class='abs flex wide'>
-	<summary title='Settings'>☰</summary>
-	<label>
-		<span class='label'>Offset</span>
-		<input id='offset' value='0' type='range' max='86400000' step='60000' onInput='synchronize()'>
+<details class='abs column wide'>
+	<summary title='Settings' class='btn thick'>☰</summary>
+	<a href='..' accesskey='h' class='btn home thick'>
+		<span class='hotkey'>H</span>ome
+	</a>
+	<label class='row thick'>
+		<span class='label'><span class='hotkey'>O</span>ffset</span>
+		<input id='offset' accesskey='o' value='0' type='range' max='86400000' step='60000' onInput='synchronize()'>
 	</label>
-	<label>
-		<span class='label'>Bezel</span>
-		<input id='bezel_offset' value='120' type='range' max='120' step='1' onInput='display_static()'>
+	<label class='row thick'>
+		<span class='label'><span class='hotkey'>B</span>ezel</span>
+		<input id='bezel_offset' accesskey='b' value='120' type='range' max='120' step='1' onInput='display_static()'>
 	</label>
-	<label>
-		<span class='label'>Theme</span>
-		<select id='theme' onChange='setTheme(this.value)'></select>
+	<label class='row thick'>
+		<span class='label'><span class='hotkey'>T</span>heme</span>
+		<select id='theme' accesskey='t' onChange='setTheme(this.value)'></select>
 	</label>
-	<label>
-		<span class='label'>Hour Shape</span>
-		<select id='hour_shape' onChange='setHourShape(this.value)'></select>
+	<label class='row thick'>
+		<span class='label'>Hour <span class='hotkey'>S</span>hape</span>
+		<select id='hour_shape' accesskey='s' onChange='setHourShape(this.value)'></select>
 	</label>
-	<div>
-		<a href='..' accesskey='h' class='btn'>
-			<span class='hotkey'>H</span>ome
-		</a>
-	</div>
 </details>
 
 <script type='text/javascript'>
@@ -175,7 +176,7 @@ const color_palettes = {
 	bezel: '#000000',
 	dial: '#000000',
 	edge: '#808080',
-	highlight: '#C00000',
+	highlight: '#C0C0C0',
 	mark: '#FFFFFF',
 	text: '#FFFFFF',
 }
@@ -362,7 +363,7 @@ const offset_el = document.getElementById('offset')
 function setTheme(theme){
 	palettes = themes[theme]
 	document.querySelector(`#theme [value=${theme}]`).selected = true
-	document.documentElement.style.setProperty('--accent', palettes.dial)
+	document.documentElement.style.setProperty('--accent', palettes.highlight)
 	colors.forEach(color => {
 		document.documentElement.style.setProperty('--'+color, palettes[color])
 	})
@@ -508,6 +509,9 @@ function display(t){
 }
 
 function display_static(){
+	if(bezel_el.value === '0'){
+		bezel_el.value = bezel_el.max
+	}
 	const bezel_frac = Number(bezel_el.value) / 120
 	const bezel_angle = bezel_frac * tau
 	document.getElementById('bezel_group').setAttribute(
