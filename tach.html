@@ -62,7 +62,7 @@
 		min-width: 2em;
 		text-decoration: none;
 	}
-	.cursive {font-family: cursive; letter-spacing: -1px; font-style:italic; }
+	.cursive {font-family: 'Dancing Script', cursive; letter-spacing: -1px; font-style:italic; }
 	.flex {
 		display: flex;
 		flex-direction: column;
@@ -552,13 +552,13 @@ function display_static(){
 		c.fill()
 	})
 	;[-1,1].forEach(i => {
-		const a = 3/12*tau
+		const a = -tau_4
 		const gap = tw_gap * i
 		const r = 1
 		const p = hour_r_rect + r
 		circle(r,
-			half + (p * cos(-a)) + gap,
-			half + (p * sin(-a)),
+			half + (p * cos(a)) + gap,
+			half + (p * sin(a)),
 		)
 		c.closePath()
 		c.fill()
