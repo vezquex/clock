@@ -1,15 +1,18 @@
-# [Analog Watch](https://vezquex.github.io/clock/analog.html)
-- 4 beats per second
+# [Analog Clock](https://vezquex.github.io/clock/analog.html)
+4 beats per second
+## [Biel dive watch](https://vezquex.github.io/clock/biel.html)
+## [Geneva dive watch](https://vezquex.github.io/clock/geneva.html)
+## [GMT watch](https://vezquex.github.io/clock/gmt.html)
 
 # [Dice, Cards, & Chess](https://vezquex.github.io/clock/dice.html)
 - Grids of arbitrary pips
 - Playing cards: ace through king
 - Chess position display
-[Playing Cards with labels](https://vezquex.github.io/clock/card.html)
+## [Playing Cards with labels](https://vezquex.github.io/clock/card.html)
 
 # [Chess Viewer](https://vezquex.github.io/clock/chess/)
 Step through a recorded chess game.
-[Encapsulated Transparent Chess Widget](https://vezquex.github.io/clock/chess/widget.html)
+## [Encapsulated Transparent Chess Widget](https://vezquex.github.io/clock/chess/widget.html)
 
 # [Retro Watch](https://vezquex.github.io/clock/retro-168.html)
 Example of SVG decorations and finer adjustments
