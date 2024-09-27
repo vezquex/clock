@@ -155,32 +155,39 @@ const themes = {
 	'Blue': {
 		bezel: '#001830',
 		dial: '#002040',
+		subdial: '#001830',
 	},
 	'Cyan': {
 		bezel: '#003030',
 		dial: '#004040',
+		subdial: '#003030',
 	},
 	'Gray': {
 		bezel: '#303030',
 		dial: '#404040',
+		subdial: '#303030',
 	},
 	'Green': {
 		bezel: '#003000',
 		dial: '#004000',
+		subdial: '#003000',
 	},
 	'Purple': {
 		bezel: '#300030',
 		dial: '#400040',
+		subdial: '#300030',
 	},
 	'Red': {
 		bezel: '#300000',
 		dial: '#400000',
+		subdial: '#300000',
 	},
 	'Tan': {
 		bezel: '#262427',
 		dial: '#424242',
 		edge: '#CFCAC7',
 		mark: '#D2A67F',
+		subdial: '#262427',
 		text: '#D2A67F',
 	},
 }
@@ -290,7 +297,7 @@ function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = parseInt(offset_el.value) * 1000 / 3
 	let t = new Date(Date.now() + offset)
-	t = new Date(new Date(2000,0,1,10,9,44,333).getTime() + offset)
+	t = new Date(new Date(2000,0,1,10,8,37,333).getTime() + offset)
 	display(t)
 	const r = delay - (t % delay)
 	// window.synchronizeTimeout = window.setTimeout(synchronize, r)
