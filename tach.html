@@ -84,9 +84,12 @@
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
 <svg version="1.1" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class='svg'>
 <rect id="canvas" x="0" y="0" width="2048" height="2048" fill="none"/>
-<circle id="edge" style="fill:var(--edge);opacity:1.0;" r="1024" cx="1024" cy="1024"/>
-<circle id="bezel" style="fill:var(--bezel);opacity:1.0;" r="1012" cx="1024" cy="1024"/>
+<circle id="edge" style="fill:var(--edge);" r="1024" cx="1024" cy="1024"/>
+<circle id="bezel" style="fill:var(--bezel);" r="1012" cx="1024" cy="1024"/>
 <circle id="dial" style="fill:var(--dial);" r="780" cx="1024" cy="1024"/>
+<circle id="west" style="fill:var(--subdial);" r="192" cx="732" cy="1024"/>
+<circle id="south" style="fill:var(--subdial);" r="192" cx="1024" cy="1316"/>
+<circle id="east" style="fill:var(--subdial);" r="192" cx="1316" cy="1024"/>
 
 <text x="1024" y="700" style="font:bold 110px Times, serif;">
 	Θ
@@ -144,6 +147,7 @@ const color_palettes = {
 	edge: '#C0C0C0',
 	highlight: '#9DE5B3',
 	mark: '#FFFFFF',
+	subdial: '#101010',
 	text: '#FFFFFF',
 }
 const themes = {
@@ -180,26 +184,41 @@ const themes = {
 		text: '#D2A67F',
 	},
 }
-const height = 128
-const width = height
+const scale = 1024
+const width = 128
+const height = width
 const half = width / 2
+const ratio = half / scale
 const bezel_r = 50
 const bezel_mark_len = 9.5
 const bezel_mark_r = .5
 const dash = 1.2
-const dial_r = half * 780/1024
+const dial_r = half * 780/scale
 const hour_r_rect = 32
 const hour_len = 10
 const hour_thick = 1
 const minute_len = 10
 const minute_len_five = 2
-const minute_r = half * 720/1024
+const minute_r = half * 720/scale
 const minute_thick = 0.2
 const minute_thick_five = 0.3
 const tach_length = 4
 const tach_thick = .25
 const thick = .2
 const tw_gap = 3
+const sub_r = 192 * ratio
+const east = {
+	cx: 1316 * ratio,
+	cy: 1024 * ratio,
+}
+const south = {
+	cx: 1024 * ratio,
+	cy: 1316 * ratio,
+}
+const west = {
+	cx: 732 * ratio,
+	cy: 1024 * ratio,
+}
 
 // zoom
 let z = 1
@@ -208,6 +227,7 @@ const {cos, sin, sqrt, tan} = Math
 const tau = 2 * Math.PI
 const tau_4 = tau / 4
 const tau_12 = tau / 12
+const tau_30 = tau / 30
 const tau_60 = tau / 60
 
 for(k in themes){
@@ -319,13 +339,6 @@ const rect_my = (y, h) => ([
 
 const tach_long = rect_my(tach_thick, tach_length)
 const tach_short = rect_my(tach_thick, tach_length / 2)
-
-function polygon(sides, radius = 1, rot = tau_4){
-	return Array(sides).fill().map((_,i)=>([
-		radius * cos(i * tau / sides - rot),
-		radius * sin(i * tau / sides - rot),
-	]))
-}
 
 const arm_w = 2
 const arm_w2 = 3
@@ -541,10 +554,36 @@ function display_static(){
 			half + (minute_r * sin(-a)),
 		)
 	})
-	c.fillStyle = palettes.mark
+	;Array(30).fill().map((_, i) => i)
+	.forEach(i => {
+		const a = i * tau_30
+		shape(
+			rect_my(minute_thick, -minute_len_five).map(v => rot(a, v)),
+			east.cx + (sub_r * cos(-a)),
+			east.cy + (sub_r * sin(-a)),
+		)
+	})
+	;Array(12).fill().map((_, i) => i)
+	.forEach(i => {
+		const a = i * tau_12
+		shape(
+			rect_my(minute_thick, -minute_len_five).map(v => rot(a, v)),
+			south.cx + (sub_r * cos(-a)),
+			south.cy + (sub_r * sin(-a)),
+		)
+	})
+	;Array(12).fill().map((_, i) => i)
+	.forEach(i => {
+		const a = i * tau_12
+		shape(
+			rect_my(minute_thick, -minute_len_five).map(v => rot(a, v)),
+			west.cx + (sub_r * cos(-a)),
+			west.cy + (sub_r * sin(-a)),
+		)
+	})
+	// hour markers
 	c.lineCap = 'square'
 	c.strokeStyle = palettes.edge
-	// hour markers
 	c.fillStyle = palettes.highlight
 	;Array(12).fill().map((_, i) => i+1)
 	.forEach(i => {
