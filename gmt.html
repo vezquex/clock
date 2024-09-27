@@ -516,7 +516,7 @@ function display(t){
 function display_static(){
 	c.clearRect(0, 0, width*z, height*z)
 	c.fillStyle = palettes.bezel_text
-	;Array(12).fill().map((_, i) => i + .5)
+	Array(12).fill().map((_, i) => i + .5)
 	.forEach(i => {
 		const a = -i * tau_12 + tau_4
 		shape(

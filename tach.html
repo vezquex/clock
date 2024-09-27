@@ -527,7 +527,7 @@ function display_static(){
 			half + (r * sin(-a)),
 		)
 	})
-	;Array(12).fill().map((_, i) => i*5)
+	Array(12).fill().map((_, i) => i*5)
 	.forEach(i => {
 		const a = -i * tau_60 + tau_4
 		shape(
@@ -536,7 +536,7 @@ function display_static(){
 			half + (minute_r * sin(-a)),
 		)
 	})
-	;Array(180).fill().map((_, i) => i)
+	Array(180).fill().map((_, i) => i)
 	.filter(x => x % 3)
 	.forEach(i => {
 		const a = -(i/3) * tau_60 + tau_4
@@ -546,7 +546,7 @@ function display_static(){
 			half + (minute_r * sin(-a)),
 		)
 	})
-	;Array(60).fill().map((_, i) => i)
+	Array(60).fill().map((_, i) => i)
 	.filter(x => x % 5)
 	.forEach(i => {
 		const a = -i * tau_60 + tau_4
@@ -556,7 +556,7 @@ function display_static(){
 			half + (minute_r * sin(-a)),
 		)
 	})
-	;Array(30).fill().map((_, i) => i)
+	Array(30).fill().map((_, i) => i)
 	.forEach(i => {
 		const a = i * tau_30
 		shape(
@@ -565,7 +565,7 @@ function display_static(){
 			east.cy + (sub_r * sin(-a)),
 		)
 	})
-	;Array(12).fill().map((_, i) => i)
+	Array(12).fill().map((_, i) => i)
 	.forEach(i => {
 		const a = i * tau_12
 		shape(
@@ -574,7 +574,7 @@ function display_static(){
 			south.cy + (sub_r * sin(-a)),
 		)
 	})
-	;Array(12).fill().map((_, i) => i)
+	Array(12).fill().map((_, i) => i)
 	.forEach(i => {
 		const a = i * tau_12
 		shape(
@@ -587,7 +587,7 @@ function display_static(){
 	c.lineCap = 'square'
 	c.strokeStyle = palettes.edge
 	c.fillStyle = palettes.highlight
-	;Array(12).fill().map((_, i) => i+1)
+	Array(12).fill().map((_, i) => i+1)
 	.forEach(i => {
 		const a = -i * tau_12 + tau_4
 		shape(

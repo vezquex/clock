@@ -375,7 +375,7 @@ function display_static(){
 	c.lineWidth = 2 * bezel_mark_thick * z
 	c.strokeStyle = palettes.mark
 	c.fillStyle = palettes.mark
-	;Array(60).fill().map((_, i) => i)
+	Array(60).fill().map((_, i) => i)
 	.filter(x => x % 60)
 	.forEach(i => {
 		const a = (i+45)*tau_60
@@ -399,7 +399,7 @@ function display_static(){
 		)
 		c.stroke()
 	})
-	;Array(60).fill().forEach((_, i) => {
+	Array(60).fill().forEach((_, i) => {
 		const a = -i * tau_60 + tau_4
 		shape(
 			[
