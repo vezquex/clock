@@ -322,7 +322,7 @@ const sq2 = Math.SQRT2
 const tau_4 = tau / 4
 const tau_12 = tau / 12
 const tau_60 = tau / 60
-const {cos, sin} = Math
+const {cos, min, sin} = Math
 const locale = 'en-us'
 
 // zoom
@@ -332,7 +332,7 @@ function resize(){
 	const canvas_el = document.getElementById('canvas')
 	const rect = canvas_el.getBoundingClientRect()
 	const scale = window.devicePixelRatio || 1
-	z = Math.min(
+	z = min(
 		(rect.height / height),
 		(rect.width / width),
 	)

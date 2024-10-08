@@ -191,13 +191,14 @@ const grid_w2 = grid_w * 2
 // zoom
 let z = 1
 
+const {cos, min, sin} = Math
 const offset_el = document.getElementById('offset')
 
 const lcd_el = document.getElementById('LCD')
 function resize(){
 	const rect = lcd_el.getBoundingClientRect()
 	const scale = window.devicePixelRatio || 1
-	z = Math.min(
+	z = min(
 		(rect.height / height),
 		(rect.width / width),
 	)
@@ -269,8 +270,8 @@ function circle(r, x, y){
 const colon_sides = 6
 const colon_radius = 1.16
 const colon_shape = Array(colon_sides).fill().map((_,i)=>([
-	colon_radius * Math.cos(i * tau / colon_sides),
-	colon_radius * Math.sin(i * tau / colon_sides),
+	colon_radius * cos(i * tau / colon_sides),
+	colon_radius * sin(i * tau / colon_sides),
 ]))
 function colon(x, y){
 	shape(colon_shape, x, y+5)

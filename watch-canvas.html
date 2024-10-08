@@ -807,14 +807,16 @@ const fonts = {
 	},
 }
 
+const {ceil, floor, random, round} = Math
+
 const sym_w = 5
 const sym_w2 = sym_w * 2
 const g = sym_w + 1
 const g2 = g * 2
-const slots_h = Math.floor((width - pad_h) / g)
-const slots_v = Math.floor((height - pad_v) / g)
-const tiles_h = Math.ceil(width / g * .5)
-const tiles_v = Math.ceil(height / g * .5) - 1
+const slots_h = floor((width - pad_h) / g)
+const slots_v = floor((height - pad_v) / g)
+const tiles_h = ceil(width / g * .5)
+const tiles_v = ceil(height / g * .5) - 1
 
 setTheme('Dark')
 
@@ -835,7 +837,7 @@ function symbol(s, x, y, m, p, f, c = c){
 		c.fillStyle = palettes[p][b]
 		c.fillRect(
 			m * (x * g + (i % sym_w)) + pad_h,
-			(y * g + m * Math.floor(i / sym_w)) + pad_v,
+			(y * g + m * floor(i / sym_w)) + pad_v,
 			m, m
 		)
 	}
@@ -872,12 +874,12 @@ function display(t){
 	for(var i = 0; i < tiles; ++i){
 		c.fillStyle = 'rgba('+
 			Array.apply(null, Array(3)).map(
-				() => Math.floor(Math.random() * 256)
+				() => floor(random() * 256)
 			).concat(.1).join()
 			+')'
 		c.fillRect(
 			i % tiles_h * g2,
-			Math.floor(i / tiles_h) * g2,
+			floor(i / tiles_h) * g2,
 			sym_w2, sym_w2
 		)
 	}
@@ -894,17 +896,17 @@ function display(t){
 
 	const weathers = ['CLOUD', 'SNOW', 'FOG', 'RAIN', 'FAIR', 'SUNNY']
 	const temperature = (t % 864e5) / 864e3
-	const weather = weathers[Math.floor(temperature / 100 * weathers.length)]
-	const s = Math.round((temperature-32)/1.8)+'°C'
+	const weather = weathers[floor(temperature / 100 * weathers.length)]
+	const s = round((temperature-32)/1.8)+'°C'
 
-	const battery = 100 - Math.floor((t % 864e5) / 864e3)
+	const battery = 100 - floor((t % 864e5) / 864e3)
 	const batt_s = (' ' + battery).slice(-2)
-	const batt_c = 'batt_' + ['lo', 'mid', 'hi'][Math.floor(battery * .0299)]
+	const batt_c = 'batt_' + ['lo', 'mid', 'hi'][floor(battery * .0299)]
 	str(`🔋${batt_s}%`, .5, y, 2, batt_c, 'block')
 
 	'✓'
 	'🗙'
-	const bluetooth = Math.floor(hours / 12)
+	const bluetooth = floor(hours / 12)
 	str(
 		''
 		, 5.5, y, 2

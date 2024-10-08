@@ -156,10 +156,11 @@ const grid_w2 = grid_w * 2
 let z = 1
 
 const offset_el = document.getElementById('offset')
+const {cos, floor, min, sin} = Math
 
 function resize(){
 	const scale = window.devicePixelRatio || 1
-	z = Math.floor(Math.min(
+	z = floor(min(
 		window.innerWidth / width,
 		window.innerHeight / height,
 	))
@@ -217,8 +218,8 @@ function circle(r, x, y){
 const colon_sides = 6
 const colon_radius = 1.16
 const colon_shape = Array(colon_sides).fill().map((_,i)=>([
-	colon_radius * Math.cos(i * tau / colon_sides),
-	colon_radius * Math.sin(i * tau / colon_sides),
+	colon_radius * cos(i * tau / colon_sides),
+	colon_radius * sin(i * tau / colon_sides),
 ]))
 function colon(x, y){
 	shape(colon_shape, x, y+5)

@@ -96,8 +96,9 @@ can.width = width * z
 c.setTransform(z, 0, 0, z, 0, 0)
 
 const offset_el = document.getElementById('offset')
+const {floor} = Math
 
-function slots_h(grid){ return Math.floor((width - pad_horizon) / grid) }
+function slots_h(grid){ return floor((width - pad_horizon) / grid) }
 
 const decode_font = (area) => (s) => s.replace(/\s/g, '').padEnd(area, '0').split('').map(s=>parseInt(s))
 const fonts_decode = {}
@@ -1102,7 +1103,7 @@ function symbol(s, x, y, m, p, f, c = c){
 		c.fillStyle = palettes[p][b]
 		c.fillRect(
 			m * (x * cell + (i % w)) + pad_horizon,
-			(y + m * Math.floor(i / w)) + pad_vertical,
+			(y + m * floor(i / w)) + pad_vertical,
 			m, m
 		)
 	}

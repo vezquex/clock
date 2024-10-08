@@ -104,10 +104,11 @@ const sym_a = sym_w * sym_w
 const sym_w2 = sym_w * 2
 const g = sym_w + 1
 const g2 = g * 2
-const tiles_h = Math.ceil(width / g * .5)
-const tiles_v = Math.ceil(height / g * .5) - 1
-const slots_h = Math.floor((width - pad_h) / g)
-// const slots_v = Math.floor((height - pad_v) / g)
+const {ceil, floor, random} = Math
+const tiles_h = ceil(width / g * .5)
+const tiles_v = ceil(height / g * .5) - 1
+const slots_h = floor((width - pad_h) / g)
+// const slots_v = floor((height - pad_v) / g)
 
 // base-2 for single color pixel font
 // base-3 for 1 extra color, and so forth
@@ -484,7 +485,7 @@ function symbol(s, x, y, m, p, f, c = c){
 		c.fillStyle = palettes[p][b]
 		c.fillRect(
 			m * (x * g + (i % sym_w)) + pad_h,
-			(y * g + m * Math.floor(i / sym_w)) + pad_v,
+			(y * g + m * floor(i / sym_w)) + pad_v,
 			m, m
 		)
 	}
@@ -527,12 +528,12 @@ function display(t){
 	for(var i = 0; i < tiles; ++i){
 		c.fillStyle = 'rgba('+
 			Array(3).fill(
-				((i+1) % 2) * Math.floor(Math.random() * 256)
+				((i+1) % 2) * floor(random() * 256)
 			).concat(.1).join()
 			+')'
 		c.fillRect(
 			i % tiles_h * g2,
-			Math.floor(i / tiles_h) * g2,
+			floor(i / tiles_h) * g2,
 			sym_w2, sym_w2
 		)
 	}
