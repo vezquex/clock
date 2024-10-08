@@ -62,10 +62,9 @@
 		width: 50%;
 	}
 	.hotkey { text-decoration: underline dotted; }
-	.info {font-size: 34px; letter-spacing: 1px; text-transform: uppercase; }
 	.mono {font-family: 'Roboto Mono', monospace;}
 	.row { display: flex; }
-	.sans {font-family: Roboto, sans-serif; letter-spacing: 3px;}
+	.sans {font-family: Roboto, sans-serif;}
 	.svg {
 		margin: 0 auto;
 		max-height: 100vh;
@@ -84,7 +83,7 @@
 <circle id="west" style="fill:var(--subdial);" r="192" cx="732" cy="1024"/>
 <circle id="south" style="fill:var(--subdial);" r="192" cx="1024" cy="1316"/>
 <circle id="east" style="fill:var(--subdial);" r="192" cx="1316" cy="1024"/>
-<g style="fill:var(--bezel_mark);font-size:60px;">
+<g class="sans" style="fill:var(--bezel_mark);font-size:60px;">
 	<path id="tach-curve" pathLength="2" d="M 1024, 224 a 800,800 0 0,1 500,180" fill="none"/>
 	<text>
 		<textPath xlink:href="#tach-curve" startOffset="1"
@@ -129,7 +128,7 @@ style="font-size:50px;"
 transform="translate(1030 845) scale(1.5 1)">
 <tspan style="font-size:1.5em;">S</tspan><tspan dy="-10">pacewalker</tspan>
 </text>
-<text x="1024" y="890" class="sans info">
+<text x="1024" y="890" class="sans" style="font-size:34px;letter-spacing:3px;text-transform:uppercase;">
 	Professional
 </text>
 <path id="curve" pathLength="2" d="M 1024, 294 a 746,746 0 1,0 5,0" fill="none"/>
