@@ -5,7 +5,6 @@
 <title>
 	Tachymeter Watch
 </title>
-<!-- Tachymètre -->
 <style type='text/css'>
 	*, *::before, *::after {
 		box-sizing: border-box;
@@ -85,7 +84,38 @@
 <circle id="west" style="fill:var(--subdial);" r="192" cx="732" cy="1024"/>
 <circle id="south" style="fill:var(--subdial);" r="192" cx="1024" cy="1316"/>
 <circle id="east" style="fill:var(--subdial);" r="192" cx="1316" cy="1024"/>
-
+<g style="fill:var(--bezel_mark);font-size:60px;">
+	<path id="tach-curve" pathLength="2" d="M 1024, 224 a 800,800 0 0,1 500,180" fill="none"/>
+	<text>
+		<textPath xlink:href="#tach-curve" startOffset="1"
+		>TACHYMÈTRE</textPath>
+	</text>
+	<text x="1024" y="200">60</text>
+	<text x="641" y="294" style="text-anchor:end;">65</text>
+	<text x="380" y="510" style="text-anchor:end;">70</text>
+	<text x="240" y="769" dominant-baseline="central" style="text-anchor:end;">75</text>
+	<text x="200" y="1024" dominant-baseline="central" style="text-anchor:end;">80</text>
+	<text x="231" y="1249" dominant-baseline="hanging" style="text-anchor:end;">85</text>
+	<text x="310" y="1436" dominant-baseline="hanging" style="text-anchor:end;">90</text>
+	<text x="540" y="1691" dominant-baseline="hanging">I00</text>
+	<text x="792" y="1815" dominant-baseline="hanging">II0</text>
+	<text x="1024" y="1848" dominant-baseline="hanging">I20</text>
+	<text x="1221" y="1824" dominant-baseline="hanging">I30</text>
+	<text x="1382" y="1766" dominant-baseline="hanging">I40</text>
+	<text x="1508" y="1691" dominant-baseline="hanging">I50</text>
+	<text x="1607" y="1607" dominant-baseline="hanging">I60</text>
+	<text x="1682" y="1521" dominant-baseline="hanging">I70</text>
+	<text x="1738" y="1436" dominant-baseline="hanging">I80</text>
+	<text x="1779" y="1355" dominant-baseline="hanging">I90</text>
+	<text x="1808" y="1279" dominant-baseline="hanging">200</text>
+	<text x="1843" y="1110" dominant-baseline="hanging" style="translate:0 12px">225</text>
+	<text x="1846" y="972" style="translate: 0 -12px">250</text>
+	<text x="1832" y="860" style="translate: 0 -12px">275</text>
+	<text x="1808" y="769" style="translate: 0 -6px">300</text>
+	<text x="1750" y="634">350</text>
+	<text x="1691" y="540">400</text>
+	<text x="1588" y="423">500</text>
+</g>
 <text x="1024" y="700" style="font:bold 110px Times, serif;">
 	Θ
 </text>
@@ -102,14 +132,9 @@ transform="translate(1030 845) scale(1.5 1)">
 <text x="1024" y="890" class="sans info">
 	Professional
 </text>
-<path id="curve"
-pathLength="2"
-d="
-M 1024, 294
-a 746,746 0 1,0 5,0
-" fill='none'/>
+<path id="curve" pathLength="2" d="M 1024, 294 a 746,746 0 1,0 5,0" fill="none"/>
 <text class="mono" style="font-size:24px;">
-	<textPath xlink:href="#curve"	startOffset="1"
+	<textPath xlink:href="#curve" startOffset="1"
 	>HTML<tspan style="font-size:12px;"> </tspan>MADE</textPath>
 </text>
 </svg>
@@ -192,6 +217,7 @@ const height = width
 const half = width / 2
 const ratio = half / scale
 const bezel_r = 50
+const tach_r = bezel_r + 1.5
 const bezel_mark_len = 9.5
 const bezel_mark_r = .5
 const dash = 1.2
@@ -347,16 +373,11 @@ const arm_w = 2
 const arm_w2 = 3
 const base_h = 1.5
 const base_w = 4
-const fudge = .25
+const fudge = .5
 const lume_inset = 2
 const lume_inset_arm = .75
-const minute_h = minute_r - minute_len_five - 1.5
-const minute_head_h = 9
-const stem_h = 5
+const minute_hand_w = 2.5
 const stem_w = 1.5
-const arm_h = minute_h - stem_h - minute_head_h
-const minute_head_w = minute_head_h*4/3
-const hour_head_w = minute_head_w * 0.828633
 
 function display(t){
 	const hours = t.getHours()
@@ -387,18 +408,18 @@ function display(t){
 		[
 			[0, 0],
 			[23, 0],
-			[26, 2],
-			[23, 4],
-			[0, 4],
+			[26, minute_hand_w/2],
+			[23, minute_hand_w],
+			[0, minute_hand_w],
 			[0, 0],
 		],
-		0, -2,
+		0, -minute_hand_w/2,
 	)
 	// hour lume
 	fc.beginPath()
 	fc.moveTo(6*z, 0)
 	fc.lineTo(22*z, 0)
-	fc.lineWidth = 2*z
+	fc.lineWidth = 1.5*z
 	fc.strokeStyle = palettes.highlight
 	fc.stroke()
 	fc.restore()
@@ -411,12 +432,12 @@ function display(t){
 		[
 			[0, 0],
 			[40, 0],
-			[43.6, 2],
-			[40, 4],
-			[0, 4],
+			[43+fudge, minute_hand_w/2],
+			[40, minute_hand_w],
+			[0, minute_hand_w],
 			[0, 0],
 		],
-		0, -2,
+		0, -minute_hand_w/2,
 	)
 	// minute lume
 	fc.beginPath()
@@ -497,14 +518,16 @@ function display_static(){
 		60,65,70,75,80,85,90,
 		100,110,120,130,140,150,160,170,180,190,
 		200,225,250,275,
-		300,350,400,500,
+		300,350,400,450,500,
 	].forEach(i => {
 		const a = -(60/i) * tau + tau_4
 		circle(
 			bezel_mark_r,
 			half + (bezel_r * cos(-a)),
 			half + (bezel_r * sin(-a)),
-		)}
+		)
+		// console.log(`<text x="${Math.round((half + (tach_r * cos(-a)))/ratio)}" y="${Math.round((half + (tach_r * sin(-a)))/ratio)}">${i}</text>`)
+		}
 	)
 	;[
 		135,125,115,105,95,
