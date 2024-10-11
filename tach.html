@@ -94,7 +94,7 @@
 	<text x="380" y="510" style="text-anchor:end;">70</text>
 	<text x="240" y="769" dominant-baseline="central" style="text-anchor:end;">75</text>
 	<text x="200" y="1024" dominant-baseline="central" style="text-anchor:end;">80</text>
-	<text x="231" y="1249" dominant-baseline="hanging" style="text-anchor:end;">85</text>
+	<text x="231" y="1249" dominant-baseline="central" style="text-anchor:end;">85</text>
 	<text x="310" y="1436" dominant-baseline="hanging" style="text-anchor:end;">90</text>
 	<text x="540" y="1691" dominant-baseline="hanging">I00</text>
 	<text x="792" y="1815" dominant-baseline="hanging">II0</text>
@@ -114,6 +114,22 @@
 	<text x="1750" y="634">350</text>
 	<text x="1691" y="540">400</text>
 	<text x="1588" y="423">500</text>
+</g>
+<g class="sans" style="fill:var(--bezel_mark);font-size:60px;">
+	<text x="1184" y="1316" dominant-baseline="central" style="text-anchor:end;">3</text>
+	<text x="1024" y="1476">6</text>
+	<text x="864" y="1316" dominant-baseline="central" style="text-anchor:start;">9</text>
+	<text x="1024" y="1156" dominant-baseline="hanging">12</text>
+</g>
+<g class="sans" style="fill:var(--bezel_mark);font-size:60px;">
+	<text x="871" y="1104" style="text-anchor:end;">20</text>
+	<text x="593" y="1104" style="text-anchor:start;">40</text>
+	<text x="732" y="864" dominant-baseline="hanging">60</text>
+</g>
+<g class="sans" style="fill:var(--bezel_mark);font-size:60px;">
+	<text x="1455" y="1104" style="text-anchor:end;">10</text>
+	<text x="1177" y="1104" style="text-anchor:start;">20</text>
+	<text x="1316" y="864" dominant-baseline="hanging">30</text>
 </g>
 <text x="1024" y="700" style="font:bold 110px Times, serif;">
 	Θ
@@ -210,6 +226,7 @@ const themes = {
 		text: '#D2A67F',
 	},
 }
+const chrono_max = 43200000
 const scale = 1024
 const width = 128
 const height = width
@@ -318,10 +335,10 @@ function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = parseInt(offset_el.value) * 1000 / bps
 	let t = new Date(Date.now() + offset)
-	t = new Date(new Date(2000,0,1,10,8,37,333).getTime() + offset)
+	// t = new Date(new Date(2000,0,1,10,8,37,333).getTime() + offset)
 	display(t)
 	const r = delay - (t % delay)
-	// window.synchronizeTimeout = window.setTimeout(synchronize, r)
+	window.synchronizeTimeout = window.setTimeout(synchronize, r)
 }
 
 function shapec(c, path, x = 0, y = 0, m = 1){
@@ -377,11 +394,13 @@ const lume_inset = 2
 const lume_inset_arm = .75
 const minute_hand_w = 2.5
 const stem_w = 1.5
+const sub_hand_w = 1
 
 function display(t){
 	const hours = t.getHours()
 	const minutes = t.getMinutes()
 	const seconds = t.getSeconds() + t.getMilliseconds() / 1000
+	const chrono = t.getTime() % chrono_max
 	// const day_of_month = (t.getDate()+'').padStart(2)
 	// const weekday = t.toLocaleString(locale, {weekday:'short'}).toUpperCase().slice(0,2)
 
@@ -396,6 +415,60 @@ function display(t){
 	const hr = hours % 12
 
 	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds`;
+
+	// subdials
+	fc.save()
+	fc.translate(0, (west.cx - half) * z)
+	fc.beginPath(); fc.arc(0, 0, 2*z, 0, tau); fc.fill()
+	fc.rotate(seconds * tau_60)
+	shapec(
+		fc,
+		[
+			[0, 0],
+			[10, 0],
+			[11.5, sub_hand_w/2],
+			[10, sub_hand_w],
+			[0, sub_hand_w],
+			[0, 0],
+		],
+		0, 0-sub_hand_w/2,
+	)
+	fc.restore()
+	fc.save()
+	fc.translate(0, (east.cx - half) * z)
+	fc.beginPath(); fc.arc(0, 0, 2*z, 0, tau); fc.fill()
+	fc.rotate(((chrono % 1800e3) / 1800e3) * tau)
+	shapec(
+		fc,
+		[
+			[0, 0],
+			[10, 0],
+			[11.5, sub_hand_w/2],
+			[10, sub_hand_w],
+			[0, sub_hand_w],
+			[0, 0],
+		],
+		0, 0-sub_hand_w/2,
+	)
+	fc.restore()
+	fc.save()
+	fc.translate((half - south.cy) * z, 0)
+	fc.beginPath(); fc.arc(0, 0, 2*z, 0, tau); fc.fill()
+	fc.rotate((chrono / chrono_max) * tau)
+	shapec(
+		fc,
+		[
+			[0, 0],
+			[10, 0],
+			[11.5, sub_hand_w/2],
+			[10, sub_hand_w],
+			[0, sub_hand_w],
+			[0, 0],
+		],
+		0, 0-sub_hand_w/2,
+	)
+	fc.restore()
+
 
 	// hour hand
 	fc.save()
@@ -452,10 +525,10 @@ function display(t){
 	fc.arc(0, 0, 4*z, 0, tau)
 	fc.fill()
 
-	// second hand
+	// chrono second hand
 	fc.save()
 	fc.lineWidth = .5*z
-	fc.rotate(seconds * tau_60)
+	fc.rotate(((chrono % 60e3) / 60e3) * tau)
 	
 	// stick
 	fc.beginPath()
@@ -525,9 +598,7 @@ function display_static(){
 			half + (bezel_r * cos(-a)),
 			half + (bezel_r * sin(-a)),
 		)
-		// console.log(`<text x="${Math.round((half + (tach_r * cos(-a)))/ratio)}" y="${Math.round((half + (tach_r * sin(-a)))/ratio)}">${i}</text>`)
-		}
-	)
+	})
 	;[
 		135,125,115,105,95,
 	].forEach(i => {
@@ -579,31 +650,42 @@ function display_static(){
 			half + (minute_r * sin(-a)),
 		)
 	})
+	// west
+	Array(12).fill().map((_, i) => i)
+	.forEach(i => {
+		const a = i * tau_12
+		let len = minute_len_five
+		if(!((i+1) % 4)){ len *= .5}
+		shape(
+			rect_my(minute_thick, -len).map(v => rot(a, v)),
+			west.cx + (sub_r * cos(-a)),
+			west.cy + (sub_r * sin(-a)),
+		)
+	})
+	// east
 	Array(30).fill().map((_, i) => i)
 	.forEach(i => {
-		const a = i * tau_30
+		const a = i * tau_30 + tau_4
+		let len = minute_len_five
+		if(!((i+5) % 10)){ len *= 1.5}
+		let thick = minute_thick
+		if(!((i) % 10)){ thick *= 1.5}
 		shape(
-			rect_my(minute_thick, -minute_len_five).map(v => rot(a, v)),
+			rect_my(thick, -len).map(v => rot(a, v)),
 			east.cx + (sub_r * cos(-a)),
 			east.cy + (sub_r * sin(-a)),
 		)
 	})
+	// south
 	Array(12).fill().map((_, i) => i)
 	.forEach(i => {
 		const a = i * tau_12
+		let len = minute_len_five
+		if(!((i) % 3)){ len *= .5}
 		shape(
-			rect_my(minute_thick, -minute_len_five).map(v => rot(a, v)),
+			rect_my(minute_thick, -len).map(v => rot(a, v)),
 			south.cx + (sub_r * cos(-a)),
 			south.cy + (sub_r * sin(-a)),
-		)
-	})
-	Array(12).fill().map((_, i) => i)
-	.forEach(i => {
-		const a = i * tau_12
-		shape(
-			rect_my(minute_thick, -minute_len_five).map(v => rot(a, v)),
-			west.cx + (sub_r * cos(-a)),
-			west.cy + (sub_r * sin(-a)),
 		)
 	})
 	// hour markers

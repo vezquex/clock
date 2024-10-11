@@ -1,5 +1,6 @@
 # [Analog Clock](https://vezquex.github.io/clock/analog.html)
 4 beats per second
+## [Biel chronograph](https://vezquex.github.io/clock/tach.html)
 ## [Biel dive watch](https://vezquex.github.io/clock/biel.html)
 ## [Geneva dive watch](https://vezquex.github.io/clock/geneva.html)
 ## [GMT watch](https://vezquex.github.io/clock/gmt.html)
