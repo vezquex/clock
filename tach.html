@@ -80,9 +80,6 @@
 <circle id="edge" style="fill:var(--edge);" r="924" cx="1024" cy="1024"/>
 <circle id="bezel" style="fill:var(--bezel);" r="912" cx="1024" cy="1024"/>
 <circle id="dial" style="fill:var(--dial);" r="780" cx="1024" cy="1024"/>
-<circle id="west" style="fill:var(--subdial);" r="192" cx="732" cy="1024"/>
-<circle id="south" style="fill:var(--subdial);" r="192" cx="1024" cy="1316"/>
-<circle id="east" style="fill:var(--subdial);" r="192" cx="1316" cy="1024"/>
 <g class="sans" style="fill:var(--bezel_mark);font-size:60px;">
 	<path id="tach-curve" pathLength="2" d="M 1024, 224 a 800,800 0 0,1 500,180" fill="none"/>
 	<text>
@@ -115,21 +112,24 @@
 	<text x="1691" y="540">400</text>
 	<text x="1588" y="423">500</text>
 </g>
-<g class="sans" style="fill:var(--bezel_mark);font-size:60px;">
-	<text x="1184" y="1316" dominant-baseline="central" style="text-anchor:end;">3</text>
-	<text x="1024" y="1476">6</text>
-	<text x="864" y="1316" dominant-baseline="central" style="text-anchor:start;">9</text>
-	<text x="1024" y="1156" dominant-baseline="hanging">12</text>
+<g id="chrono_hours" class="sans" transform="translate(1024,1316)" style="fill:var(--bezel_mark);font-size:60px;">
+	<circle style="fill:var(--subdial);" r="192"/>
+	<text x="160" y="0" dominant-baseline="central" style="text-anchor:end;">3</text>
+	<text x="0" y="160">6</text>
+	<text x="-160" y="0" dominant-baseline="central" style="text-anchor:start;">9</text>
+	<text x="0" y="-160" dominant-baseline="hanging">12</text>
 </g>
-<g class="sans" style="fill:var(--bezel_mark);font-size:60px;">
-	<text x="871" y="1104" style="text-anchor:end;">20</text>
-	<text x="593" y="1104" style="text-anchor:start;">40</text>
-	<text x="732" y="864" dominant-baseline="hanging">60</text>
+<g id="sub_seconds" class="sans" transform="translate(732,1024)" style="fill:var(--bezel_mark);font-size:60px;">
+	<circle style="fill:var(--subdial);" r="192"/>
+	<text x="139" y="80" style="text-anchor:end;">20</text>
+	<text x="-138" y="80" style="text-anchor:start;">40</text>
+	<text x="0" y="-160" dominant-baseline="hanging">60</text>
 </g>
-<g class="sans" style="fill:var(--bezel_mark);font-size:60px;">
-	<text x="1455" y="1104" style="text-anchor:end;">10</text>
-	<text x="1177" y="1104" style="text-anchor:start;">20</text>
-	<text x="1316" y="864" dominant-baseline="hanging">30</text>
+<g id="chrono_minutes" class="sans" transform="translate(1316,1024)" style="fill:var(--bezel_mark);font-size:60px;">
+	<circle style="fill:var(--subdial);" r="192"/>
+	<text x="139" y="80" style="text-anchor:end;">10</text>
+	<text x="-139" y="80" style="text-anchor:start;">20</text>
+	<text x="0" y="-160" dominant-baseline="hanging">30</text>
 </g>
 <text x="1024" y="700" style="font:bold 110px Times, serif;">
 	Θ
@@ -251,17 +251,20 @@ const tach_thick = .25
 const thick = .2
 const tw_gap = 2.5
 const sub_r = 192 * ratio
-const east = {
-	cx: 1316 * ratio,
-	cy: 1024 * ratio,
+const chrono_minutes_el = document.getElementById('chrono_minutes')
+const chrono_minutes = {
+	x: chrono_minutes_el.transform.baseVal[0].matrix.e * ratio,
+	y: chrono_minutes_el.transform.baseVal[0].matrix.f * ratio,
 }
-const south = {
-	cx: 1024 * ratio,
-	cy: 1316 * ratio,
+const chrono_hours_el = document.getElementById('chrono_hours')
+const chrono_hours = {
+	x: chrono_hours_el.transform.baseVal[0].matrix.e * ratio,
+	y: chrono_hours_el.transform.baseVal[0].matrix.f * ratio,
 }
-const west = {
-	cx: 732 * ratio,
-	cy: 1024 * ratio,
+const sub_seconds_el = document.getElementById('sub_seconds')
+const sub_seconds = {
+	x: sub_seconds_el.transform.baseVal[0].matrix.e * ratio,
+	y: sub_seconds_el.transform.baseVal[0].matrix.f * ratio,
 }
 
 // zoom
@@ -417,7 +420,7 @@ function display(t){
 
 	// subdials
 	fc.save()
-	fc.translate(0, (west.cx - half) * z)
+	fc.translate((half - sub_seconds.y) * z, (sub_seconds.x - half) * z)
 	fc.beginPath(); fc.arc(0, 0, 2*z, 0, tau); fc.fill()
 	fc.rotate(seconds * tau_60)
 	shapec(
@@ -434,7 +437,7 @@ function display(t){
 	)
 	fc.restore()
 	fc.save()
-	fc.translate(0, (east.cx - half) * z)
+	fc.translate((half - chrono_minutes.y) * z, (chrono_minutes.x - half) * z)
 	fc.beginPath(); fc.arc(0, 0, 2*z, 0, tau); fc.fill()
 	fc.rotate(((chrono % 1800e3) / 1800e3) * tau)
 	shapec(
@@ -451,7 +454,7 @@ function display(t){
 	)
 	fc.restore()
 	fc.save()
-	fc.translate((half - south.cy) * z, 0)
+	fc.translate((half - chrono_hours.y) * z, (chrono_hours.x - half) * z)
 	fc.beginPath(); fc.arc(0, 0, 2*z, 0, tau); fc.fill()
 	fc.rotate((chrono / chrono_max) * tau)
 	shapec(
@@ -656,8 +659,8 @@ function display_static(){
 		if(!((i+1) % 4)){ len *= .5}
 		shape(
 			rect_my(minute_thick, -len).map(v => rot(a, v)),
-			west.cx + (sub_r * cos(-a)),
-			west.cy + (sub_r * sin(-a)),
+			sub_seconds.x + (sub_r * cos(-a)),
+			sub_seconds.y + (sub_r * sin(-a)),
 		)
 	})
 	// east
@@ -670,11 +673,11 @@ function display_static(){
 		if(!((i) % 10)){ thick *= 1.5}
 		shape(
 			rect_my(thick, -len).map(v => rot(a, v)),
-			east.cx + (sub_r * cos(-a)),
-			east.cy + (sub_r * sin(-a)),
+			chrono_minutes.x + (sub_r * cos(-a)),
+			chrono_minutes.y + (sub_r * sin(-a)),
 		)
 	})
-	// south
+	// chrono_hours
 	Array(12).fill().map((_, i) => i)
 	.forEach(i => {
 		const a = i * tau_12
@@ -682,8 +685,8 @@ function display_static(){
 		if(!((i) % 3)){ len *= .5}
 		shape(
 			rect_my(minute_thick, -len).map(v => rot(a, v)),
-			south.cx + (sub_r * cos(-a)),
-			south.cy + (sub_r * sin(-a)),
+			chrono_hours.x + (sub_r * cos(-a)),
+			chrono_hours.y + (sub_r * sin(-a)),
 		)
 	})
 	// hour markers
