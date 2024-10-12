@@ -83,22 +83,24 @@
 <path id="twelve_bezel" style="fill:var(--bezel_mark);" d="M 1024,220 l -108,-140 q 108,-16 216,0"/>
 <circle id="twelve_pip" style="fill:var(--mark);stroke:var(--edge);stroke-width:8;" r="48" cx="1024" cy="128"/>
 <g style="fill:var(--bezel_mark);font-size:100px;font-weight:bold;">
-	<text class="ten" transform="rotate(60 1024 1024) translate(1024 224) scale(1.5 2)">
+	<text transform="rotate(60 1024 1024) translate(1024 224) scale(1.5 2)">
 		I0
 	</text>
-	<text class="ten" transform="rotate(120 1024 1024) translate(1024 224) scale(1.5 2)">
+	<text transform="rotate(120 1024 1024) translate(1024 224) scale(1.5 2)">
 		20
 	</text>
-	<text class="ten" transform="rotate(180 1024 1024) translate(1024 224) scale(1.5 2)">
+	<text transform="rotate(180 1024 1024) translate(1024 224) scale(1.5 2)">
 		30
 	</text>
-	<text class="ten" transform="rotate(240 1024 1024) translate(1024 224) scale(1.5 2)">
+	<text transform="rotate(240 1024 1024) translate(1024 224) scale(1.5 2)">
 		40
 	</text>
-	<text class="ten" transform="rotate(300 1024 1024) translate(1024 224) scale(1.5 2)">
+	<text transform="rotate(300 1024 1024) translate(1024 224) scale(1.5 2)">
 		50
 	</text>
 </g>
+<rect id="date_window" x="1504" y="964" width="224" height="128" style="fill:var(--mark);stroke:var(--edge);stroke-width:8px;"/>
+<text id="day_of_month" x="1616" y="1024" dominant-baseline="central" style="fill:var(--bezel);font-size:144px;font-family:'Roboto Mono',monospace;"></text>
 </g>
 <text x="1024" y="724" style="fill:var(--text);font:168px serif;">
 	Θ
@@ -424,11 +426,15 @@ const bezel_minute = [
 	[bezel_minute_len, -edge_thick],
 ]
 
+const day_of_month_el = document.getElementById('day_of_month')
+
 function display(t){
 	const hours = t.getHours()
 	const minutes = t.getMinutes()
 	const seconds = t.getSeconds() + t.getMilliseconds() / 1000
-	// const day_of_month = (t.getDate()+'')
+	const day_of_month = day_of_month_el.innerHTML = (t.getDate()+'')
+	const hr = hours % 12
+	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds, on day ${day_of_month} of the month.`;
 
 	fc.fillStyle = palettes.mark
 	fc.lineWidth = .5*z
@@ -437,10 +443,6 @@ function display(t){
 	fc.clearRect(0, 0, width*z, height*z)
 	fc.translate(half*z, half*z)
 	fc.rotate(-tau_4)
-
-	const hr = hours % 12
-
-	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds`;
 
 	// hour hand
 	fc.save()
@@ -612,7 +614,7 @@ function display_static(){
 		c.stroke()
 	})
 	;[
-		3, 6, 9,
+		6, 9,
 	].forEach(i => {
 		const a = -i * tau_12 + tau_4
 		shape(
