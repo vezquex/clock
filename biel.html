@@ -66,19 +66,24 @@
 	.row { display: flex; }
 	.sans {font-family: Roboto, sans-serif; letter-spacing: 3px;}
 	.svg {
+		height: 100vh;
 		margin: 0 auto;
-		max-height: 100vh;
+		position:absolute;
+		width: 100vw;
 	}
 	.thick { line-height: 3em; }
 	.wide { width: 100vw; }
 </style>
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
 <svg version="1.1" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg" class='svg'>
-<rect id="canvas" x="0" y="0" width="2048" height="2048" fill="none"/>
-<circle id="edge" style="fill:var(--edge);" r="1024" cx="1024" cy="1024"/>
-<circle id="bezel" style="fill:var(--bezel);" r="968" cx="1024" cy="1024"/>
-<circle id="dial" style="fill:var(--dial);" r="780" cx="1024" cy="1024"/>
-
+	<rect id="canvas" x="0" y="0" width="2048" height="2048" fill="none"/>
+	<circle id="edge" style="fill:var(--edge);" r="1024" cx="1024" cy="1024"/>
+	<circle id="bezel" style="fill:var(--bezel);" r="968" cx="1024" cy="1024"/>
+	<circle id="dial" style="fill:var(--dial);" r="780" cx="1024" cy="1024"/>
+</svg>
+<canvas id='waves' class='abs'></canvas>
+<canvas id='face-static' class='abs'></canvas>
+<svg version="1.1" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg" class='svg'>
 <g id="bezel_group">
 <path id="twelve_bezel" style="stroke:var(--mark);stroke-width:16;fill:none;" d="M 1024,224 l -118,-140 q 118,-16 236,0z"/>
 <circle id="twelve_pip" style="fill:var(--mark);stroke:var(--edge);stroke-width:8;" r="32" cx="1024" cy="132"/>
@@ -115,10 +120,12 @@
 	</text>
 </g>
 </g>
-<g transform="translate(1024 1600)">
-	<rect id="date_window" x="-64" y="-64" width="128" height="128" style="fill:none;stroke:var(--bezel);stroke-width:8px;"/>
-	<text id="day_of_month" dominant-baseline="central" style="fill:var(--mark);font-size:96px;font-family:'Roboto Mono',monospace;"></text>
+<g transform="translate(1024 1512)">
+	<rect id="date_window" x="-64" y="-68" width="128" height="146" style="fill:var(--dial);stroke:var(--dial);stroke-width:12px;"/>
+	<rect id="date_window" x="-64" y="-68" width="128" height="146" style="fill:none;stroke:rgba(255,255,255,.1);stroke-width:12px;"/>
+	<text id="day_of_month" dominant-baseline="central" style="fill:var(--mark);font-size:96px;font-family:'Roboto Mono',monospace;" transform="scale(1 1.5)"></text>
 </g>
+<rect x="988" y="1612" width="72" height="52" style="fill:var(--mark);stroke:var(--edge);stroke-width:8px;"/>
 <text x="1024" y="700" style="font:bold 110px Times, serif;">
 	Θ
 </text>
@@ -158,7 +165,6 @@ a 746,746 0 1,0 5,0
 	>HTML<tspan style="font-size:180px;"> </tspan>MADE</textPath>
 </text>
 </svg>
-<canvas id='face-static' class='abs'></canvas>
 <canvas id='face' class='abs'></canvas>
 </div>
 <details class='abs column wide'>
@@ -228,17 +234,21 @@ const themes = {
 		edge: '#CFCAC7',
 		mark: '#D2A67F',
 		text: '#D2A67F',
+		wave: 'rgba(0,0,0,0)',
 	},
 }
 const height = 128
 const width = height
 const half = width / 2
+const scale = 1024
+const ratio = half / scale
+const inv_ratio = scale / half
 const bezel_r = 50
 const bezel_mark_len = 9.5
 const bezel_mark_r = 1
 const bezel_minute_len = bezel_mark_r * 3
 const dash = 1.2
-const dial_r = half * 780/1024
+const dial_r = 780/scale
 const hour_r = 35
 const hour_r_rect = 28
 const hour_len = 12
@@ -251,11 +261,13 @@ const minute_thick = 0.2
 const minute_thick_five = minute_thick * 1.5
 const thick = .2
 const tw_gap = 3
+const waves = 20
+const waves_r = 40
 
 // zoom
 let z = 1
 
-const {cos, min, sin, sqrt} = Math
+const {abs, cos, min, sin, sqrt} = Math
 const phi = (1 + sqrt(5)) * .5
 const tau = 2 * Math.PI
 const tau_4 = tau / 4
@@ -280,8 +292,11 @@ const fc = face.getContext('2d')
 const can = eid('face-static')
 const c = can.getContext('2d')
 
-const faces = [face, can]
-const faces_c = [fc, c]
+const waves_can = eid('waves')
+const waves_c = waves_can.getContext('2d')
+
+const faces = [can, face, waves_can]
+const faces_c = [c, fc, waves_c]
 
 function resize(){
 	const canvas_el = eid('canvas')
@@ -427,7 +442,8 @@ function display(t){
 	const hours = t.getHours()
 	const minutes = t.getMinutes()
 	const seconds = t.getSeconds() + t.getMilliseconds() / 1000
-	const day_of_month = day_of_month_el.innerHTML = (t.getDate()+'')
+	// const day_of_month = day_of_month_el.innerHTML = (t.getDate()+'')
+	const day_of_month = day_of_month_el.innerHTML = '88'
 
 	fc.fillStyle = palettes.mark
 	fc.strokeStyle = palettes.edge
@@ -599,12 +615,34 @@ function display_static(){
 		`rotate(${360 * bezel_frac} 1024 1024)`,
 	)
 
+	// waves
+	const waves_b = waves
+	const amplitude = 2
+  const frequency = waves_r
+	waves_c.clearRect(0, 0, width*z, height*z)
+	waves_c.lineWidth = 1 * z
+	waves_c.fillStyle = 'rgba(255,255,255,.1)'
+	Array(waves).fill().map((_, i) => i)
+	.forEach(i => {
+		let j = i + 2/3
+		const a = abs(Math.asin(2*j/waves_b - 1))
+		let progress = j / waves_b
+		let y = (2 * waves_r * progress) + (half - waves_r)
+		waves_c.beginPath()
+		for(let dx = 0; dx <= width*z; ++dx){
+			const dy = amplitude * Math.cos(tau * (-.1 + dx / (frequency*z)))
+			waves_c.lineTo(dx, (y + dy)*z);
+		}
+		waves_c.stroke()
+	})
+	waves_c.globalCompositeOperation = 'source-in'
+	waves_c.beginPath()
+	waves_c.arc(half*z, half*z, waves_r*z, 0, 2*Math.PI)
+	waves_c.fill()
+
 	c.clearRect(0, 0, width*z, height*z)
-
 	c.fillStyle = palettes.mark
-	c.strokeStyle = palettes.mark
 	c.lineWidth = .5 * z
-
 	;[
 		1, 3, 5, 7, 9, 11,
 	].forEach(i => {
