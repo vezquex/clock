@@ -113,7 +113,8 @@
 
 <script type='text/javascript'>
 const {abs, cos, floor, min, sin} = Math
-const eid = document.getElementById.bind(document)
+const doc = document
+const eid = doc.getElementById.bind(document)
 const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEPT', 'OCT', 'NOV', 'DEC']
 const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
@@ -236,11 +237,11 @@ const offset_el = eid('offset')
 
 function setTheme(theme){
 	palettes = themes[theme]
-	document.querySelector(`#theme [value=${theme}]`).selected = true
+	doc.querySelector(`#theme [value=${theme}]`).selected = true
 	colors.forEach(color => {
-		document.documentElement.style.setProperty('--'+color, palettes[color])
+		doc.documentElement.style.setProperty('--'+color, palettes[color])
 	})
-	document.querySelector(`meta[name='theme-color']`).setAttribute('content', palettes.bg)
+	doc.querySelector(`meta[name='theme-color']`).setAttribute('content', palettes.bg)
 	synchronize()
 }
 
@@ -260,15 +261,15 @@ function on_button(ev, callback){
 		if((ev.type === evc.type) && (ev.key === evc.key)){ return }
 		window.clearInterval(interval)
 		window.clearTimeout(long_press_repeat)
-		pointerdown && document.removeEventListener('pointerup', cancel)
+		pointerdown && doc.removeEventListener('pointerup', cancel)
 		keyboard && self.removeEventListener('keydown', cancel)
 		keyboard && self.removeEventListener('keyup', cancel)
-		document.removeEventListener('touchcancel', cancel)
-		document.removeEventListener('touchend', cancel)
+		doc.removeEventListener('touchcancel', cancel)
+		doc.removeEventListener('touchend', cancel)
 	}
-	pointerdown && document.addEventListener('pointerup', cancel)
-	document.addEventListener('touchcancel', cancel)
-	document.addEventListener('touchend', cancel)
+	pointerdown && doc.addEventListener('pointerup', cancel)
+	doc.addEventListener('touchcancel', cancel)
+	doc.addEventListener('touchend', cancel)
 	keyboard && self.addEventListener('keydown', cancel)
 	keyboard && self.addEventListener('keyup', cancel)
 	long_press_repeat = window.setTimeout(function(){
@@ -291,20 +292,20 @@ function bind_on_button(el, cb, hotkeys=[]){
 	)
 	el.dataset.hotkeys = hotkeys.join(separator)
 }
-document.addEventListener('keydown', function(event){
+doc.addEventListener('keydown', function(event){
 	if(event.repeat){ return }
 	const k = event.key
 	if(k === ' ' || k === 'Enter'){
 		return
 	}
 	const el = Hotkeys[k]
-	|| document.querySelector(`[accesskey='${k}']`)
+	|| doc.querySelector(`[accesskey='${k}']`)
 	if(!el){ return }
 	const tag = el.tagName
 	let ev
 	if(el.hasAttribute('onPointerDown')){
-		if(el === document.activeElement){ return }
-		if(document.activeElement.tagName === 'SELECT'){ return }
+		if(el === doc.activeElement){ return }
+		if(doc.activeElement.tagName === 'SELECT'){ return }
 		ev = new KeyboardEvent('keydown', {key: event.key})
 	}
 	else if(tag === 'A'){
@@ -316,13 +317,13 @@ document.addEventListener('keydown', function(event){
 	}
 	el.dispatchEvent(ev)
 })
-document.addEventListener('keyup', function(event){
+doc.addEventListener('keyup', function(event){
 	if(event.repeat){ return }
 	const k = event.key
 	const button = (k === ' ' || k === 'Enter') ?
-		document.activeElement
+		doc.activeElement
 		: Hotkeys[k]
-	|| document.querySelector(`[accesskey='${k}']`)
+	|| doc.querySelector(`[accesskey='${k}']`)
 	button?.dispatchEvent(
 		new KeyboardEvent('keyup', {key: event.key})
 	)

@@ -162,7 +162,9 @@ a 770,770 0 1,0 5,0
 
 <script type='text/javascript'>
 const _ = void 0
-const eid = document.getElementById.bind(document)
+const doc = document
+const $ = doc.querySelector.bind(doc)
+const eid = doc.getElementById.bind(doc)
 
 let palettes
 const color_palettes = {
@@ -360,17 +362,17 @@ const offset_el = eid('offset')
 
 function setTheme(theme){
 	palettes = themes[theme]
-	document.querySelector(`#theme [value=${theme}]`).selected = true
-	document.documentElement.style.setProperty('--accent', palettes.highlight)
+	$(`#theme [value=${theme}]`).selected = true
+	doc.documentElement.style.setProperty('--accent', palettes.highlight)
 	colors.forEach(color => {
-		document.documentElement.style.setProperty('--'+color, palettes[color])
+		doc.documentElement.style.setProperty('--'+color, palettes[color])
 	})
 	display_static()
 	synchronize()
 }
 
 function setHourShape(shape){
-	document.querySelector(`#hour_shape [value=${shape}]`).selected = true
+	$(`#hour_shape [value=${shape}]`).selected = true
 	hour_shape = shape
 	synchronize()
 }

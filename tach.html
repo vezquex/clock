@@ -172,10 +172,12 @@ transform="translate(1030 845) scale(1.5 1)">
 </details>
 
 <script type='text/javascript'>
-const bps = 3
 const _ = void 0
+const doc = document
+const $ = document.querySelector.bind(document)
 const eid = document.getElementById.bind(document)
 
+const bps = 3
 let palettes
 const color_palettes = {
 	bezel: '#000000',
@@ -325,10 +327,10 @@ offset_el.setAttribute('max', 86400 * bps)
 
 function setTheme(theme){
 	palettes = themes[theme]
-	document.querySelector(`#theme [value=${theme}]`).selected = true
-	document.documentElement.style.setProperty('--accent', palettes.highlight)
+	$(`#theme [value=${theme}]`).selected = true
+	doc.documentElement.style.setProperty('--accent', palettes.highlight)
 	colors.forEach(color => {
-		document.documentElement.style.setProperty('--'+color, palettes[color])
+		doc.documentElement.style.setProperty('--'+color, palettes[color])
 	})
 	display_static()
 	synchronize()

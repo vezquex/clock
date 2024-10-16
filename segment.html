@@ -78,6 +78,8 @@
 
 <script type='text/javascript'>
 const _ = void 0
+const doc = document
+const $ = document.querySelector.bind(document)
 const eid = document.getElementById.bind(document)
 const locale = 'en-us'
 
@@ -175,12 +177,12 @@ window.addEventListener('resize', resize)
 
 function setTheme(theme){
 	palettes = themes[theme]
-	document.querySelector(`#theme [value=${theme}]`).selected = true
+	$(`#theme [value=${theme}]`).selected = true
 	palettes.accent = palettes.color
 	colors.forEach(color => {
-		document.documentElement.style.setProperty('--'+color, palettes[color])
+		doc.documentElement.style.setProperty('--'+color, palettes[color])
 	})
-	document.querySelector(`meta[name='theme-color']`).setAttribute('content', palettes.bg)
+	$(`meta[name='theme-color']`).setAttribute('content', palettes.bg)
 	synchronize()
 }
 

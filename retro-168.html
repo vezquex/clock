@@ -194,6 +194,8 @@
 
 <script type='text/javascript'>
 const _ = void 0
+const doc = document
+const $ = document.querySelector.bind(document)
 const eid = document.getElementById.bind(document)
 
 let palettes
@@ -320,12 +322,12 @@ function resize(){
 }
 window.addEventListener('resize', resize)
 
-document.addEventListener('keydown', function(event){
+doc.addEventListener('keydown', function(event){
 	if(event.repeat){ return }
 	const k = event.key
 	const el = (k === ' ' || k === 'Enter') ?
-		document.activeElement
-		: document.querySelector(`[accesskey='${k}']`)
+		doc.activeElement
+		: doc.querySelector(`[accesskey='${k}']`)
 	if(!el){ return }
 	const tag = el.tagName
 	let ev
@@ -342,9 +344,9 @@ const offset_el = eid('offset')
 
 function setTheme(theme){
 	palettes = themes[theme]
-	document.querySelector(`#theme [value=${theme}]`).selected = true
+	$(`#theme [value=${theme}]`).selected = true
 	colors.forEach(color => {
-		document.documentElement.style.setProperty('--'+color, palettes[color])
+		doc.documentElement.style.setProperty('--'+color, palettes[color])
 	})
 	synchronize()
 }
