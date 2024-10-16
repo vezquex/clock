@@ -201,6 +201,7 @@ const color_palettes = {
 	highlight: '#C00000',
 	mark: '#FFFFFF',
 	text: '#FFFFFF',
+	wave: 'rgba(255,255,255,.1)',
 }
 const themes = {
 	'Black': {},
@@ -619,9 +620,10 @@ function display_static(){
 	const waves_b = waves
 	const amplitude = 2
   const frequency = waves_r
+	waves_c.save()
 	waves_c.clearRect(0, 0, width*z, height*z)
 	waves_c.lineWidth = 1 * z
-	waves_c.fillStyle = 'rgba(255,255,255,.1)'
+	waves_c.fillStyle = palettes.wave
 	Array(waves).fill().map((_, i) => i)
 	.forEach(i => {
 		let j = i + 2/3
@@ -639,7 +641,8 @@ function display_static(){
 	waves_c.beginPath()
 	waves_c.arc(half*z, half*z, waves_r*z, 0, 2*Math.PI)
 	waves_c.fill()
-
+	waves_c.restore()
+	
 	c.clearRect(0, 0, width*z, height*z)
 	c.fillStyle = palettes.mark
 	c.lineWidth = .5 * z
