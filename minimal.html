@@ -37,6 +37,7 @@
 <div><canvas id='face'></canvas></div>
 
 <script type='text/javascript'>
+const eid = document.getElementById.bind(document)
 
 let font = 'blockString'
 let palettes
@@ -73,7 +74,7 @@ for(k in themes){
 	;(theme._scale||[]).forEach((color, i)=>theme[i] = color_palettes[color])
 	Object.assign(theme, color_palettes)
 }
-document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
+eid('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
 
 
 const locale = 'en-us'
@@ -81,7 +82,7 @@ const months = ['JAN.', 'FEB.', 'MAR.', 'APR.', 'MAY', 'JUNE', 'JULY', 'AUG.', '
 
 const _ = void 0
 
-const can = document.getElementById('face')
+const can = eid('face')
 const c = can.getContext('2d')
 
 const height = 144
@@ -97,7 +98,7 @@ can.width = width * z
 // can.style.width = width + 'px';
 c.setTransform(z, 0, 0, z, 0, 0)
 
-const offset_el = document.getElementById('offset')
+const offset_el = eid('offset')
 
 const sym_w = 5
 const sym_a = sym_w * sym_w

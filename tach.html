@@ -174,6 +174,7 @@ transform="translate(1030 845) scale(1.5 1)">
 <script type='text/javascript'>
 const bps = 3
 const _ = void 0
+const eid = document.getElementById.bind(document)
 
 let palettes
 const color_palettes = {
@@ -251,17 +252,17 @@ const tach_thick = .25
 const thick = .2
 const tw_gap = 2.5
 const sub_r = 192 * ratio
-const chrono_minutes_el = document.getElementById('chrono_minutes')
+const chrono_minutes_el = eid('chrono_minutes')
 const chrono_minutes = {
 	x: chrono_minutes_el.transform.baseVal[0].matrix.e * ratio,
 	y: chrono_minutes_el.transform.baseVal[0].matrix.f * ratio,
 }
-const chrono_hours_el = document.getElementById('chrono_hours')
+const chrono_hours_el = eid('chrono_hours')
 const chrono_hours = {
 	x: chrono_hours_el.transform.baseVal[0].matrix.e * ratio,
 	y: chrono_hours_el.transform.baseVal[0].matrix.f * ratio,
 }
-const sub_seconds_el = document.getElementById('sub_seconds')
+const sub_seconds_el = eid('sub_seconds')
 const sub_seconds = {
 	x: sub_seconds_el.transform.baseVal[0].matrix.e * ratio,
 	y: sub_seconds_el.transform.baseVal[0].matrix.f * ratio,
@@ -281,22 +282,22 @@ for(k in themes){
 	themes[k] = Object.assign({}, color_palettes, themes[k])
 }
 const colors = Object.keys(color_palettes)
-document.getElementById('theme').innerHTML = Object.keys(themes).map(
+eid('theme').innerHTML = Object.keys(themes).map(
 	t => `<option value='${t}'>${t.replaceAll('_',' ')}</option>`
 ).join('')
 
 
-const face = document.getElementById('face')
+const face = eid('face')
 const fc = face.getContext('2d')
 
-const can = document.getElementById('face-static')
+const can = eid('face-static')
 const c = can.getContext('2d')
 
 const faces = [face, can]
 const faces_c = [fc, c]
 
 function resize(){
-	const canvas_el = document.getElementById('canvas')
+	const canvas_el = eid('canvas')
 	const rect = canvas_el.getBoundingClientRect()
 	const scale = window.devicePixelRatio || 1
 	z = min(
@@ -319,7 +320,7 @@ function resize(){
 }
 window.addEventListener('resize', resize)
 
-const offset_el = document.getElementById('offset')
+const offset_el = eid('offset')
 offset_el.setAttribute('max', 86400 * bps)
 
 function setTheme(theme){

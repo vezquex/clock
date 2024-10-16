@@ -27,6 +27,7 @@
 <canvas id="icon"></canvas>
 
 <script type="text/javascript">
+const eid = document.getElementById.bind(document)
 
 const font = 'jag'
 let palettes
@@ -88,7 +89,7 @@ const themes = {
 for(k in themes){
 	Object.assign(themes[k], color_palettes)
 }
-document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
+eid('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
 
 
 const locale = "en-us"
@@ -96,7 +97,7 @@ const months = ['JAN.', 'FEB.', 'MAR.', 'APR.', 'MAY', 'JUNE', 'JULY', 'AUG.', '
 
 const _ = void 0
 
-const can = document.getElementById('face')
+const can = eid('face')
 const c = can.getContext('2d')
 
 const height = 160
@@ -114,8 +115,8 @@ c.setTransform(z, 0, 0, z, 0, 0)
 
 // icon
 const icon_size = 32
-const favicon = document.getElementById('favicon')
-const icon = document.getElementById('icon')
+const favicon = eid('favicon')
+const icon = eid('icon')
 icon.style.display = 'none'
 const ic = icon.getContext('2d')
 icon.height = icon.width = icon_size
@@ -123,7 +124,7 @@ icon.height = icon.width = icon_size
 // display at the start of each second
 function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
-	const offset = Number(document.getElementById('offset').value)
+	const offset = Number(eid('offset').value)
 	const t = new Date(Date.now() + offset)
 	display(t)
 	const r = 1000 - (t % 1000)
@@ -822,7 +823,7 @@ setTheme('Dark')
 
 function setTheme(theme){
 	palettes = themes[theme]
-	document.getElementById('face').style.backgroundColor = palettes.background
+	eid('face').style.backgroundColor = palettes.background
 	document.querySelector(`#theme [value=${theme}]`).selected = true
 	synchronize()
 }

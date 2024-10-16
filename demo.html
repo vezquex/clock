@@ -39,6 +39,8 @@
 <canvas id='icon'></canvas>
 
 <script type='text/javascript'>
+const $ = document.querySelector.bind(document)
+const eid = document.getElementById.bind(document)
 
 let font = 'jag'
 let palettes
@@ -134,7 +136,8 @@ const themes = {
 for(k in themes){
 	Object.assign(themes[k], color_palettes)
 }
-document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
+
+eid('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
 
 
 const locale = 'en-us'
@@ -142,7 +145,7 @@ const months = ['JAN.', 'FEB.', 'MAR.', 'APR.', 'MAY', 'JUNE', 'JULY', 'AUG.', '
 
 const _ = void 0
 
-const can = document.getElementById('face')
+const can = eid('face')
 const c = can.getContext('2d')
 
 const height = 400
@@ -160,13 +163,13 @@ c.setTransform(z, 0, 0, z, 0, 0)
 
 // icon
 const icon_size = 32
-const favicon = document.getElementById('favicon')
-const icon = document.getElementById('icon')
+const favicon = eid('favicon')
+const icon = eid('icon')
 icon.style.display = 'none'
 const ic = icon.getContext('2d')
 icon.height = icon.width = icon_size
 
-const offset_el = document.getElementById('offset')
+const offset_el = eid('offset')
 
 const {ceil, floor, round} = Math
 const sym_h = 5
@@ -1310,8 +1313,8 @@ for(f in fonts){
 
 function setTheme(theme){
 	palettes = themes[theme]
-	document.getElementById('face').style.backgroundColor = palettes.background
-	document.querySelector(`#theme [value=${theme}]`).selected = true
+	eid('face').style.backgroundColor = palettes.background
+	$(`#theme [value=${theme}]`).selected = true
 	synchronize()
 }
 

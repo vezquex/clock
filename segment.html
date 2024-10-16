@@ -77,6 +77,8 @@
 <div><canvas id='face'></canvas></div>
 
 <script type='text/javascript'>
+const _ = void 0
+const eid = document.getElementById.bind(document)
 const locale = 'en-us'
 
 let palettes
@@ -135,12 +137,9 @@ for(k in themes){
 	Object.assign(theme, color_palettes)
 }
 const colors = ['accent', 'bg', 'color', 'text'].concat(Object.keys(color_palettes))
-document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
+eid('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
 
-
-const _ = void 0
-
-const can = document.getElementById('face')
+const can = eid('face')
 const c = can.getContext('2d')
 
 const height = 30
@@ -155,7 +154,7 @@ const grid_w2 = grid_w * 2
 // zoom
 let z = 1
 
-const offset_el = document.getElementById('offset')
+const offset_el = eid('offset')
 const {cos, floor, min, sin} = Math
 
 function resize(){

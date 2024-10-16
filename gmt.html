@@ -203,6 +203,7 @@ a 700,700 0 1,0 5,0
 
 <script type='text/javascript'>
 const _ = void 0
+const eid = document.getElementById.bind(document)
 
 let palettes
 const color_palettes = {
@@ -230,15 +231,15 @@ for(k in themes){
 	themes[k] = Object.assign({}, color_palettes, themes[k])
 }
 const colors = Object.keys(color_palettes)
-document.getElementById('theme').innerHTML = Object.keys(themes).map(
+eid('theme').innerHTML = Object.keys(themes).map(
 	t => `<option value='${t}'>${t.replaceAll('_',' ')}</option>`
 ).join('')
 
 
-const face = document.getElementById('face')
+const face = eid('face')
 const fc = face.getContext('2d')
 
-const can = document.getElementById('face-static')
+const can = eid('face-static')
 const c = can.getContext('2d')
 
 const faces = [face, can]
@@ -274,7 +275,7 @@ const locale = 'en-us'
 let z = 1
 
 function resize(){
-	const canvas_el = document.getElementById('canvas')
+	const canvas_el = eid('canvas')
 	const rect = canvas_el.getBoundingClientRect()
 	const scale = window.devicePixelRatio || 1
 	z = min(
@@ -297,7 +298,7 @@ function resize(){
 }
 window.addEventListener('resize', resize)
 
-const offset_el = document.getElementById('offset')
+const offset_el = eid('offset')
 
 function setTheme(theme){
 	palettes = themes[theme]

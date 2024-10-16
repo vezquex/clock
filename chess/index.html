@@ -220,7 +220,10 @@ for(k in themes){
 }
 
 const doc = document
-const can = doc.getElementById('face')
+const eid = doc.getElementById.bind(doc)
+const $ = doc.querySelector.bind(doc)
+
+const can = eid('face')
 const c = can.getContext('2d')
 
 function on_button(ev, callback){
@@ -277,7 +280,7 @@ doc.addEventListener('keydown', function(event){
 		return
 	}
 	const el = Hotkeys[k]
-	|| doc.querySelector(`[accesskey='${k}']`)
+	|| $(`[accesskey='${k}']`)
 	if(!el){ return }
 	const tag = el.tagName
 	let ev
@@ -301,14 +304,14 @@ doc.addEventListener('keyup', function(event){
 	const button = (k === ' ' || k === 'Enter') ?
 		doc.activeElement
 		: Hotkeys[k]
-	|| doc.querySelector(`[accesskey='${k}']`)
+	|| $(`[accesskey='${k}']`)
 	button?.dispatchEvent(
 		new KeyboardEvent('keyup', {key: event.key})
 	)
 })
 
-const step_dec_el = doc.getElementById('step_dec')
-const step_inc_el = doc.getElementById('step_inc')
+const step_dec_el = eid('step_dec')
+const step_inc_el = eid('step_inc')
 
 bind_on_button(
 	step_dec_el,
@@ -321,8 +324,8 @@ bind_on_button(
 	['ArrowRight','ArrowDown',...'dfjns+=.>]})'],
 )
 
-const button_box = doc.getElementById('button_box')
-const face_box = doc.getElementById('face_box')
+const button_box = eid('button_box')
+const face_box = eid('face_box')
 function resize(event){
 	const scale = window.devicePixelRatio || 1
 	const face_box_height = floor(window.innerHeight  - button_box.offsetHeight) - 1
@@ -342,8 +345,8 @@ function resize(event){
 
 window.addEventListener('resize', resize)
 
-const move_el = doc.getElementById('move')
-const step_el = doc.getElementById('step')
+const move_el = eid('move')
+const step_el = eid('step')
 
 function pad2(s){
 	return (' ' + s).slice(-2)

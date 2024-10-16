@@ -113,6 +113,7 @@
 	</div>
 </div>
 <script type='text/javascript'>
+const eid = document.getElementById.bind(document)
 const locale = 'en-us'
 
 let palettes
@@ -171,12 +172,12 @@ for(k in themes){
 	Object.assign(theme, color_palettes)
 }
 const colors = ['accent', 'bg', 'color', 'text'].concat(Object.keys(color_palettes))
-document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
+eid('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
 
 
 const _ = void 0
 
-const can = document.getElementById('face')
+const can = eid('face')
 const c = can.getContext('2d')
 
 const height = 23
@@ -192,9 +193,9 @@ const grid_w2 = grid_w * 2
 let z = 1
 
 const {cos, min, sin} = Math
-const offset_el = document.getElementById('offset')
+const offset_el = eid('offset')
 
-const lcd_el = document.getElementById('LCD')
+const lcd_el = eid('LCD')
 function resize(){
 	const rect = lcd_el.getBoundingClientRect()
 	const scale = window.devicePixelRatio || 1

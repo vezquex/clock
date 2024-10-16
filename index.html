@@ -58,6 +58,7 @@ body {
 </div>
 <canvas id='icon-render'></canvas>
 <script>
+const eid = document.getElementById.bind(document)
 function clock_widget(){
 	const clock = {}
 	const clock_el = document.querySelector('.clock')
@@ -109,8 +110,8 @@ function clock_widget(){
 // icon
 const icon_size = 32
 const icon_center = icon_size / 2
-const favicon = document.getElementById('favicon')
-const icon = document.getElementById('icon-render')
+const favicon = eid('favicon')
+const icon = eid('icon-render')
 icon.style.display = 'none'
 const ic = icon.getContext('2d')
 icon.style.width = icon.style.height = icon_size + 'px'

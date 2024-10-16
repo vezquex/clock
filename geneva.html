@@ -80,25 +80,25 @@
 
 <path id="twelve" style="fill:var(--mark);stroke:var(--edge);stroke-width:8px;" d="M 942,316 l 84,192 84,-192z"/>
 <g id="bezel_group">
-<path id="twelve_bezel" style="fill:var(--bezel_mark);" d="M 1024,220 l -108,-140 q 108,-16 216,0"/>
-<circle id="twelve_pip" style="fill:var(--mark);stroke:var(--edge);stroke-width:8;" r="48" cx="1024" cy="128"/>
-<g style="fill:var(--bezel_mark);font-size:100px;font-weight:bold;">
-	<text transform="rotate(60 1024 1024) translate(1024 224) scale(1.5 2)">
-		I0
-	</text>
-	<text transform="rotate(120 1024 1024) translate(1024 224) scale(1.5 2)">
-		20
-	</text>
-	<text transform="rotate(180 1024 1024) translate(1024 224) scale(1.5 2)">
-		30
-	</text>
-	<text transform="rotate(240 1024 1024) translate(1024 224) scale(1.5 2)">
-		40
-	</text>
-	<text transform="rotate(300 1024 1024) translate(1024 224) scale(1.5 2)">
-		50
-	</text>
-</g>
+	<path id="twelve_bezel" style="fill:var(--bezel_mark);" d="M 1024,220 l -108,-140 q 108,-16 216,0"/>
+	<circle id="twelve_pip" style="fill:var(--mark);stroke:var(--edge);stroke-width:8;" r="48" cx="1024" cy="128"/>
+	<g style="fill:var(--bezel_mark);font-size:100px;font-weight:bold;">
+		<text transform="rotate(60 1024 1024) translate(1024 224) scale(1.5 2)">
+			I0
+		</text>
+		<text transform="rotate(120 1024 1024) translate(1024 224) scale(1.5 2)">
+			20
+		</text>
+		<text transform="rotate(180 1024 1024) translate(1024 224) scale(1.5 2)">
+			30
+		</text>
+		<text transform="rotate(240 1024 1024) translate(1024 224) scale(1.5 2)">
+			40
+		</text>
+		<text transform="rotate(300 1024 1024) translate(1024 224) scale(1.5 2)">
+			50
+		</text>
+	</g>
 </g>
 <rect id="date_window" x="1504" y="964" width="224" height="128" style="fill:var(--mark);stroke:var(--edge);stroke-width:8px;"/>
 <text id="day_of_month" x="1616" y="1024" dominant-baseline="central" style="fill:var(--bezel);font-size:144px;font-family:'Roboto Mono',monospace;"></text>
@@ -162,6 +162,7 @@ a 770,770 0 1,0 5,0
 
 <script type='text/javascript'>
 const _ = void 0
+const eid = document.getElementById.bind(document)
 
 let palettes
 const color_palettes = {
@@ -208,7 +209,7 @@ for(k in themes){
 	themes[k] = Object.assign({}, color_palettes, themes[k])
 }
 const colors = Object.keys(color_palettes)
-document.getElementById('theme').innerHTML = Object.keys(themes).map(
+eid('theme').innerHTML = Object.keys(themes).map(
 	t => `<option value='${t}'>${t.replaceAll('_',' ')}</option>`
 ).join('')
 
@@ -286,14 +287,14 @@ const hour_shapes = {
 		fc.stroke()
 	},
 }
-document.getElementById('hour_shape').innerHTML = Object.keys(hour_shapes).map(
+eid('hour_shape').innerHTML = Object.keys(hour_shapes).map(
 	t => `<option value='${t}'>${t.replaceAll('_',' ')}</option>`
 ).join('')
 
-const face = document.getElementById('face')
+const face = eid('face')
 const fc = face.getContext('2d')
 
-const can = document.getElementById('face-static')
+const can = eid('face-static')
 const c = can.getContext('2d')
 
 const faces = [face, can]
@@ -331,7 +332,7 @@ const locale = 'en-us'
 let z = 1
 
 function resize(){
-	const canvas_el = document.getElementById('canvas')
+	const canvas_el = eid('canvas')
 	const rect = canvas_el.getBoundingClientRect()
 	const scale = window.devicePixelRatio || 1
 	z = min(
@@ -354,8 +355,8 @@ function resize(){
 }
 window.addEventListener('resize', resize)
 
-const bezel_el = document.getElementById('bezel_offset')
-const offset_el = document.getElementById('offset')
+const bezel_el = eid('bezel_offset')
+const offset_el = eid('offset')
 
 function setTheme(theme){
 	palettes = themes[theme]
@@ -426,7 +427,7 @@ const bezel_minute = [
 	[bezel_minute_len, -edge_thick],
 ]
 
-const day_of_month_el = document.getElementById('day_of_month')
+const day_of_month_el = eid('day_of_month')
 
 function display(t){
 	const hours = t.getHours()
@@ -511,7 +512,7 @@ function display_static(){
 	}
 	const bezel_frac = Number(bezel_el.value) / 120
 	const bezel_angle = bezel_frac * tau
-	document.getElementById('bezel_group').setAttribute(
+	eid('bezel_group').setAttribute(
 		'transform',
 		`rotate(${360 * bezel_frac} 1024 1024)`,
 	)

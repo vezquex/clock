@@ -113,6 +113,7 @@
 
 <script type='text/javascript'>
 const {abs, cos, floor, min, sin} = Math
+const eid = document.getElementById.bind(document)
 const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEPT', 'OCT', 'NOV', 'DEC']
 const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
@@ -203,7 +204,7 @@ for(k in themes){
 	Object.assign(theme, color_palettes)
 }
 const colors = ['bg', 'color'].concat(Object.keys(color_palettes))
-document.getElementById('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
+eid('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
 
 
 const ch = 14
@@ -216,7 +217,7 @@ const hcw = cw/2
 
 const _ = void 0
 
-const can = document.getElementById('face')
+const can = eid('face')
 const c = can.getContext('2d')
 
 const height = 44
@@ -231,7 +232,7 @@ can.height = height * z
 can.width = width * z
 c.setTransform(z, 0, 0, z, 0, 0)
 
-const offset_el = document.getElementById('offset')
+const offset_el = eid('offset')
 
 function setTheme(theme){
 	palettes = themes[theme]
@@ -328,12 +329,12 @@ document.addEventListener('keyup', function(event){
 })
 
 bind_on_button(
-	document.getElementById('zone_dec'),
+	eid('zone_dec'),
 	zone_dec,
 	['ArrowLeft','ArrowUp', ...'bkpuw,-_,<[{('],
 )
 bind_on_button(
-	document.getElementById('zone_inc'),
+	eid('zone_inc'),
 	zone_inc,
 	['ArrowRight','ArrowDown',...'dfjns+=.>]})'],
 )
@@ -571,7 +572,7 @@ function colon(x, y){
 	shape(colon_shape, x, y+9)
 }
 
-const lcd_el = document.getElementById('LCD')
+const lcd_el = eid('LCD')
 function resize(event){
 	const rect = lcd_el.getBoundingClientRect()
 	const scale = window.devicePixelRatio || 1

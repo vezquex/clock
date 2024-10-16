@@ -63,6 +63,7 @@
 
 <script type='text/javascript'>
 const _ = void 0
+const eid = document.getElementById.bind(document)
 const {asin, ceil, cos, floor, max, min, PI, random, sin, sqrt} = Math
 const phi = (1 + sqrt(5)) * .5
 const tau = 2 * Math.PI
@@ -145,11 +146,11 @@ for(k in themes){
 	Object.assign(theme, color_palettes)
 }
 
-document.getElementById('color').innerHTML = Object.keys(color_palettes).map(
+eid('color').innerHTML = Object.keys(color_palettes).map(
 	t => `<option value='${t}' ${t===obj_colors.die ? 'selected' : ''}>${capitalize(t)}</option>`
 	).join('')
 
-const can = document.getElementById('field')
+const can = eid('field')
 const c = can.getContext('2d')
 
 function capitalize(s) {
@@ -165,7 +166,7 @@ function resize(){
 	can.height = height * scale * z
 	can.width = width * scale * z
 	can.style.height = (height*z)+'px'
-	can.style.width = document.getElementById('color-label').style.width = (width*z)+'px'
+	can.style.width = eid('color-label').style.width = (width*z)+'px'
 	c.scale(scale, scale)
 	synchronize()
 }
