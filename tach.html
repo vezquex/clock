@@ -344,8 +344,8 @@ const delay = 1000 / bps
 function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = parseInt(offset_el.value) * 1000 / bps
-	// let t = new Date(Date.now() + offset)
-	t = new Date(new Date(2000,0,30,10,8,37,333).getTime() + offset)
+	let t = new Date(Date.now() + offset)
+	// t = new Date(new Date(2000,0,30,10,8,37,333).getTime() + offset)
 	display(t)
 	const r = delay - (t % delay)
 	window.synchronizeTimeout = window.setTimeout(synchronize, r)
