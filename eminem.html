@@ -218,7 +218,7 @@ doc.addEventListener('keydown', function(event){
 	const k = event.key
 	const el = (k === ' ' || k === 'Enter') ?
 		doc.activeElement
-		: doc.querySelector(`[accesskey='${k}']`)
+		: $(`[accesskey='${k}']`)
 	if(!el){ return }
 	const tag = el.tagName
 	let ev

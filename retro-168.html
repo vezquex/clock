@@ -195,8 +195,8 @@
 <script type='text/javascript'>
 const _ = void 0
 const doc = document
-const $ = document.querySelector.bind(document)
-const eid = document.getElementById.bind(document)
+const $ = doc.querySelector.bind(doc)
+const eid = doc.getElementById.bind(doc)
 
 let palettes
 const color_palettes = {
@@ -327,7 +327,7 @@ doc.addEventListener('keydown', function(event){
 	const k = event.key
 	const el = (k === ' ' || k === 'Enter') ?
 		doc.activeElement
-		: doc.querySelector(`[accesskey='${k}']`)
+		: $(`[accesskey='${k}']`)
 	if(!el){ return }
 	const tag = el.tagName
 	let ev

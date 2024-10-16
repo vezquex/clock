@@ -114,7 +114,8 @@
 <script type='text/javascript'>
 const {abs, cos, floor, min, sin} = Math
 const doc = document
-const eid = doc.getElementById.bind(document)
+const $ = doc.querySelector.bind(doc)
+const eid = doc.getElementById.bind(doc)
 const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEPT', 'OCT', 'NOV', 'DEC']
 const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
@@ -237,11 +238,11 @@ const offset_el = eid('offset')
 
 function setTheme(theme){
 	palettes = themes[theme]
-	doc.querySelector(`#theme [value=${theme}]`).selected = true
+	$(`#theme [value=${theme}]`).selected = true
 	colors.forEach(color => {
 		doc.documentElement.style.setProperty('--'+color, palettes[color])
 	})
-	doc.querySelector(`meta[name='theme-color']`).setAttribute('content', palettes.bg)
+	$(`meta[name='theme-color']`).setAttribute('content', palettes.bg)
 	synchronize()
 }
 
@@ -299,7 +300,7 @@ doc.addEventListener('keydown', function(event){
 		return
 	}
 	const el = Hotkeys[k]
-	|| doc.querySelector(`[accesskey='${k}']`)
+	|| $(`[accesskey='${k}']`)
 	if(!el){ return }
 	const tag = el.tagName
 	let ev
@@ -323,7 +324,7 @@ doc.addEventListener('keyup', function(event){
 	const button = (k === ' ' || k === 'Enter') ?
 		doc.activeElement
 		: Hotkeys[k]
-	|| doc.querySelector(`[accesskey='${k}']`)
+	|| $(`[accesskey='${k}']`)
 	button?.dispatchEvent(
 		new KeyboardEvent('keyup', {key: event.key})
 	)
