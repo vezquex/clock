@@ -61,7 +61,7 @@
 		width: 50%;
 	}
 	.hotkey { text-decoration: underline dotted; }
-	.info {font-size: 34px; letter-spacing: 1px;}
+	.info {font-size: 34px; letter-spacing: 1px; font-weight: 300;}
 	.mono {font-family: 'Roboto Mono', monospace;}
 	.row { display: flex; }
 	.sans {font-family: Roboto, sans-serif; letter-spacing: 3px;}
@@ -126,34 +126,59 @@
 	<text id="day_of_month" dominant-baseline="central" style="fill:var(--mark);font-size:96px;font-family:'Roboto Mono',monospace;" transform="scale(1 1.5)"></text>
 </g>
 <rect x="988" y="1612" width="72" height="52" style="fill:var(--mark);stroke:var(--edge);stroke-width:8px;"/>
-<text x="1024" y="700" style="font:bold 110px Times, serif;">
-	Θ
-</text>
-<text transform="translate(1024 774) scale(1.25 1)"
-class="mono"
-style="font-size:80px;">
-THETA
-</text>
-<text class="cursive"
-style="fill:var(--highlight);font-size:50px;"
-transform="translate(1030 845) scale(1.5 1)">
-	<tspan style="font-size:1.5em;">S</tspan><tspan dy="-10">uperstar</tspan>
-</text>
-<text x="1032" y="1138" class="sans info" style="opacity:.3;font-weight:lighter;font-size:44px;">
-	[SiO<tspan dy="10">2</tspan><tspan dy="-10">]</tspan>
-</text>
-<text x="1024" y="890" class="sans info">
-	PROFESSIONAL
-</text>
-<text x="1032" y="1236" class="sans info">
-	JAVASCRIPT
-</text>
-<text x="1024" y="1282" class="sans info">
-	VIRTUAL CHRONOMETER
-</text>
-<text x="1028" y="1328" class="sans info">
-	300m ≈ 1000ft
-</text>
+<g transform="translate(1024 664)">
+	<circle r="46" style="fill:var(--dial)"/>
+	<text style="font:bold 110px Times, serif;" dominant-baseline="central">
+		Θ
+	</text>
+</g>
+<g transform="translate(1024 708)">
+	<rect height="80" width="300" x="-150" y="0" style="fill:var(--dial)"/>
+	<text transform="scale(1.25 1)"
+	class="mono" dominant-baseline="hanging"
+	style="font-size:80px;"
+	>
+	THETA
+	</text>
+</g>
+<g transform="translate(1024 788)">
+	<rect height="72" width="384" x="-184" y="0" style="fill:var(--dial)"/>
+	<text class="cursive"	dominant-baseline="hanging"
+	style="fill:var(--highlight);font-size:50px;font-weight:bold;"
+	transform="scale(2 1)">
+		<tspan style="font-size:1.5em;">S</tspan><tspan dy="10">uperstar</tspan>
+	</text>
+</g>
+<g transform="translate(1024 860)">
+	<rect height="30" width="300" x="-150" y="0" style="fill:var(--dial)"/>
+	<text class="sans info" dominant-baseline="hanging">
+		PROFESSIONAL
+	</text>
+</g>
+<g transform="translate(1024 1094)">
+	<rect height="50" width="130" x="-65" y="-5" style="fill:var(--dial)"/>
+	<text class="sans info" style="opacity:.3;font-weight:lighter;font-size:44px;" dominant-baseline="hanging">
+		[SiO<tspan dy="10">2</tspan><tspan dy="-10">]</tspan>
+	</text>
+</g>
+<g transform="translate(1024 1208)">
+	<rect height="40" width="228" x="-114" style="fill:var(--dial)"/>
+	<text class="sans info" dominant-baseline="hanging">
+		JAVASCRIPT
+	</text>
+</g>
+<g transform="translate(1024 1248)">
+	<rect height="52" width="452" x="-225" y="-12" style="fill:var(--dial)"/>
+	<text class="sans info" dominant-baseline="hanging">
+		VIRTUAL CHRONOMETER
+	</text>
+</g>
+<g transform="translate(1024 1288)">
+	<rect height="34" width="264" x="-132" style="fill:var(--dial)"/>
+	<text class="sans info" dominant-baseline="hanging">
+		300m ≈ 1000ft
+	</text>
+</g>
 <path id="curve"
 pathLength="2"
 d="
