@@ -647,10 +647,8 @@ function display_static(){
 	waves_c.fillStyle = palettes.wave
 	Array(waves).fill().map((_, i) => i)
 	.forEach(i => {
-		let j = i + 2/3
-		const a = abs(Math.asin(2*j/waves_b - 1))
-		let progress = j / waves_b
-		let y = (2 * waves_r * progress) + (half - waves_r)
+		let frac = 2 * (i + 2/3) / waves_b
+		let y = (waves_r * frac) + half - waves_r 
 		waves_c.beginPath()
 		for(let dx = 0; dx <= width*z; ++dx){
 			const dy = amplitude * Math.cos(tau * (-.1 + dx / (frequency*z)))
