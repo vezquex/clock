@@ -1,0 +1,545 @@
+<!doctype html>
+<meta charset='utf-8'/>
+<meta name='viewport' content='width=device-width, initial-scale=1'/>
+<meta name='theme-color' content='#000000'/>
+<title>
+	GMT Watch
+</title>
+<style type='text/css'>
+	*, *::before, *::after {
+		box-sizing: border-box;
+	}
+	:root {
+		accent-color: var(--accent);
+		color-scheme: dark;
+	}
+	body {
+		background: #000;
+		overflow: hidden;
+	}
+	body, .btn, input, select {
+		font-family: sans-serif;
+		font-size: 1em;
+		margin: 0;
+	}
+	details {
+		opacity: 0.5;
+	}
+	input, select, .label, summary {
+		padding: 0 .5em;
+	}
+	input {
+		width: 100%;
+	}
+	select {
+		min-width: 8rem;
+	}
+	summary {
+		cursor:pointer;
+		list-style: none;
+		user-select: none;
+	}
+	text {text-anchor:middle;}
+	.abs {
+		position:absolute;
+	}
+	.btn {
+		border-color: rgba(0, 0, 0, .5);
+		border-style: outset;
+		border-width: 0px;
+		cursor: pointer;
+		padding: 0 .5em;
+		text-decoration: none;
+	}
+	.column { display: flex; flex-direction: column; }
+	.condensed {font-family:'Roboto Condensed';}
+	.home {
+		border-color: inherit;
+		border-width: 1px 1px 0 0;
+		position: absolute;
+		right:0;
+		text-align: right;
+		top:0;
+		width: 50%;
+	}
+	.hotkey { text-decoration: underline dotted; }
+	.mono {font-family: 'Roboto Mono', monospace;}
+	.row { display: flex; }
+	.svg {
+		margin: 0 auto;
+		max-height: 100vh;
+	}
+	.ten {letter-spacing: -.051em; font-size: .0833em; }
+	.thick { line-height: 3em; }
+	.wide { width: 100vw;	}
+	/* #face {opacity:.5} */
+	/* #face-static {opacity:.5} */
+</style>
+<div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
+<svg version="1.1" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg" class='svg'>
+<rect id="canvas" x="0" y="0" width="2048" height="2048" fill="none"/>
+<circle id="edge" style="fill:var(--dial);opacity:1.0;" r="1024" cx="1024" cy="1024"/>
+<circle id="bezel" style="fill:var(--bezel);opacity:1.0;" r="968" cx="1024" cy="1024"/>
+<circle id="dial" style="fill:var(--dial);" r="780" cx="1024" cy="1024"/>
+
+<path id="twelve" style="fill:var(--lume);stroke:var(--edge);stroke-width:12px;" d="M 940,336 l 84,192 84,-192z"/>
+<g id="bezel_group"
+	style="fill:var(--bezel_text);font-size:50px;">
+	<text class="ten" transform="rotate(30 1024 1024) translate(1024 160) scale(27 16)">
+		2
+	</text>
+	<text class="ten" transform="rotate(60 1024 1024) translate(1024 160) scale(27 16)">
+		4
+	</text>
+	<text class="ten" transform="rotate(90 1024 1024) translate(1024 160) scale(27 16)">
+		6
+	</text>
+	<text class="ten" transform="rotate(120 1024 1024) translate(1024 160) scale(27 16)">
+		8
+	</text>
+	<text class="ten" transform="rotate(150 1024 1024) translate(1024 160) scale(27 16)">
+		10
+	</text>
+	<text class="ten" transform="rotate(180 1024 1024) translate(1024 160) scale(27 16)">
+		12
+	</text>
+	<text class="ten" transform="rotate(210 1024 1024) translate(1024 160) scale(27 16)">
+		14
+	</text>
+	<text class="ten" transform="rotate(240 1024 1024) translate(1024 160) scale(27 16)">
+		16
+	</text>
+	<text class="ten" transform="rotate(270 1024 1024) translate(1024 160) scale(27 16)">
+		18
+	</text>
+	<text class="ten" transform="rotate(300 1024 1024) translate(1024 160) scale(27 16)">
+		20
+	</text>
+	<text class="ten" transform="rotate(330 1024 1024) translate(1024 160) scale(27 16)">
+		22
+	</text>
+	<text class="ten" transform="translate(1024 160) scale(27 16)">
+		24
+	</text>
+</g>
+<rect id="date_window" x="1318" y="972" width="308" height="104" style="fill:var(--lume);stroke:var(--edge);stroke-width:8px;"/>
+<text id="day_of_month" x="1560" y="1024" dominant-baseline="central" style="fill:var(--edge);font-size:96px;font-family:'Roboto Mono',monospace;"></text>
+</svg>
+<canvas id='face-static' class='abs'></canvas>
+<canvas id='face' class='abs'></canvas>
+</div>
+<details class='abs column wide'>
+	<summary title='Settings' class='btn thick'>☰</summary>
+	<a href='..' accesskey='h' class='btn home thick'>
+		<span class='hotkey'>H</span>ome
+	</a>
+	<label class='row thick'>
+		<span class='label'><span class='hotkey'>O</span>ffset</span>
+		<input id='offset' accesskey='o' value='0' type='range' max='86400000' step='60000' onInput='synchronize()'>
+	</label>
+	<label class='row thick'>
+		<span class='label'><span class='hotkey'>B</span>ezel</span>
+		<input id='bezel_offset' accesskey='b' value='48' type='range' max='48' step='1' onInput='display_static()'>
+	</label>
+	<label class='row thick'>
+		<span class='label'><span class='hotkey'>T</span>heme</span>
+		<select id='theme' accesskey='t' onChange='setTheme(this.value)'></select>
+	</label>
+</details>
+
+<script type='text/javascript'>
+const _ = void 0
+const doc = document
+const $ = doc.querySelector.bind(doc)
+const eid = doc.getElementById.bind(doc)
+
+let palettes
+const color_palettes = {
+	bezel: '#C0C0C0',
+	bezel_text: '#000000',
+	dial: '#000000',
+	edge: '#808080',
+	highlight: '#E06000',
+	lume: '#FFFFFF',
+	mark: '#FFFFFF',
+	text: '#FFFFFF',
+}
+const themes = {
+	'Black': {
+		bezel: '#101010',
+		bezel_text: '#808080',
+		lume: '#C0C0C0',
+	},
+	'White': {
+		dial: '#F0F0F0',
+		edge: '#000000',
+		mark: '#000000',
+		text: '#000000',
+	},
+}
+for(k in themes){
+	themes[k] = Object.assign({}, color_palettes, themes[k])
+}
+const colors = Object.keys(color_palettes)
+eid('theme').innerHTML = Object.keys(themes).map(
+	t => `<option value='${t}'>${t.replaceAll('_',' ')}</option>`
+).join('')
+
+const face = eid('face')
+const fc = face.getContext('2d')
+
+const can = eid('face-static')
+const c = can.getContext('2d')
+
+const faces = [face, can]
+const faces_c = [fc, c]
+
+const height = 128
+const width = height
+const half = width / 2
+const bezel_r = 51.5
+const bezel_index_r = 53.5
+const dash = 1.2
+const hour_r = 39.5
+const hour_r_rect = 36.25
+const hour_len = 6
+const hour_radius = 3.5
+const hour_thick = 2
+const minute_len = 2.25
+const minute_r = half * 780/1024
+const minute_thick = 0.125
+const minute_thick_major = 0.25
+
+const tau = 2 * Math.PI
+const tau_4 = tau / 4
+const tau_12 = tau / 12
+const tau_60 = tau / 60
+const {cos, min, sin} = Math
+const locale = 'en-us'
+
+const minute_len_five = 1
+const rect_my = (y, h) => ([
+	[0, -y],
+	[h, -y],
+	[h, y],
+	[0, y],
+])
+
+// zoom
+let z = 1
+
+function resize(){
+	const canvas_el = eid('canvas')
+	const rect = canvas_el.getBoundingClientRect()
+	const scale = window.devicePixelRatio || 1
+	z = min(
+		(rect.height / height),
+		(rect.width / width),
+	)
+	faces.forEach(can =>{
+		can.height = height * scale * z
+		can.width = width * scale * z
+		can.style.left = rect.x + 'px'
+		can.style.top = rect.y + 'px'
+		can.style.height = rect.height+'px'
+		can.style.width = rect.width+'px'
+	})
+	faces_c.forEach(
+		c => c.scale(scale, scale)
+	)
+	display_static()
+	synchronize()
+}
+window.addEventListener('resize', resize)
+
+const bezel_el = eid('bezel_offset')
+const offset_el = eid('offset')
+
+function setTheme(theme){
+	palettes = themes[theme]
+	$(`#theme [value=${theme}]`).selected = true
+	doc.documentElement.style.setProperty('--accent', palettes.highlight)
+	colors.forEach(color => {
+		doc.documentElement.style.setProperty('--'+color, palettes[color])
+	})
+	display_static()
+	synchronize()
+}
+
+const bps = 30
+const delay = 1000 / bps
+function synchronize(){
+	window.clearTimeout(window.synchronizeTimeout)
+	const offset = Number(offset_el.value)
+	let t = new Date(Date.now() + offset)
+	// t = new Date(2000,0,25,3,10,31,0)
+	// t = new Date(2000,0,25,9,12,18,0)
+	display(t)
+	const r = delay - (t % delay)
+	window.synchronizeTimeout = window.setTimeout(synchronize, r)
+}
+
+function shapec(c, path, x = 0, y = 0, m = 1){
+	m = m*z
+	c.beginPath()
+	c.moveTo((path[0][0] + x)*m, (path[0][1] + y)*m)
+	for(i=1; i<path.length; ++i){
+		c.lineTo((path[i][0] + x)*m, (path[i][1] + y)*m)
+	}
+	c.fill()
+}
+const shape = shapec.bind(null, c)
+
+function circle(r, x, y, m = 1){
+	m = m*z
+	c.beginPath()
+	c.arc(x*m, y*m, r*m, 0, tau)
+	c.fill()
+}
+function rot(a, [x,y]){
+	return [
+		x * cos(a) + y * sin(a),
+		y * cos(a) - x * sin(a),
+	]
+}
+
+const day_of_month_el = eid('day_of_month')
+
+function display(t){
+	const hours = t.getHours()
+	const minutes = t.getMinutes()
+	const seconds = t.getSeconds() + t.getMilliseconds() / 1000
+	const gmt = (t.getUTCHours() + t.getUTCMinutes() / 60 + t.getUTCSeconds() / 3600) / 24
+	const day_of_month = day_of_month_el.innerHTML = (t.getDate()+'')
+
+	fc.save()
+	fc.lineWidth = 1*z
+	fc.clearRect(0, 0, width*z, height*z)
+	fc.translate(half*z, half*z)
+	fc.rotate(-tau_4)
+
+	const hr = hours % 12
+
+	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds, on day ${day_of_month} of the month.`;
+
+	// hour hand
+	fc.save()
+	fc.fillStyle = palettes.edge
+	fc.rotate(
+		(hr / 12 + minutes / 720 + seconds / 43200) * tau,
+	)
+	shapec(
+		fc,
+		[
+			[0, 0],
+			[20, 0],
+			[26, 3],
+			[20, 6],
+			[0, 6],
+			[0, 0],
+		],
+		0, -3,
+	)
+	fc.fillStyle = palettes.lume
+	shapec(
+		fc,
+		[
+			[20, 0],
+			[23, 1.75],
+			[20, 3.5],
+			[4, 3.5],
+			[4, 0],
+		],
+		0, -1.75,
+	)
+	fc.beginPath()
+	fc.arc(0, 0, 4*z, 0, tau)
+	fc.fillStyle = palettes.edge
+	fc.fill()
+
+	fc.restore()
+
+	// GMT hand
+	fc.save()
+	fc.fillStyle = fc.strokeStyle = palettes.highlight
+	fc.rotate(gmt * tau)
+	shapec(
+		fc,
+		[
+			[0, -1.5],
+			[0, 1.5],
+			[43, .25],
+			[43, -.25],
+		],
+		0, 0,
+	)
+	fc.beginPath()
+	fc.arc(0, 0, 3*z, 0, tau)
+	fc.fill()
+
+	fc.fillStyle = palettes.lume
+	fc.lineWidth = 1*z
+	shapec(
+		fc,
+		[
+			[0, 0],
+			[0, -4],
+			[11, 0],
+			[0, 4],
+			[0, 0],
+		],
+		30, 0,
+	)
+	fc.stroke()
+	fc.restore()
+
+	// minute hand
+	fc.save()
+	fc.fillStyle = palettes.edge
+	fc.beginPath()
+	fc.arc(0, 0, 2.75*z, 0, tau)
+	fc.fill()
+	fc.rotate((minutes / 60 + seconds / 3600) * tau)
+	shapec(
+		fc,
+		[
+			[32, 0],
+			[39.7, 3],
+			[32, 6],
+			[6, 6],
+			[0, 3],
+			[6, 0],
+		],
+		0, -3,
+	)
+	fc.fillStyle = palettes.lume
+	fc.fillRect(6.5*z, -1.75*z, 25*z, 3.5*z)
+	fc.restore()
+
+	// second hand
+	fc.save()
+	fc.lineWidth = 1*z
+	fc.rotate(seconds * tau_60)
+	
+	fc.beginPath()
+	fc.moveTo(-15*z, 0)
+	fc.lineTo(46.6*z, 0)
+	fc.strokeStyle = palettes.edge
+	fc.stroke()
+
+	fc.beginPath()
+	fc.arc(-15*z, 0, 2*z, 0, tau)
+	fc.fillStyle = palettes.edge
+	fc.fill()
+
+	fc.beginPath()
+	fc.arc(22.6*z, 0, 3*z, 0, tau)
+	fc.fillStyle = palettes.lume
+	fc.strokeStyle = palettes.edge
+	fc.fill()
+	fc.stroke()
+
+	fc.restore()
+	fc.restore()
+}
+
+function display_static(){
+	if(bezel_el.value === '0'){
+		bezel_el.value = bezel_el.max
+	}
+	const bezel_frac = Number(bezel_el.value) / 48
+	const bezel_angle = bezel_frac * tau
+	eid('bezel_group').setAttribute(
+		'transform',
+		`rotate(${360 * bezel_frac} 1024 1024)`,
+	)
+	c.clearRect(0, 0, width*z, height*z)
+	c.fillStyle = palettes.bezel_text
+	Array(24).fill().map((_, i) => i)
+	.forEach(i => {
+		const a = i*tau/24 + bezel_angle
+		circle(
+			1,
+			half + (bezel_r * cos(a)),
+			half + (bezel_r * sin(a)),
+		)}
+	)
+	c.fillStyle = palettes.mark
+	Array(60).fill().map((_, i) => i)
+	.filter(x => x % 60)
+	.forEach(i => {
+		const a = -i * tau_60 + tau_4
+		shape(
+			[
+				rot(a, [0, -minute_thick]),
+				rot(a, [-minute_len, -minute_thick]),
+				rot(a, [-minute_len, minute_thick]),
+				rot(a, [0, minute_thick]),
+			],
+			half + (minute_r * cos(-a)),
+			half + (minute_r * sin(-a)),
+		)
+	})
+	;[
+		0, 5, 10, 15, 20, 25,
+		35, 40, 45, 50, 55,
+	]
+	.forEach(i => {
+		const a = -i * tau_60 + tau_4
+		shape(
+			[
+				rot(a, [0, -minute_thick_major]),
+				rot(a, [-minute_len, -minute_thick_major]),
+				rot(a, [-minute_len, minute_thick_major]),
+				rot(a, [0, minute_thick_major]),
+			],
+			half + (minute_r * cos(-a)),
+			half + (minute_r * sin(-a)),
+		)
+	})
+	Array(120).fill().map((_, i) => i)
+	.filter(x => x % 2)
+	.forEach(i => {
+		const a = -(i/2) * tau_60 + tau_4
+		shape(
+			rect_my(minute_thick, -minute_len_five).map(v => rot(a, v)),
+			half + (minute_r * cos(-a)),
+			half + (minute_r * sin(-a)),
+		)
+	})
+	c.fillStyle = palettes.lume
+	c.lineWidth = .75 * z
+	c.lineCap = 'square'
+	c.strokeStyle = palettes.edge
+	;[
+		1, 2, 4, 5, 7, 8, 10, 11
+	].forEach(i => {
+		const a = i * tau_12 - tau_4
+		circle(
+			hour_radius,
+			half + (hour_r * cos(a)),
+			half + (hour_r * sin(a)),
+		)
+		c.stroke()
+	})
+	;[
+		6, 9,
+	].forEach(i => {
+		const a = -i * tau_12 + tau_4
+		shape(
+			[
+				rot(a, [-hour_len,-hour_thick]),
+				rot(a, [hour_len,-hour_thick]),
+				rot(a, [hour_len,hour_thick]),
+				rot(a, [-hour_len,hour_thick]),
+				rot(a, [-hour_len,-hour_thick]),
+			],
+			half + (hour_r_rect * cos(-a)),
+			half + (hour_r_rect * sin(-a)),
+		)
+		c.stroke()
+	})
+}
+setTheme('Black')
+resize()
+</script>
