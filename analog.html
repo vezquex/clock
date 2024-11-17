@@ -75,9 +75,10 @@
 <circle id="bezel" style="fill:var(--bezel);opacity:1.0;" r="968" cx="1024" cy="1024"/>
 <circle id="dial" style="fill:var(--dial);" r="780" cx="1024" cy="1024"/>
 
-<path id="twelve_bezel" style="fill:var(--mark);" d="M 1024,220 l -108,-140 q 108,-16 216,0"/>
-<path id="twelve" style="fill:var(--mark);stroke:var(--edge);stroke-width:8px;" d="M 942,316 l 84,192 84,-192z"/>
-<g style="fill:var(--mark);font-size:100px;font-weight:bold;">
+<path id="twelve" style="fill:var(--mark);stroke:var(--edge);stroke-width:8px;" d="M 940,316 l 84,192 84,-192z"/>
+<g id="bezel_group"
+	style="fill:var(--mark);font-size:100px;font-weight:bold;">
+	<path id="twelve_bezel" style="fill:var(--mark);" d="M 1024,220 l -108,-140 q 108,-16 216,0"/>
 	<text transform="rotate(60 1024 1024) translate(1024 176)">
 		10
 	</text>
@@ -109,6 +110,10 @@
 	<label class='row thick'>
 		<span class='label'><span class='hotkey'>O</span>ffset</span>
 		<input id='offset' accesskey='o' value='0' type='range' max='86400000' step='60000' onInput='synchronize()'>
+	</label>
+	<label class='row thick'>
+		<span class='label'><span class='hotkey'>B</span>ezel</span>
+		<input id='bezel_offset' accesskey='b' value='120' type='range' max='120' step='1' onInput='display_static()'>
 	</label>
 	<label class='row thick'>
 		<span class='label'><span class='hotkey'>T</span>heme</span>
@@ -229,6 +234,7 @@ function resize(){
 }
 window.addEventListener('resize', resize)
 
+const bezel_el = eid('bezel_offset')
 const offset_el = eid('offset')
 
 function setTheme(theme){
@@ -242,7 +248,7 @@ function setTheme(theme){
 	synchronize()
 }
 
-const bps = 4
+const bps = 30
 const delay = 1000 / bps
 function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
@@ -376,6 +382,15 @@ function display(t){
 }
 
 function display_static(){
+	if(bezel_el.value === '0'){
+		bezel_el.value = bezel_el.max
+	}
+	const bezel_frac = Number(bezel_el.value) / 120
+	const bezel_angle = bezel_frac * tau
+	eid('bezel_group').setAttribute(
+		'transform',
+		`rotate(${360 * bezel_frac} 1024 1024)`,
+	)
 	c.clearRect(0, 0, width*z, height*z)
 	c.lineCap = 'round'
 	c.lineWidth = 2 * bezel_mark_thick * z
@@ -384,7 +399,7 @@ function display_static(){
 	Array(60).fill().map((_, i) => i)
 	.filter(x => x % 60)
 	.forEach(i => {
-		const a = (i+45)*tau_60
+		const a = (i+45)*tau_60 + bezel_angle
 		circle(
 			bezel_mark_thick,
 			half + (bezel_r * cos(a)),
@@ -394,7 +409,7 @@ function display_static(){
 	;[
 		1, 3, 5, 7, 9, 11,
 	].forEach(i => {
-		const a = -i * tau_12 + tau_4
+		const a = -i * tau_12 + tau_4 + bezel_angle
 		const x = half + (bezel_r * cos(a))
 		const y = half + (bezel_r * sin(a))
 		c.beginPath()

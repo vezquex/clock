@@ -264,21 +264,6 @@ function shape(path, x, y, m = 1){
 }
 
 const tau = 2 * Math.PI
-function circle(r, x, y){
-	c.beginPath()
-	c.arc(x*z, y*z, r*z, 0, tau)
-	c.fill()
-}
-const colon_sides = 6
-const colon_radius = 1.16
-const colon_shape = Array(colon_sides).fill().map((_,i)=>([
-	colon_radius * cos(i * tau / colon_sides),
-	colon_radius * sin(i * tau / colon_sides),
-]))
-function colon(x, y){
-	shape(colon_shape, x, y+5)
-	shape(colon_shape, x, y+9)
-}
 
 const db = [[4,11.625], [6,11.625], [6,9], [5,8.25], [4,9]]
 const dc = [[.25,14], [9.75,14], [7.75,12], [2.25,12]]

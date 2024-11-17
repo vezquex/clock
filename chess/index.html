@@ -64,7 +64,7 @@
 		cursor: default;
 	}
 	.center {
-    justify-content: center;
+		justify-content: center;
 	}
 	.column {
 		display: flex;
@@ -328,7 +328,7 @@ const button_box = eid('button_box')
 const face_box = eid('face_box')
 function resize(event){
 	const scale = window.devicePixelRatio || 1
-	const face_box_height = floor(window.innerHeight  - button_box.offsetHeight) - 1
+	const face_box_height = floor(window.innerHeight - button_box.offsetHeight) - 1
 	z = floor(min(
 		window.innerWidth / width,
 		face_box_height / height,

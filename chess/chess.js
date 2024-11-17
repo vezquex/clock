@@ -464,7 +464,7 @@ for(let i = 0; i < chess_game.moves.length; ++i){
 		pgn_move(chess_positions[i], chess_game.moves[i], i)
 	)
 }
-const title_text = `${move_text(step)} of ${move_text(chess_positions.length-1)}  | ${Object.values(chess_game.tags).join(' | ')}`
+const title_text = `${move_text(step)} of ${move_text(chess_positions.length-1)} | ${Object.values(chess_game.tags).join(' | ')}`
 title ? (title.innerText = title_text) : (canvas.title = title_text)
 
 const cb = chessboard(colors.bs, colors.ws)
