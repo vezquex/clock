@@ -69,6 +69,7 @@
 		border-top-width: 0;
 	}
 	.column { display:flex; flex-direction:column; }
+	.height-full { height: 100%; }
 	.tall { line-height: 7; }
 	.fade { opacity: 0.5; }
 	.grow { flex-grow: 1; }
@@ -89,8 +90,7 @@
 <div class='abs row' style='top:0;bottom:0;left:0;right:0;'>
 	<div class='column'>
 		<details class='grow'>
-			<summary title='Settings' class='btn btn-left hotkey' style='height:100%;'
-				accesskey='s'>
+			<summary accesskey='s' title='Settings' class='btn btn-left height-full hotkey'>
 				S
 			</summary>
 			<div class='abs fade column' style="top:0; left:2em; right: 2em; z-index:2;">
