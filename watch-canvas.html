@@ -1,33 +1,57 @@
 <!doctype html>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width" />
+<meta charset='utf-8'/>
+<meta name='viewport' content='width=device-width' />
 <meta name='theme-color' content='#000000'/>
 <link id='favicon' rel='shortcut icon'>
 <title>
 	Watch
 </title>
-<style type="text/css">
-	body, input, select {
-		background: #000;
-		color: #FFF;
+<style type='text/css'>
+	:root {
+		--bg: #000;
+		--text: #FFF;
+		accent-color: var(--accent);
+		color-scheme: dark;
+	}
+	body {
+		overflow: hidden;
+	}
+	body, .btn, input, select {
+		font-family: 'Roboto', sans-serif;
+		font-size: 1rem;
 		margin: 0;
 	}
-	input, select {
-		border: 0;
-		width: 130px;
+	body, .btn, select {
+		background-color: var(--bg);
+		color: var(--text);
 	}
+	.btn, input, select, summary, .label {
+		display: block;
+		padding: .5em;
+		border-width: 1px;
+	}
+	input {
+		width: 100%;
+	}
+	select {
+		min-width: 8rem;
+	}
+
+	.fade { opacity: 0.5; }
+	.w100 { width: 100%; }
 </style>
 
-<canvas id="face"></canvas>
-<br>
-<input id="offset" title="Demo Offset" value="0" type="range" max="86400000" step="100000" onChange="synchronize()">
-<br>
-<select id="theme" title="Theme" onChange="setTheme(this.value)"></select>
-<br>
-<canvas id="icon"></canvas>
+<canvas id='face'></canvas>
+<div class='fade'>
+	<input id='offset' class='w100' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
+	<select id='theme' title='Theme' onChange='setTheme(this.value)'></select>
+</div>
+<canvas id='icon'></canvas>
 
-<script type="text/javascript">
-const eid = document.getElementById.bind(document)
+<script type='text/javascript'>
+const doc = document
+const $ = doc.querySelector.bind(doc)
+const eid = doc.getElementById.bind(doc)
 
 const font = 'jag'
 let palettes
@@ -62,28 +86,31 @@ const color_palettes = {
 		1: '#B0D0FF',
 	},
 }
+const colors = ['accent', 'bg', 'color', 'text'].concat(Object.keys(color_palettes))
 const themes = {
 	Dark: {
-		background: color_palettes.black[1],
-		body: color_palettes.white,
-		sec: color_palettes.cyan,
 		batt_hi: color_palettes.green,
-		batt_mid: color_palettes.white,
 		batt_lo: color_palettes.red,
-		weather: color_palettes.blue_cyan,
+		batt_mid: color_palettes.white,
+		bg: color_palettes.black[1],
 		bluetooth_0: color_palettes.red,
 		bluetooth_1: color_palettes.sky,
+		body: color_palettes.white,
+		sec: color_palettes.cyan,
+		text: color_palettes.white[1],
+		weather: color_palettes.blue_cyan,
 	},
 	Light: {
-		background: color_palettes.sky[1],
-		body: color_palettes.black,
-		sec: color_palettes.cyan,
 		batt_hi: color_palettes.green,
-		batt_mid: color_palettes.black,
 		batt_lo: color_palettes.red,
-		weather: color_palettes.blue_cyan,
+		batt_mid: color_palettes.black,
+		bg: color_palettes.sky[1],
 		bluetooth_0: color_palettes.red,
 		bluetooth_1: color_palettes.blue,
+		body: color_palettes.black,
+		sec: color_palettes.cyan,
+		text: color_palettes.black[1],
+		weather: color_palettes.blue_cyan,
 	},
 }
 for(k in themes){
@@ -823,8 +850,12 @@ setTheme('Dark')
 
 function setTheme(theme){
 	palettes = themes[theme]
-	eid('face').style.backgroundColor = palettes.background
-	document.querySelector(`#theme [value=${theme}]`).selected = true
+	$(`#theme [value=${theme}]`).selected = true
+	palettes.accent = palettes.color
+	colors.forEach(color => {
+		doc.documentElement.style.setProperty('--'+color, palettes[color])
+	})
+	$(`meta[name='theme-color']`).setAttribute('content', palettes.bg)
 	synchronize()
 }
 
