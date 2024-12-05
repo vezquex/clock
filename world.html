@@ -155,6 +155,9 @@ const city_info = [
 	[11, 'NOU', 'Noumea'],
 	[12, 'WLG', 'Wellington'],
 ]
+const city_info_dst = [
+	[1, 'BST', 'British'],
+]
 const zone_count = city_info.reduce(
 	(a, [n])=>(
 		a.found[n] ? a : (
@@ -651,7 +654,7 @@ function display(t){
 			m,
 		)
 		c.fillStyle = palettes[lit ? 3 : 2]
-		draw_str(zone_desc(zone),
+		draw_str(zone_desc(zone + (dst ? 1 : 0)),
 			(width-4.7)/m,
 			1/m + i * grid_h,
 			m,
@@ -660,7 +663,10 @@ function display(t){
 	y += 16
 	m = .5
 	c.fillStyle = palettes[1]
-	const city_codes = city_info.filter(a => a[0] === mem_zone)
+	let city_codes = dst && city_info_dst.filter(a => a[0] === mem_zone + 1)
+	if(!city_codes || !city_codes.length){
+		city_codes = city_info.filter(a => a[0] === mem_zone)
+	}
 	if(city_codes.length > 1){
 		draw_str(city_codes.map(a => a[1]).join('.'), pad_h/m, y/m, m, char_paths_sixteen)
 	}
