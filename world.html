@@ -41,31 +41,17 @@
 		outline: none;
 		box-shadow: 0px 0px .5em var(--accent);
 	}
-	.center-content {
-		justify-content: center;
-	}
-	.collapse {
-		white-space-collapse: collapse;
-	}
+	.center-content { justify-content: center; }
+	.collapse { white-space-collapse: collapse;	}
 	.column {
 		display: flex;
 		flex-direction: column;
 	}
-	.fade {
-		opacity: .5;
-	}
-	.grow {
-		flex-grow: 1;
-	}
-	.grow2 {
-		flex-grow: 2;
-	}
-	.hotkey {
-		text-decoration: underline dotted;
-	}
-	.nosel {
-		user-select: none;
-	}
+	.fade { opacity: .5; }
+	.grow { flex-grow: 1; }
+	.grow2 { flex-grow: 2; }
+	.hotkey { text-decoration: underline dotted; }
+	.nosel { user-select: none; }
 	.round {
 		border-radius: 100%;
 		display: inline-block;
@@ -98,6 +84,10 @@
 			<span class='hotkey'>H</span>ome
 		</a>
 		<select id='theme' class='grow btn' title='Theme' onChange='setTheme(this.value)' accesskey='t'></select>
+		<button id='dst_btn' class='btn nosel'>
+			<input id='dst' type='checkbox' disabled>
+			<span style='margin: 0 0 0 .25em;'>DS<span class='hotkey'>T
+		</button>
 		<button id='zone_dec' class='grow2 btn nosel center-content'>
 			<span class='btn round'>
 				-
@@ -174,6 +164,7 @@ const zone_count = city_info.reduce(
 	{count: 0, found: {}}
 ).count
 
+let dst
 let mem_zone = 0
 let zone_index = city_info.findIndex(([z])=>(z === mem_zone))
 let palettes
@@ -235,6 +226,18 @@ can.width = width * z
 c.setTransform(z, 0, 0, z, 0, 0)
 
 const offset_el = eid('offset')
+
+function isDST(d){
+	let jan = new Date(d.getFullYear(), 0, 1).getTimezoneOffset()
+	let jul = new Date(d.getFullYear(), 6, 1).getTimezoneOffset()
+	return Math.max(jan, jul) !== d.getTimezoneOffset()
+}
+
+function setDST(on){
+	const d = eid('dst')
+	dst = d.checked = on ?? !d.checked
+	synchronize()
+}
 
 function setTheme(theme){
 	palettes = themes[theme]
@@ -331,9 +334,14 @@ doc.addEventListener('keyup', function(event){
 })
 
 bind_on_button(
+	eid('dst_btn'),
+	setDST,
+	['t'],
+)
+bind_on_button(
 	eid('zone_dec'),
 	zone_dec,
-	['ArrowLeft','ArrowUp', ...'bkpuw,-_,<[{('],
+	['ArrowLeft','ArrowUp', ...'abkpuw,-_,<[{('],
 )
 bind_on_button(
 	eid('zone_inc'),
@@ -368,6 +376,7 @@ function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(offset_el.value) + (mem_zone * 36e5)
 	const t = new Date(Date.now() + offset)
+	dst ??= isDST(t)
 	display(t)
 	const r = 1000 - (t % 1000)
 	window.synchronizeTimeout = window.setTimeout(synchronize, r)
@@ -602,13 +611,17 @@ function display(t){
 	const month_name = months[t.getUTCMonth()].padStart(4)
 	const year = t.getUTCFullYear()
 	const weekday = weekdays[t.getUTCDay()]
-	const hours = zeropad2(t.getUTCHours())
+	let hours = t.getUTCHours()
 	const minutes = zeropad2(t.getUTCMinutes())
 	const seconds = zeropad2(t.getUTCSeconds())
+
+	eid(`dst`).checked = dst
+	if(dst){ hours += 1 }
 
 	c.fillStyle = palettes.color
 	c.clearRect(0, 0, width*z, height*z)
 	let x = 0, y = pad_v, m = .25, m_scale = 2
+	dst && draw_str('DST', x = pad_h/(m*m_scale) + grid_w*4.5, y/m, m, char_paths_sixteen)
 	draw_str(month_name, x = pad_h/(m*m_scale) + grid_w*9.5, y/m, m, char_paths_sixteen)
 	draw_str(weekday, x += grid_w*6.5, y/m, m, char_paths_sixteen)
 	y += 6
@@ -619,7 +632,7 @@ function display(t){
 	shape(dash,	pad_h + 4*grid_w, y + grid_h - 5, m)
 	shape(dash,	pad_h + 6.75*grid_w, y + grid_h - 5, m)
 	y += 10
-	draw_str(hours, x = pad_h, y)
+	draw_str(zeropad2(hours), x = pad_h, y)
 	colon(x+29.5, y)
 	draw_str(minutes, x += grid_w2+7, y)
 	m = 0.75
