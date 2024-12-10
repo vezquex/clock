@@ -166,6 +166,10 @@ transform="translate(1030 845) scale(1.5 1)">
 		<input id='offset' accesskey='o' value='0' type='range' onInput='synchronize()'>
 	</label>
 	<label class='row thick'>
+		<span class='label'><span class='hotkey'>C</span>hrono&nbsp;Offset</span>
+		<input id='chrono_offset' accesskey='c' value='0' type='range' onInput='synchronize()'>
+	</label>
+	<label class='row thick'>
 		<span class='label'><span class='hotkey'>T</span>heme</span>
 		<select id='theme' accesskey='t' onChange='setTheme(this.value)'></select>
 	</label>
@@ -178,6 +182,7 @@ const $ = document.querySelector.bind(document)
 const eid = document.getElementById.bind(document)
 
 const bps = 3
+const delay = 1000 / bps
 let palettes
 const color_palettes = {
 	bezel: '#000000',
@@ -229,7 +234,7 @@ const themes = {
 		text: '#D2A67F',
 	},
 }
-const chrono_max = 43200000
+const chrono_max = 43200e3
 const scale = 1024
 const width = 128
 const height = width
@@ -324,6 +329,9 @@ window.addEventListener('resize', resize)
 const offset_el = eid('offset')
 offset_el.setAttribute('max', 86400 * bps)
 
+const chrono_offset_el = eid('chrono_offset')
+chrono_offset_el.setAttribute('max', 43200 * bps)
+
 function setTheme(theme){
 	palettes = themes[theme]
 	$(`#theme [value=${theme}]`).selected = true
@@ -335,13 +343,13 @@ function setTheme(theme){
 	synchronize()
 }
 
-const delay = 1000 / bps
 function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = parseInt(offset_el.value) * 1000 / bps
+	const chrono_offset = parseInt(chrono_offset_el.value) * 1000 / bps
 	let t = new Date(Date.now() + offset)
 	// t = new Date(new Date(2000,0,30,10,8,37,333).getTime() + offset)
-	display(t)
+	display(t, chrono_offset)
 	const r = delay - (t % delay)
 	window.synchronizeTimeout = window.setTimeout(synchronize, r)
 }
@@ -401,12 +409,14 @@ const minute_hand_w = 2.5
 const stem_w = 1.5
 const sub_hand_w = 1
 
-const chrono_offset = performance.timeOrigin % 3
-function display(t){
+let chrono_align
+function display(t, chrono_offset){
+	chrono_align ??= performance.now()
 	const hours = t.getHours()
 	const minutes = t.getMinutes()
 	const seconds = t.getSeconds() + t.getMilliseconds() / 1000
-	const chrono = (performance.now() - chrono_offset) % chrono_max
+	let chrono = (performance.now() - chrono_align)
+	chrono = (chrono - (chrono % delay) + chrono_offset) % chrono_max
 
 	fc.fillStyle = palettes.mark
 	fc.strokeStyle = palettes.mark
@@ -421,6 +431,7 @@ function display(t){
 	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds`;
 
 	// subdials
+	// second hand
 	fc.save()
 	fc.translate((half - sub_seconds.y) * z, (sub_seconds.x - half) * z)
 	fc.beginPath(); fc.arc(0, 0, 2*z, 0, tau); fc.fill()
@@ -438,6 +449,7 @@ function display(t){
 		0, 0-sub_hand_w/2,
 	)
 	fc.restore()
+	// chrono minute hand (30)
 	fc.save()
 	fc.translate((half - chrono_minutes.y) * z, (chrono_minutes.x - half) * z)
 	fc.beginPath(); fc.arc(0, 0, 2*z, 0, tau); fc.fill()
@@ -456,6 +468,7 @@ function display(t){
 	)
 	fc.restore()
 	fc.save()
+	// chrono hour hand
 	fc.translate((half - chrono_hours.y) * z, (chrono_hours.x - half) * z)
 	fc.beginPath(); fc.arc(0, 0, 2*z, 0, tau); fc.fill()
 	fc.rotate((chrono / chrono_max) * tau)
