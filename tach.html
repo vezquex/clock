@@ -144,8 +144,7 @@ style="font-size:50px;"
 transform="translate(1030 845) scale(1.5 1)">
 <tspan style="font-size:1.5em;">S</tspan><tspan dy="-10">pacewalker</tspan>
 </text>
-<text x="1024" y="890" class="sans" style="font-size:34px;letter-spacing:3px;text-transform:uppercase;">
-	Professional
+<text id="desc" x="1024" y="890" class="sans" style="font-size:34px;letter-spacing:3px;text-transform:uppercase;">
 </text>
 <path id="curve" pathLength="2" d="M 1024, 294 a 746,746 0 1,0 5,0" fill="none"/>
 <text class="mono" style="font-size:24px;">
@@ -185,6 +184,7 @@ const bps = 3
 const delay = 1000 / bps
 let palettes
 const color_palettes = {
+	desc: 'Professional',
 	bezel: '#000000',
 	dial: '#000000',
 	edge: '#C0C0C0',
@@ -194,44 +194,55 @@ const color_palettes = {
 	text: '#FFFFFF',
 }
 const themes = {
-	'Black': {},
+	'Black': {
+	},
 	'Blue': {
+		desc: 'Neptune',
 		bezel: '#001830',
 		dial: '#002040',
+		highlight: '#C0FFFF',
 		subdial: '#001830',
 	},
-	'Cyan': {
-		bezel: '#003030',
-		dial: '#004040',
-		subdial: '#003030',
-	},
 	'Gray': {
+		desc: 'Mercury',
 		bezel: '#303030',
 		dial: '#404040',
+		highlight: '#D0FFD0',
 		subdial: '#303030',
 	},
-	'Green': {
-		bezel: '#003000',
-		dial: '#004000',
-		subdial: '#003000',
-	},
 	'Purple': {
+		desc: 'Nebula',
 		bezel: '#300030',
 		dial: '#400040',
+		highlight: '#78F8F8',
 		subdial: '#300030',
 	},
+	'Purple-Dark': {
+		desc: 'Cosmos',
+		bezel: '#301020',
+		dial: '#100810',
+		edge: '#D2A67F',
+		highlight: '#C0F080',
+		mark: '#D2A67F',
+		subdial: '#201020',
+		text: '#D2A67F',
+	},
 	'Red': {
+		desc: 'Mars',
 		bezel: '#300000',
 		dial: '#400000',
+		highlight: '#E0E0E0',
 		subdial: '#300000',
 	},
-	'Tan': {
-		bezel: '#262427',
-		dial: '#424242',
-		edge: '#CFCAC7',
-		mark: '#D2A67F',
-		subdial: '#262427',
-		text: '#D2A67F',
+	'Yellow': {
+		desc: 'Saturn',
+		bezel: '#F0E070',
+		dial: '#F0F080',
+		edge: '#806040',
+		highlight: '#C0A040',
+		mark: '#402020',
+		text: '#303000',
+		subdial: '#F0E070',
 	},
 }
 const chrono_max = 43200e3
@@ -335,6 +346,7 @@ chrono_offset_el.setAttribute('max', 43200 * bps)
 function setTheme(theme){
 	palettes = themes[theme]
 	$(`#theme [value=${theme}]`).selected = true
+	eid('desc').innerHTML = palettes.desc
 	doc.documentElement.style.setProperty('--accent', palettes.highlight)
 	colors.forEach(color => {
 		doc.documentElement.style.setProperty('--'+color, palettes[color])
