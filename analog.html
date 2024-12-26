@@ -190,17 +190,25 @@ const bezel_r = 50
 const bezel_mark_len = 9
 const bezel_mark_thick = 0.75
 const dash = 1.2
+const hour_h = 26.5
+const hour_hw = 4.5
+const hour_point = 3.5
 const hour_r = 40
 const hour_r_rect = 37
 const hour_len = 7
 const hour_radius = 4
 const hour_thick = 2
+const lineWidth = .5
+const minute_h = 43.5
 const minute_len = 2.25
 const minute_r = half * 766/1024
 const minute_thick = 0.25
+const shadowBlur = .5
+const shadowOffset = .25
 const thick = .2
 
 const tau = 2 * Math.PI
+const tau_2 = tau / 2
 const tau_4 = tau / 4
 const tau_12 = tau / 12
 const tau_60 = tau / 60
@@ -260,16 +268,15 @@ function synchronize(){
 	window.synchronizeTimeout = window.setTimeout(synchronize, r)
 }
 
-function shapec(c, path, x = 0, y = 0, m = 1){
+function shape(c, path, x = 0, y = 0, m = 1, fill = true){
 	m = m*z
 	c.beginPath()
 	c.moveTo((path[0][0] + x)*m, (path[0][1] + y)*m)
 	for(i=1; i<path.length; ++i){
 		c.lineTo((path[i][0] + x)*m, (path[i][1] + y)*m)
 	}
-	c.fill()
+	fill && c.fill()
 }
-const shape = shapec.bind(null, c)
 
 function circle(r, x, y, m = 1){
 	m = m*z
@@ -287,6 +294,16 @@ function rot(a, [x,y]){
 const weekday_el = eid('weekday')
 const day_of_month_el = eid('day_of_month')
 
+function shadow_on(c){
+	c.shadowBlur = z*shadowBlur
+	c.shadowOffsetX = c.shadowOffsetY = z*shadowOffset
+}
+function shadow_off(c){
+	c.shadowBlur = 0
+	c.shadowOffsetX = 0
+	c.shadowOffsetY = 0
+}
+
 function display(t){
 	const hours = t.getHours()
 	const minutes = t.getMinutes()
@@ -295,87 +312,128 @@ function display(t){
 	const weekday = weekday_el.innerHTML = t.toLocaleString(locale, {weekday:'short'}).toUpperCase().slice(0,3)
 	const hr = hours % 12
 	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds, on a ${t.toLocaleString(locale, {weekday:'long'})}, day ${day_of_month} of the month.`;
-
-	fc.fillStyle = palettes.mark
-	fc.strokeStyle = palettes.edge
 	fc.save()
-	fc.lineWidth = .5*z
 	fc.clearRect(0, 0, width*z, height*z)
 	fc.translate(half*z, half*z)
 	fc.rotate(-tau_4)
+	fc.lineWidth = lineWidth*z
+	fc.shadowColor='rgba(0,0,0,1)'
 
 	// hour hand
 	fc.save()
 	fc.rotate(
 		(hr / 12 + minutes / 720 + seconds / 43200) * tau,
 	)
-	shapec(
+	shadow_on(fc)
+	fc.fillStyle = palettes.edge
+	shape(
 		fc,
 		[
 			[0, 0],
-			[23, 0],
-			[26, 2],
-			[23, 4],
-			[0, 4],
+			[hour_h - hour_point, 0],
+			[hour_h, hour_hw/2],
+			[hour_h - hour_point, hour_hw],
+			[0, hour_hw],
 			[0, 0],
 		],
-		0, -2,
+		0, -hour_hw/2
 	)
-	fc.stroke()
+	fc.arc(0, 0, 3.75*z, 0, tau)
+	fc.fill()
+	shadow_off(fc)
+	fc.fillStyle = palettes.mark
+	shape(
+		fc,
+		[
+			[4, 0],
+			[hour_h - hour_point, 0],
+			[hour_h - lineWidth*2, hour_hw/2 - lineWidth],
+			[hour_h - hour_point, hour_hw - 2*lineWidth],
+			[4, hour_hw - 2*lineWidth],
+		],
+		0, lineWidth - hour_hw/2,
+	)
 	fc.restore()
 
 	// minute hand
 	fc.save()
 	fc.rotate((minutes / 60 + seconds / 3600) * tau)
-	shapec(
+	shadow_on(fc)
+	fc.fillStyle = palettes.edge
+	shape(
 		fc,
 		[
 			[0, 0],
-			[40, 0],
-			[43.6, 2],
-			[40, 4],
-			[0, 4],
+			[minute_h - hour_point, 0],
+			[minute_h, hour_hw/2],
+			[minute_h - hour_point, hour_hw],
+			[0, hour_hw],
 			[0, 0],
 		],
-		0, -2,
+		0, -hour_hw/2
 	)
-	fc.stroke()
-	fc.restore()
-
-	// center post
-	fc.beginPath()
-	fc.arc(0, 0, 4*z, 0, tau)
-	fc.fillStyle = palettes.edge
+	fc.arc(0, 0, 3*z, 0, tau)
 	fc.fill()
+	shadow_off(fc)
+	fc.fillStyle = palettes.mark
+	shape(
+		fc,
+		[
+			[3, 0],
+			[minute_h - hour_point, 0],
+			[minute_h - lineWidth*2, hour_hw/2 - lineWidth],
+			[minute_h - hour_point, hour_hw - 2*lineWidth],
+			[3, hour_hw - 2*lineWidth],
+		],
+		0, lineWidth - hour_hw/2,
+	)
+	fc.restore()
 
 	// second hand
 	fc.save()
-	fc.lineWidth = .5*z
 	fc.rotate(seconds * tau_60)
-	
-	fc.beginPath()
-	fc.moveTo(-15*z, 0)
-	fc.lineTo(45.6*z, 0)
+	shadow_on(fc)
+
 	fc.strokeStyle = palettes.edge
-	fc.stroke()
-
 	fc.beginPath()
-	fc.moveTo(35.6*z, 0)
+	// tip
 	fc.lineTo(45.6*z, 0)
-	fc.strokeStyle = palettes.highlight
+	// eye
+	fc.arc(33.6*z, 0, 2*z, -tau_2, tau_2)
+	// center
+	fc.arc(0, 0, 2*z, 0, tau)
+	fc.moveTo(-2*z, 0)
+	// tail
+	fc.arc(-15*z, 0, 1.25*z, 0, tau)
 	fc.stroke()
 
-	fc.beginPath()
-	fc.arc(-15*z, 0, 1.5*z, 0, tau)
-	fc.fillStyle = palettes.edge
-	fc.fill()
-
-	fc.beginPath()
-	fc.arc(33.6*z, 0, 2*z, 0, tau)
+	shadow_off(fc)
+	// eye
 	fc.fillStyle = palettes.mark
-	fc.strokeStyle = palettes.edge
+	fc.beginPath()
+	fc.arc(33.6*z, 0, 1.8*z, -tau_2, tau_2)
 	fc.fill()
+
+	fc.fillStyle = palettes.edge
+	fc.beginPath()
+	// center
+	fc.arc(0, 0, 1.8*z, 0, tau)
+	// tail
+	fc.arc(-15*z, 0, 1.3*z, 0, tau)
+	fc.fill()
+
+	// tip
+	fc.strokeStyle = palettes.highlight
+	fc.beginPath()
+	fc.moveTo(35.85*z, 0)
+	fc.lineTo(45.6*z, 0)
 	fc.stroke()
+
+	// stem
+	fc.fillStyle = palettes.dial
+	fc.beginPath()
+	fc.arc(0, 0, lineWidth*z, 0, tau)
+	fc.fill()
 
 	fc.restore()
 	fc.restore()
@@ -392,10 +450,10 @@ function display_static(){
 		`rotate(${360 * bezel_frac} 1024 1024)`,
 	)
 	c.clearRect(0, 0, width*z, height*z)
+	c.fillStyle = palettes.mark
 	c.lineCap = 'round'
 	c.lineWidth = 2 * bezel_mark_thick * z
 	c.strokeStyle = palettes.mark
-	c.fillStyle = palettes.mark
 	Array(60).fill().map((_, i) => i)
 	.filter(x => x % 60)
 	.forEach(i => {
@@ -423,6 +481,7 @@ function display_static(){
 	Array(60).fill().forEach((_, i) => {
 		const a = -i * tau_60 + tau_4
 		shape(
+			c,
 			[
 				rot(a, [0, -minute_thick]),
 				rot(a, [-minute_len, -minute_thick]),
@@ -436,6 +495,7 @@ function display_static(){
 	c.fillStyle = palettes.mark
 	c.lineWidth = .5 * z
 	c.lineCap = 'square'
+	c.shadowColor='rgba(0,0,0,.5)'
 	c.strokeStyle = palettes.edge
 	;[1,2,4,5,7,8,10,11].forEach(
 		i => {
@@ -452,6 +512,7 @@ function display_static(){
 	].forEach(i => {
 		const a = -i * tau_12 + tau_4
 		shape(
+			c,
 			[
 				rot(a, [-hour_len,-hour_thick]),
 				rot(a, [hour_len,-hour_thick]),
