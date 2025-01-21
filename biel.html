@@ -615,9 +615,9 @@ function display(t){
 	fc.stroke()
 
 	// stem
-	fc.fillStyle = palettes.dial
+	shadow_on(fc)
 	fc.beginPath()
-	fc.arc(0, 0, .5*z, 0, tau)
+	fc.arc(0, 0, .375*z, 0, tau)
 	fc.fill()
 
 	fc.restore()

@@ -557,7 +557,7 @@ function display(t, chrono_offset){
 	fc.save()
 	fc.lineWidth = .5*z
 	fc.rotate(((chrono % 60e3) / 60e3) * tau)
-	
+
 	// stick
 	fc.beginPath()
 	fc.moveTo(-15*z, 0)
@@ -604,6 +604,11 @@ function display(t, chrono_offset){
 	fc.stroke()
 	fc.restore()
 
+	// stem
+	fc.fillStyle = palettes.highlight
+	fc.beginPath()
+	fc.arc(0, 0, .375*z, 0, tau)
+	fc.fill()
 	fc.restore()
 }
 
