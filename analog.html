@@ -317,7 +317,7 @@ function display(t){
 	fc.translate(half*z, half*z)
 	fc.rotate(-tau_4)
 	fc.lineWidth = lineWidth*z
-	fc.shadowColor='rgba(0,0,0,1)'
+	fc.shadowColor = 'rgba(0,0,0,1)'
 
 	// hour hand
 	fc.save()
@@ -358,8 +358,8 @@ function display(t){
 	// minute hand
 	fc.save()
 	fc.rotate((minutes / 60 + seconds / 3600) * tau)
-	shadow_on(fc)
 	fc.fillStyle = palettes.edge
+	shadow_on(fc)
 	shape(
 		fc,
 		[
@@ -392,15 +392,14 @@ function display(t){
 	// second hand
 	fc.save()
 	fc.rotate(seconds * tau_60)
-	shadow_on(fc)
-
 	fc.strokeStyle = palettes.edge
+	shadow_on(fc)
 	fc.beginPath()
 	// tip
 	fc.lineTo(45.6*z, 0)
 	// eye
 	fc.arc(33.6*z, 0, 2*z, -tau_2, tau_2)
-	// center
+	// pivot
 	fc.arc(0, 0, 2*z, 0, tau)
 	fc.moveTo(-2*z, 0)
 	// tail
@@ -416,7 +415,7 @@ function display(t){
 
 	fc.fillStyle = palettes.edge
 	fc.beginPath()
-	// center
+	// pivot
 	fc.arc(0, 0, 1.8*z, 0, tau)
 	// tail
 	fc.arc(-15*z, 0, 1.3*z, 0, tau)
@@ -493,7 +492,7 @@ function display_static(){
 		)
 	})
 	c.fillStyle = palettes.mark
-	c.lineWidth = .5 * z
+	c.lineWidth = lineWidth * z
 	c.lineCap = 'square'
 	c.shadowColor='rgba(0,0,0,.5)'
 	c.strokeStyle = palettes.edge

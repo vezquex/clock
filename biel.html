@@ -210,7 +210,7 @@ a 746,746 0 1,0 5,0
 		<select id='theme' accesskey='t' onChange='setTheme(this.value)'></select>
 	</label>
 </details>
-	
+
 <script type='text/javascript'>
 const bps = 4
 const _ = void 0
@@ -282,6 +282,9 @@ const minute_len_five = minute_len * 1.5
 const minute_r = half * 720/1024
 const minute_thick = 0.2
 const minute_thick_five = minute_thick * 1.5
+const second_hand_h = minute_r - minute_len
+const shadowBlur = .5
+const shadowOffset = .25
 const thick = .2
 const tw_gap = 3
 const waves = 20
@@ -293,6 +296,7 @@ let z = 1
 const {abs, cos, min, sin, sqrt} = Math
 const phi = (1 + sqrt(5)) * .5
 const tau = 2 * Math.PI
+const tau_2 = tau / 2
 const tau_4 = tau / 4
 const tau_12 = tau / 12
 const tau_60 = tau / 60
@@ -370,16 +374,21 @@ function synchronize(){
 	window.synchronizeTimeout = window.setTimeout(synchronize, r)
 }
 
-function shapec(c, path, x = 0, y = 0, m = 1){
+function shapec(c, path, x = 0, y = 0, m = 1, fill = true, beginPath = true){
 	m = m*z
-	c.beginPath()
+	beginPath && c.beginPath()
 	c.moveTo((path[0][0] + x)*m, (path[0][1] + y)*m)
-	for(i=1; i < path.length; ++i){
+	for(i=1; i<path.length; ++i){
 		c.lineTo((path[i][0] + x)*m, (path[i][1] + y)*m)
 	}
-	c.fill()
+	fill && c.fill()
 }
 const shape = shapec.bind(null, c)
+function shapep(){
+	const a = [...arguments]
+	a[5] = a[6] = false
+	shapec.apply(null, a)
+}
 
 function circle(r, x, y, m = 1){
 	m = m*z
@@ -446,7 +455,7 @@ const hour_right_arm = [
 	[hour_h - tip, cross/2],
 	[stem_h, base_w/2],
 ]
-const hour_left_arm = hour_right_arm.map(([x,y])=>[x,-y])
+const hour_left_arm = hour_right_arm.map(([x,y])=>[x,-y]).reverse()
 const hour_arm_slope_inner = (hour_right_arm[1][1] - hour_right_arm[0][1]) / (hour_right_arm[1][0] - hour_right_arm[0][0])
 const hour_arm_slope_outer = (hour_right_arm[3][1] - hour_right_arm[2][1]) / (hour_right_arm[3][0] - hour_right_arm[2][0])
 const hour_arm_lume_w_inner = hour_h - pr * pent_h - (stem_h + base_h)
@@ -458,8 +467,42 @@ const hour_right_arm_lume = [
 	[stem_h + base_h, base_w/2 - lume_inset_arm],
 ]
 const hour_left_arm_lume = hour_right_arm_lume.map(([x,y])=>[x,-y])
+const minute_right_arm = [
+	[0, base_w/2 - arm_w],
+	[arm_h + fudge, minute_head_w/2 - arm_w2],
+	[arm_h, minute_head_w/2],
+	[0, base_w/2],
+]
+const minute_left_arm = minute_right_arm.map(([x,y])=>[x,-y]).reverse()
+const minute_head = [
+	[0, 0],
+	[minute_head_h, minute_head_w/2],
+	[0, minute_head_w],
+]
+const minute_head_lume = [
+	[0, lume_inset],
+	[minute_head_h - 1.5*lume_inset, minute_head_w/2],
+	[0, minute_head_w - lume_inset],
+]
+const minute_right_arm_lume = [
+	[base_h, base_w/2 - arm_w + lume_inset_arm],
+	[arm_h, minute_head_w/2 - arm_w2 + lume_inset_arm],
+	[arm_h, minute_head_w/2 - lume_inset_arm],
+	[base_h, base_w/2 - lume_inset_arm/2],
+]
+const minute_left_arm_lume = minute_right_arm_lume.map(([x,y])=>[x,-y]).reverse()
 
 const day_of_month_el = eid('day_of_month')
+
+function shadow_on(c){
+	c.shadowBlur = z*shadowBlur
+	c.shadowOffsetX = c.shadowOffsetY = z*shadowOffset
+}
+function shadow_off(c){
+	c.shadowBlur = 0
+	c.shadowOffsetX = 0
+	c.shadowOffsetY = 0
+}
 
 function display(t){
 	const hours = t.getHours()
@@ -468,9 +511,9 @@ function display(t){
 	const day_of_month = day_of_month_el.innerHTML = (t.getDate()+'')
 
 	fc.fillStyle = palettes.mark
+	fc.shadowColor = 'rgba(0,0,0,1)'
 	fc.strokeStyle = palettes.edge
 	fc.save()
-	fc.lineWidth = .5*z
 	fc.clearRect(0, 0, width*z, height*z)
 	fc.translate(half*z, half*z)
 	fc.rotate(-tau_4)
@@ -481,16 +524,19 @@ function display(t){
 
 	// hour hand
 	fc.save()
+	shadow_on(fc)
 	fc.rotate(
 		(hr / 12 + minutes / 720 + seconds / 43200) * tau,
 	)
 	fc.fillStyle = palettes.edge
-	shapec(fc, rect(stem_h + fudge, stem_w), 0, -stem_w/2)
-	shapec(fc, rect(base_h, base_w), stem_h, -base_w/2)
-	// hour head
-	shapec(fc, polygon(5, pr, 0), pc)
-	shapec(fc, hour_left_arm)
-	shapec(fc, hour_right_arm)
+	fc.arc(0, 0, 3.75*z, 0, tau)
+	shapep(fc, rect(base_h, base_w), stem_h, -base_w/2)
+	shapep(fc, rect(stem_h + fudge, stem_w), 0, -stem_w/2)
+	shapep(fc, hour_left_arm)
+	shapep(fc, hour_right_arm)
+	shapep(fc, polygon(5, pr, 0), pc)
+	fc.fill()
+	shadow_off(fc)
 	fc.fillStyle = palettes.mark
 	shapec(fc, hour_left_arm_lume)
 	shapec(fc, hour_right_arm_lume)
@@ -504,123 +550,67 @@ function display(t){
 	fc.save()
 	fc.rotate((minutes / 60 + seconds / 3600) * tau)
 	fc.fillStyle = palettes.edge
-	shapec(fc, rect(stem_h, stem_w), 0, -stem_w/2)
-	// base
-	fc.fillStyle = palettes.edge
-	shapec(
-		fc,
-		rect(base_h, base_w),
-		stem_h, -base_w/2,
-	)
-	// left arm
-	shapec(
-		fc,
-		[
-			[0, arm_w - base_w/2],
-			[arm_h + fudge, arm_w2 - minute_head_w/2],
-			[arm_h, -minute_head_w/2],
-			[0, -base_w/2],
-		],
-		stem_h,
-	)
-	// right arm
-	shapec(
-		fc,
-		[
-			[0, -(arm_w - base_w/2)],
-			[arm_h + fudge, -(arm_w2 - minute_head_w/2)],
-			[arm_h, minute_head_w/2],
-			[0, base_w/2],
-		],
-		stem_h,
-	)
-	// head
-	shapec(
-		fc,
-		[
-			[0, 0],
-			[minute_head_h, minute_head_w/2],
-			[0, minute_head_w]
-		],
-		minute_h - minute_head_h, -minute_head_w/2
-	)
+	shadow_on(fc)
+	fc.beginPath()
+	shapep(fc, minute_head, minute_h - minute_head_h, -minute_head_w/2)
+	shapep(fc, minute_left_arm, stem_h)
+	shapep(fc, minute_right_arm, stem_h)
+	shapep(fc, rect(base_h, base_w), stem_h, -base_w/2)
+	shapep(fc, rect(stem_h, stem_w), 0, -stem_w/2)
+	fc.arc(0, 0, 3*z, 0, tau)
+	fc.fill()
+	shadow_off(fc)
 	fc.fillStyle = palettes.mark
-	// head lume
-	shapec(
-		fc,
-		[
-			[0, lume_inset],
-			[minute_head_h - 1.5*lume_inset, minute_head_w/2],
-			[0, minute_head_w - lume_inset]
-		],
-		stem_h + arm_h + lume_inset/2, -minute_head_w/2
-	)
-	// left arm lume
-	shapec(
-		fc,
-		[
-			[base_h, -(base_w/2 - arm_w + lume_inset_arm)],
-			[arm_h, -(minute_head_w/2 - arm_w2 + lume_inset_arm)],
-			[arm_h, -(minute_head_w/2 - lume_inset_arm)],
-			[base_h, -(base_w/2 - lume_inset_arm/2)],
-		],
-		stem_h,
-	)
-	// right arm lume
-	shapec(
-		fc,
-		[
-			[base_h, base_w/2 - arm_w + lume_inset_arm],
-			[arm_h, minute_head_w/2 - arm_w2 + lume_inset_arm],
-			[arm_h, minute_head_w/2 - lume_inset_arm],
-			[base_h, base_w/2 - lume_inset_arm/2],
-		],
-		stem_h,
-	)
-
+	shapec(fc, minute_head_lume, stem_h + arm_h + lume_inset/2, -minute_head_w/2)
+	shapec(fc, minute_left_arm_lume, stem_h)
+	shapec(fc, minute_right_arm_lume, stem_h)
 	fc.restore()
 
-	// center post
-	fc.beginPath()
-	fc.arc(0, 0, 3.5*z, 0, tau)
-	fc.fillStyle = palettes.edge
-	fc.fill()
-
 	// second hand
-	const second_hand_h = minute_r - minute_len
 	fc.save()
 	fc.lineWidth = .5*z
 	fc.rotate(seconds * tau_60)
-	
-	// body
-	fc.beginPath()
-	fc.moveTo(-15*z, 0)
-	fc.lineTo(second_hand_h*z, 0)
 	fc.strokeStyle = palettes.edge
+	shadow_on(fc)
+	fc.beginPath()
+	// tip
+	fc.lineTo(second_hand_h*z, 0)
+	// eye
+	fc.arc(28*z, 0, 2.5*z, -tau_2, tau_2)
+	// pivot
+	fc.arc(0, 0, 2*z, 0, tau)
+	fc.moveTo(-2*z, 0)
+	// tail?
+	fc.lineTo(-15*z, 0)
 	fc.stroke()
+
+	shadow_off(fc)
+	// eye
+	fc.fillStyle = palettes.mark
+	fc.beginPath()
+	fc.arc(28*z, 0, 2.25*z, -tau_2, tau_2)
+	fc.fill()
+
+	fc.fillStyle = palettes.edge
+	fc.beginPath()
+	// pivot
+	fc.arc(0, 0, 1.8*z, 0, tau)
+	// tail
+	shapep(fc, rect_my(1, -10), -7.4)
+	fc.fill()
 
 	// tip
-	fc.beginPath()
-	fc.moveTo(28*z, 0)
-	fc.lineTo(second_hand_h*z, 0)
 	fc.strokeStyle = palettes.highlight
+	fc.beginPath()
+	fc.moveTo(30.75*z, 0)
+	fc.lineTo(second_hand_h*z, 0)
 	fc.stroke()
 
-	// eye
+	// stem
+	fc.fillStyle = palettes.dial
 	fc.beginPath()
-	fc.arc(28*z, 0, 2.5*z, 0, tau, true)
-	fc.fillStyle = palettes.mark
-	fc.strokeStyle = palettes.edge
+	fc.arc(0, 0, .5*z, 0, tau)
 	fc.fill()
-	fc.stroke()
-
-	// tail
-	fc.beginPath()
-	fc.lineWidth = 2*z
-	fc.moveTo(-17.4*z, 0)
-	fc.lineTo(-7.4*z, 0)
-	fc.strokeStyle = palettes.edge
-	fc.stroke()
 
 	fc.restore()
 	fc.restore()
@@ -648,7 +638,7 @@ function display_static(){
 	Array(waves).fill().map((_, i) => i)
 	.forEach(i => {
 		let frac = 2 * (i + 2/3) / waves_b
-		let y = (waves_r * frac) + half - waves_r 
+		let y = (waves_r * frac) + half - waves_r
 		waves_c.beginPath()
 		for(let dx = 0; dx <= width*z; ++dx){
 			const dy = amplitude * Math.cos(tau * (-.1 + dx / (frequency*z)))
@@ -661,10 +651,10 @@ function display_static(){
 	waves_c.arc(half*z, half*z, waves_r*z, 0, 2*Math.PI)
 	waves_c.fill()
 	waves_c.restore()
-	
+
 	c.clearRect(0, 0, width*z, height*z)
 	c.fillStyle = palettes.mark
-	c.lineWidth = .5 * z
+	c.lineWidth = .5*z
 	;[
 		1, 3, 5, 7, 9, 11,
 	].forEach(i => {
