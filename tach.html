@@ -516,6 +516,7 @@ function display(t, chrono_offset){
 		0, 0-sub_hand_w/2,
 	)
 	fc.fill()
+	stem(fc)
 	fc.restore()
 
 	// chrono minute hand (30)
@@ -527,6 +528,7 @@ function display(t, chrono_offset){
 	fc.arc(0, 0, 2*z, 0, tau)
 	shapep(fc, chrono_minute_hand, 0, -sub_hand_w/2)
 	fc.fill()
+	stem(fc)
 	fc.restore()
 
 	// chrono hour hand
@@ -538,6 +540,7 @@ function display(t, chrono_offset){
 	fc.arc(0, 0, 2*z, 0, tau)
 	shapep(fc, chrono_hour_hand, 0, -sub_hand_w/2)
 	fc.fill()
+	stem(fc)
 	fc.restore()
 
 	// hour hand
@@ -610,14 +613,18 @@ function display(t, chrono_offset){
 	fc.stroke()
 	fc.restore()
 
-	// stem
-	fc.fillStyle = palettes.highlight
-	fc.beginPath()
-	fc.arc(0, 0, .375*z, 0, tau)
-	fc.fill()
+	stem(fc)
 	fc.restore()
 }
 
+function stem(c){
+	c.save()
+	shadow_on(c)
+	c.beginPath()
+	c.arc(0, 0, .375*z, 0, tau)
+	c.fill()
+	c.restore()
+}
 function display_static(){
 	c.clearRect(0, 0, width*z, height*z)
 
