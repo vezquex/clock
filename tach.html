@@ -259,6 +259,9 @@ const dash = 1.2
 const hour_r_rect = 32
 const hour_len = 10
 const hour_thick = 1
+const lw = .5
+const lw_2 = lw / 2
+const lwhyp_2 = (2 * lw**2) ** .5 / 2
 const minute_len = 10
 const minute_len_five = 2
 const minute_r = half * 720/scale
@@ -267,7 +270,7 @@ const minute_thick_five = 0.3
 const shadowBlur = .5
 const shadowOffset = .25
 const tach_length = 4
-const tach_thick = .25
+const tach_thick = lw_2
 const thick = .2
 const tw_gap = 2.5
 const sub_r = 192 * ratio
@@ -308,11 +311,18 @@ const chr_sec_tail = [
 	[-cstw, 0],
 ]
 const chr_sec_head = [
-	[-2, 0],
-	[0, -2],
-	[11, 0],
-	[0, 2],
-	[-2, 0],
+	[-2 - lwhyp_2, 0],
+	[0, -2 - lw_2],
+	[12.5, 0],
+	[0, 2 + lw_2],
+	[-2 - lwhyp_2, 0],
+]
+const chr_sec_head_lume = [
+	[-2 + lwhyp_2, 0],
+	[.17, -1.71],
+	[9.7, 0],
+	[.17, 1.71],
+	[-2 + lwhyp_2, 0],
 ]
 
 const hour_hand = [
@@ -351,7 +361,7 @@ const sub_seconds = {
 // zoom
 let z = 1
 
-const {cos, min, sin, sqrt, tan} = Math
+const {cos, min, sin, tan} = Math
 const tau = 2 * Math.PI
 const tau_4 = tau / 4
 const tau_12 = tau / 12
@@ -452,8 +462,6 @@ function circle(r, x, y, m = 1){
 	c.fill()
 }
 
-const locale = 'en-us'
-
 function rot(a, [x,y]){
 	return [
 		x * cos(a) + y * sin(a),
@@ -494,7 +502,7 @@ function display(t, chrono_offset){
 	fc.fillStyle = palettes.mark
 	fc.strokeStyle = palettes.mark
 	fc.save()
-	fc.lineWidth = .5*z
+	fc.lineWidth = lw*z
 	fc.clearRect(0, 0, width*z, height*z)
 	fc.translate(half*z, half*z)
 	fc.rotate(-tau_4)
@@ -605,10 +613,8 @@ function display(t, chrono_offset){
 	shadow_off(fc)
 	// lume
 	fc.fillStyle = palettes.highlight
-	fc.lineWidth = .5*z
-	fc.beginPath()
-	shapec(fc, chr_sec_head, 23, 0)
-	fc.stroke()
+	fc.lineWidth = lw*z
+	shapec(fc, chr_sec_head_lume, 23, 0)
 	fc.restore()
 
 	stem(fc)
@@ -628,7 +634,7 @@ function display_static(){
 
 	c.fillStyle = palettes.mark
 	c.strokeStyle = palettes.mark
-	c.lineWidth = .5 * z
+	c.lineWidth = lw*z
 
 	;[
 		60,65,70,75,80,85,90,
