@@ -278,11 +278,13 @@ const hour_len = 12
 const hour_radius = 4
 const hour_thick = 2.25
 const lineWidth = .5
+const lineWidth_2 = lineWidth / 2
 const minute_len = 2.25
 const minute_len_five = minute_len * 1.5
 const minute_r = half * 720/1024
 const minute_thick = 0.2
 const minute_thick_five = minute_thick * 1.5
+const second_hand_eye = 2.5
 const second_hand_h = minute_r - minute_len
 const shadowBlur = .5
 const shadowOffset = .25
@@ -436,6 +438,7 @@ const arm_w2 = 3
 const base_h = 1.5
 const base_w = 4
 const fudge = .25
+const fudge_s = .05
 const hour_h = hour_r - hour_radius
 const lume_inset = 2
 const lume_inset_arm = .75
@@ -493,8 +496,8 @@ const minute_right_arm_lume = [
 ]
 const minute_left_arm_lume = minute_right_arm_lume.map(([x,y])=>[x,-y]).reverse()
 
-let x = -7.4 - lineWidth/2
-let y = 1 - lineWidth/2
+let x = -7.4 - lineWidth_2
+let y = 1 - lineWidth_2
 let l = 10 - lineWidth
 const second_tail = [
 	[-2,0], [x,0], [x,y], [x-l,y], [x-l,-y], [x,-y], [x,0]
@@ -584,7 +587,7 @@ function display(t){
 	// tip
 	fc.lineTo(second_hand_h*z, 0)
 	// eye
-	fc.arc(28*z, 0, 2.5*z, -tau_2, tau_2)
+	fc.arc(28*z, 0, second_hand_eye * z, -tau_2, tau_2)
 	// pivot
 	fc.arc(0, 0, 2*z, 0, tau)
 	// tail
@@ -597,7 +600,7 @@ function display(t){
 	// eye
 	fc.fillStyle = palettes.mark
 	fc.beginPath()
-	fc.arc(28*z, 0, 2.25*z, -tau_2, tau_2)
+	fc.arc(28*z, 0, (second_hand_eye - lineWidth_2 + fudge_s) * z, -tau_2, tau_2)
 	fc.fill()
 
 	fc.fillStyle = palettes.edge
