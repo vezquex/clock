@@ -98,6 +98,16 @@
 <rect id="date_window" x="1418" y="972" width="308" height="104" style="fill:var(--mark);stroke:var(--edge);stroke-width:8px;"/>
 <text id="weekday" x="1426" y="1024" dominant-baseline="central" style="fill:var(--bezel);font-size:96px;font-family:'Roboto Mono',monospace;text-anchor:start;"></text>
 <text id="day_of_month" x="1660" y="1024" dominant-baseline="central" style="fill:var(--bezel);font-size:96px;font-family:'Roboto Mono',monospace;"></text>
+<g transform="translate(800 800) scale(.035) translate(-5724 -5724)">
+	<circle style="fill:var(--bezel);" r="5700" cx="5724" cy="5724"/>
+	<g id="moonphase_hand">
+		<ellipse style="fill:var(--mark);" cx="5724" cy="2462" rx="1738.1" ry="1736.0"/>
+		<ellipse style="fill:var(--mark);" cx="5724" cy="8986" rx="1738.1" ry="1736.0"/>
+	</g>
+	<g transform="scale(381.6)">
+		<path style="fill:var(--dial);" d="M 15,30 C 6.72,30 0,23.28 0,15 C 0,6.72 6.72,0 15,0 C 23.28,0 30,6.72 30,15 C 30,23.28 23.28,30 15,30 Z M17.49,14.36 C 17.81,11.75 20.03,9.73 22.73,9.73 C 25.43,9.73 27.66,11.75 27.97,14.36 L 28.36,14.36 C 28.03,7.28 22.17,1.64 15,1.64 C 7.83,1.64 1.97,7.28 1.64,14.36 L 2.03,14.36 C 2.34,11.75 4.57,9.73 7.27,9.73 C 9.97,9.73 12.19,11.75 12.51,14.36 L 13.01,14.36 C 13.28,13.52 14.07,12.91 15,12.91 C 15.93,12.91 16.72,13.52 17,14.36 L 17.49,14.36 Z"/>
+	</g>
+</g>
 </svg>
 <canvas id='face-static' class='abs'></canvas>
 <canvas id='face' class='abs'></canvas>
@@ -203,6 +213,8 @@ const minute_h = 43.5
 const minute_len = 2.25
 const minute_r = half * 766/1024
 const minute_thick = 0.25
+const moon_offset_deg = 79.364
+const moon_tick = 360 / 59
 const shadowBlur = .5
 const shadowOffset = .25
 const thick = .2
@@ -291,8 +303,9 @@ function rot(a, [x,y]){
 	]
 }
 
-const weekday_el = eid('weekday')
 const day_of_month_el = eid('day_of_month')
+const moonphase_hand = eid('moonphase_hand')
+const weekday_el = eid('weekday')
 
 function shadow_on(c){
 	c.shadowBlur = z*shadowBlur
@@ -311,7 +324,11 @@ function display(t){
 	const day_of_month = day_of_month_el.innerHTML = (t.getDate()+'')
 	const weekday = weekday_el.innerHTML = t.toLocaleString(locale, {weekday:'short'}).toUpperCase().slice(0,3)
 	const hr = hours % 12
-	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds, on a ${t.toLocaleString(locale, {weekday:'long'})}, day ${day_of_month} of the month.`;
+	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds, on a ${t.toLocaleString(locale, {weekday:'long'})}, day ${day_of_month} of the month.`
+	const epoch_day = t.getTime() / 86400e3
+	const moonphase_angle = (epoch_day * moon_tick - moon_offset_deg) % 360
+	moonphase_hand.setAttribute('transform',`rotate(${moonphase_angle},5724,5724)`)
+
 	fc.save()
 	fc.clearRect(0, 0, width*z, height*z)
 	fc.translate(half*z, half*z)
