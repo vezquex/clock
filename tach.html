@@ -3,7 +3,7 @@
 <meta name='viewport' content='width=device-width, initial-scale=1'/>
 <meta name='theme-color' content='#000000'/>
 <title>
-	Tachymeter Watch
+	Biel chronograph & tachymeter
 </title>
 <style type='text/css'>
 	*, *::before, *::after {
@@ -264,11 +264,66 @@ const minute_len_five = 2
 const minute_r = half * 720/scale
 const minute_thick = 0.2
 const minute_thick_five = 0.3
+const shadowBlur = .5
+const shadowOffset = .25
 const tach_length = 4
 const tach_thick = .25
 const thick = .2
 const tw_gap = 2.5
 const sub_r = 192 * ratio
+
+const arm_w = 2
+const arm_w2 = 3
+const base_h = 1.5
+const base_w = 4
+const cstw = 1.5
+const fudge = .5
+const lume_inset = 2
+const lume_inset_arm = .75
+const minute_hand_w = 2.5
+const stem_w = 1.5
+const sub_hand_w = 1
+
+const chrono_hour_hand = [
+	[0, 0],
+	[10, 0],
+	[11.5, sub_hand_w/2],
+	[10, sub_hand_w],
+	[0, sub_hand_w],
+	[0, 0],
+]
+const chrono_minute_hand = [
+	[0, 0],
+	[10, 0],
+	[11.5, sub_hand_w/2],
+	[10, sub_hand_w],
+	[0, sub_hand_w],
+	[0, 0],
+]
+const chr_sec_tail = [
+	[-cstw, 0],
+	[0, -cstw],
+	[11, 0],
+	[0, cstw],
+	[-cstw, 0],
+]
+const hour_hand = [
+	[0, 0],
+	[23, 0],
+	[26, minute_hand_w/2],
+	[23, minute_hand_w],
+	[0, minute_hand_w],
+	[0, 0],
+]
+const minute_hand = [
+	[0, 0],
+	[40, 0],
+	[43 + fudge, minute_hand_w/2],
+	[40, minute_hand_w],
+	[0, minute_hand_w],
+	[0, 0],
+]
+
 const chrono_minutes_el = eid('chrono_minutes')
 const chrono_minutes = {
 	x: chrono_minutes_el.transform.baseVal[0].matrix.e * ratio,
@@ -366,16 +421,21 @@ function synchronize(){
 	window.synchronizeTimeout = window.setTimeout(synchronize, r)
 }
 
-function shapec(c, path, x = 0, y = 0, m = 1){
+function shapec(c, path, x = 0, y = 0, m = 1, fill = true, beginPath = true){
 	m = m*z
-	c.beginPath()
+	beginPath && c.beginPath()
 	c.moveTo((path[0][0] + x)*m, (path[0][1] + y)*m)
 	for(i=1; i<path.length; ++i){
 		c.lineTo((path[i][0] + x)*m, (path[i][1] + y)*m)
 	}
-	c.fill()
+	fill && c.fill()
 }
 const shape = shapec.bind(null, c)
+function shapep(){
+	const a = [...arguments]
+	a[5] = a[6] = false
+	shapec.apply(null, a)
+}
 
 function circle(r, x, y, m = 1){
 	m = m*z
@@ -393,13 +453,6 @@ function rot(a, [x,y]){
 	]
 }
 
-const rect = (w, h) => ([
-	[0, 0],
-	[w, 0],
-	[w, h],
-	[0, h],
-])
-
 const rect_my = (y, h) => ([
 	[0, -y],
 	[h, -y],
@@ -410,16 +463,15 @@ const rect_my = (y, h) => ([
 const tach_long = rect_my(tach_thick, tach_length)
 const tach_short = rect_my(tach_thick, tach_length / 2)
 
-const arm_w = 2
-const arm_w2 = 3
-const base_h = 1.5
-const base_w = 4
-const fudge = .5
-const lume_inset = 2
-const lume_inset_arm = .75
-const minute_hand_w = 2.5
-const stem_w = 1.5
-const sub_hand_w = 1
+function shadow_on(c){
+	c.shadowBlur = z*shadowBlur
+	c.shadowOffsetX = c.shadowOffsetY = z*shadowOffset
+}
+function shadow_off(c){
+	c.shadowBlur = 0
+	c.shadowOffsetX = 0
+	c.shadowOffsetY = 0
+}
 
 let chrono_align
 function display(t, chrono_offset){
@@ -429,6 +481,7 @@ function display(t, chrono_offset){
 	const seconds = t.getSeconds() + t.getMilliseconds() / 1000
 	let chrono = (performance.now() - chrono_align)
 	chrono = (chrono - (chrono % delay) + chrono_offset) % chrono_max
+	fc.shadowColor = 'rgba(0,0,0,1)'
 
 	fc.fillStyle = palettes.mark
 	fc.strokeStyle = palettes.mark
@@ -445,10 +498,12 @@ function display(t, chrono_offset){
 	// subdials
 	// second hand
 	fc.save()
+	shadow_on(fc)
 	fc.translate((half - sub_seconds.y) * z, (sub_seconds.x - half) * z)
-	fc.beginPath(); fc.arc(0, 0, 2*z, 0, tau); fc.fill()
 	fc.rotate(seconds * tau_60)
-	shapec(
+	fc.beginPath()
+	fc.arc(0, 0, 2*z, 0, tau)
+	shapep(
 		fc,
 		[
 			[0, 0],
@@ -460,42 +515,29 @@ function display(t, chrono_offset){
 		],
 		0, 0-sub_hand_w/2,
 	)
+	fc.fill()
 	fc.restore()
+
 	// chrono minute hand (30)
 	fc.save()
 	fc.translate((half - chrono_minutes.y) * z, (chrono_minutes.x - half) * z)
-	fc.beginPath(); fc.arc(0, 0, 2*z, 0, tau); fc.fill()
 	fc.rotate(((chrono % 1800e3) / 1800e3) * tau)
-	shapec(
-		fc,
-		[
-			[0, 0],
-			[10, 0],
-			[11.5, sub_hand_w/2],
-			[10, sub_hand_w],
-			[0, sub_hand_w],
-			[0, 0],
-		],
-		0, 0-sub_hand_w/2,
-	)
+	shadow_on(fc)
+	fc.beginPath()
+	fc.arc(0, 0, 2*z, 0, tau)
+	shapep(fc, chrono_minute_hand, 0, -sub_hand_w/2)
+	fc.fill()
 	fc.restore()
-	fc.save()
+
 	// chrono hour hand
+	fc.save()
 	fc.translate((half - chrono_hours.y) * z, (chrono_hours.x - half) * z)
-	fc.beginPath(); fc.arc(0, 0, 2*z, 0, tau); fc.fill()
 	fc.rotate((chrono / chrono_max) * tau)
-	shapec(
-		fc,
-		[
-			[0, 0],
-			[10, 0],
-			[11.5, sub_hand_w/2],
-			[10, sub_hand_w],
-			[0, sub_hand_w],
-			[0, 0],
-		],
-		0, 0-sub_hand_w/2,
-	)
+	shadow_on(fc)
+	fc.beginPath()
+	fc.arc(0, 0, 2*z, 0, tau)
+	shapep(fc, chrono_hour_hand, 0, -sub_hand_w/2)
+	fc.fill()
 	fc.restore()
 
 	// hour hand
@@ -503,42 +545,30 @@ function display(t, chrono_offset){
 	fc.rotate(
 		(hr / 12 + minutes / 720 + seconds / 43200) * tau,
 	)
-	shapec(
-		fc,
-		[
-			[0, 0],
-			[23, 0],
-			[26, minute_hand_w/2],
-			[23, minute_hand_w],
-			[0, minute_hand_w],
-			[0, 0],
-		],
-		0, -minute_hand_w/2,
-	)
+	shadow_on(fc)
+	fc.beginPath()
+	fc.arc(0, 0, 3.75*z, 0, tau)
+	shapep(fc, hour_hand, 0, -minute_hand_w/2)
+	fc.fill()
+	shadow_off(fc)
 	// hour lume
+	fc.lineWidth = 1.5*z
+	fc.strokeStyle = palettes.highlight
 	fc.beginPath()
 	fc.moveTo(6*z, 0)
 	fc.lineTo(22*z, 0)
-	fc.lineWidth = 1.5*z
-	fc.strokeStyle = palettes.highlight
 	fc.stroke()
 	fc.restore()
 
 	// minute hand
 	fc.save()
 	fc.rotate((minutes / 60 + seconds / 3600) * tau)
-	shapec(
-		fc,
-		[
-			[0, 0],
-			[40, 0],
-			[43+fudge, minute_hand_w/2],
-			[40, minute_hand_w],
-			[0, minute_hand_w],
-			[0, 0],
-		],
-		0, -minute_hand_w/2,
-	)
+	shadow_on(fc)
+	fc.beginPath()
+	fc.arc(0, 0, 3*z, 0, tau)
+	shapep(fc, minute_hand, 0, -minute_hand_w/2)
+	fc.fill()
+	shadow_off(fc)
 	// minute lume
 	fc.beginPath()
 	fc.moveTo(6*z, 0)
@@ -548,48 +578,24 @@ function display(t, chrono_offset){
 	fc.stroke()
 	fc.restore()
 
-	// center post
-	fc.beginPath()
-	fc.arc(0, 0, 4*z, 0, tau)
-	fc.fill()
-
 	// chrono second hand
 	fc.save()
-	fc.lineWidth = .5*z
 	fc.rotate(((chrono % 60e3) / 60e3) * tau)
-
-	// stick
+	shadow_on(fc)
 	fc.beginPath()
-	fc.moveTo(-15*z, 0)
-	fc.lineTo(23*z, 0)
-	fc.lineWidth = 1*z
-	fc.stroke()
-
+	fc.arc(0, 0, 2*z, 0, tau)
 	// tip
-	fc.beginPath()
-	fc.moveTo(30*z, 0)
-	fc.lineTo(43*z, 0)
-	fc.lineWidth = .5*z
-	fc.stroke()
-
-	// tail
-	const tw = 1.5
-	shapec(
-		fc,
-		[
-			[-tw, 0],
-			[0, -tw],
-			[11, 0],
-			[0, tw],
-			[-tw, 0],
-		],
-		-15
-	)
+	shapep(fc, rect_my(.25, 13), 30)
+	// stick
+	shapep(fc, rect_my(.5, 38), -15)
+	shapep(fc, chr_sec_tail, -15)
 	fc.fill()
+	shadow_off(fc)
 
 	// arrowhead
 	fc.fillStyle = palettes.highlight
 	fc.lineWidth = .5*z
+	fc.beginPath()
 	shapec(
 		fc,
 		[
