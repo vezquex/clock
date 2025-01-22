@@ -307,6 +307,14 @@ const chr_sec_tail = [
 	[0, cstw],
 	[-cstw, 0],
 ]
+const chr_sec_head = [
+	[-2, 0],
+	[0, -2],
+	[11, 0],
+	[0, 2],
+	[-2, 0],
+]
+
 const hour_hand = [
 	[0, 0],
 	[23, 0],
@@ -493,7 +501,7 @@ function display(t, chrono_offset){
 
 	const hr = hours % 12
 
-	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds`;
+	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds`
 
 	// subdials
 	// second hand
@@ -592,24 +600,14 @@ function display(t, chrono_offset){
 	// stick
 	shapep(fc, rect_my(.5, 38), -15)
 	shapep(fc, chr_sec_tail, -15)
+	shapep(fc, chr_sec_head, 23, 0)
 	fc.fill()
 	shadow_off(fc)
-
-	// arrowhead
+	// lume
 	fc.fillStyle = palettes.highlight
 	fc.lineWidth = .5*z
 	fc.beginPath()
-	shapec(
-		fc,
-		[
-			[-2, 0],
-			[0, -2],
-			[11, 0],
-			[0, 2],
-			[-2, 0],
-		],
-		23, 0,
-	)
+	shapec(fc, chr_sec_head, 23, 0)
 	fc.stroke()
 	fc.restore()
 
