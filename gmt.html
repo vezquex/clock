@@ -268,12 +268,11 @@ const minute_r = half * 694/1024
 const minute_thick = 0.125
 const minute_thick_major = 0.25
 
+const {cos, min, sin} = Math
 const tau = 2 * Math.PI
 const tau_4 = tau / 4
 const tau_12 = tau / 12
 const tau_60 = tau / 60
-const {cos, min, sin} = Math
-const locale = 'en-us'
 
 // zoom
 let z = 1
@@ -375,7 +374,7 @@ function display(t){
 
 	const hr = hours % 12
 
-	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds, on day ${day_of_month} of the month.`;
+	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds, on day ${day_of_month} of the month.`
 
 	// hour hand
 	fc.save()
@@ -496,7 +495,7 @@ function display(t){
 	fc.save()
 	fc.lineWidth = 1*z
 	fc.rotate(seconds * tau_60)
-	
+
 	fc.beginPath()
 	fc.moveTo(-15*z, 0)
 	fc.lineTo(41.1*z, 0)

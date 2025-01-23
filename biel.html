@@ -400,8 +400,6 @@ function circle(r, x, y, m = 1){
 	c.fill()
 }
 
-const locale = 'en-us'
-
 function rot(a, [x,y]){
 	return [
 		x * cos(a) + y * sin(a),
@@ -531,7 +529,7 @@ function display(t){
 
 	const hr = hours % 12
 
-	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds, on day ${day_of_month} of the month.`;
+	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds, on day ${day_of_month} of the month.`
 
 	// hour hand
 	fc.save()

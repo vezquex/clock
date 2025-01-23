@@ -355,14 +355,13 @@ const shadowBlur = .5
 const shadowOffset = .25
 const thick = .2
 
-const tau = 2 * Math.PI
+const {cos, min, sin} = Math
 const sq2 = Math.SQRT2
+const tau = 2 * Math.PI
 const tau_2 = tau / 2
 const tau_4 = tau / 4
 const tau_12 = tau / 12
 const tau_60 = tau / 60
-const {cos, min, sin} = Math
-const locale = 'en-us'
 
 // zoom
 let z = 1
@@ -480,7 +479,7 @@ function display(t){
 	const seconds = t.getSeconds() + t.getMilliseconds() / 1000
 	const day_of_month = day_of_month_el.innerHTML = (t.getDate()+'')
 	const hr = hours % 12
-	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds, on day ${day_of_month} of the month.`;
+	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds, on day ${day_of_month} of the month.`
 
 	fc.fillStyle = palettes.mark
 	fc.lineWidth = .5*z
