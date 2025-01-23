@@ -213,8 +213,8 @@ const minute_h = 43.5
 const minute_len = 2.25
 const minute_r = half * 766/1024
 const minute_thick = 0.25
-const moon_offset_deg = 79.364
-const moon_tick = 360 / 59
+const moon_offset_deg = 47.75
+const moon_tick = 360 / (2 * 29.53059)
 const shadowBlur = .5
 const shadowOffset = .25
 const thick = .2
@@ -326,7 +326,7 @@ function display(t){
 	const hr = hours % 12
 	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds, on a ${t.toLocaleString(locale, {weekday:'long'})}, day ${day_of_month} of the month.`
 	const epoch_day = t.getTime() / 86400e3
-	const moonphase_angle = (epoch_day * moon_tick - moon_offset_deg) % 360
+	const moonphase_angle = (epoch_day * moon_tick + moon_offset_deg) % 360
 	moonphase_hand.setAttribute('transform',`rotate(${moonphase_angle},5724,5724)`)
 
 	fc.save()
