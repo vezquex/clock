@@ -296,10 +296,10 @@ function display(t){
 	c.fillStyle = palettes.color
 	c.clearRect(0, 0, width*z, height*z)
 	let x = pad_h, y = pad_v - grid_h, m = .5
-	const out = `\`1234567890-=~!@#$%^&*()_+[]\\;',./    □{}|:"<>?¡   AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz`
+	const out = `\`1234567890-=~!@#$%^&*()_+[]\\;',./    □{}|:"<>?¡    AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz`
 	let i = 0
 	let w = 13
-	;[...Array(8)].forEach(() => 
+	;[...Array(8)].forEach(() =>
 		draw_str(out.slice(i, i+=w), x/m, y+=grid_h, m)
 	)
 }
