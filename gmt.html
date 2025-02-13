@@ -18,7 +18,7 @@
 		overflow: hidden;
 	}
 	body, .btn, input, select {
-		font-family: sans-serif;
+		font-family: Roboto, sans-serif;
 		font-size: 1em;
 		margin: 0;
 	}
@@ -65,11 +65,15 @@
 	.hotkey { text-decoration: underline dotted; }
 	.mono {font-family: 'Roboto Mono', monospace;}
 	.row { display: flex; }
+	.serif {font-family: 'Roboto Serif', serif;}
 	.svg {
 		margin: 0 auto;
 		max-height: 100vh;
 	}
-	.ten {letter-spacing: -.051em; font-size: .0833em; }
+	.bezel-font {
+		letter-spacing: -.051em;
+		font-weight: bold;
+	}
 	.thick { line-height: 3em; }
 	.wide { width: 100vw;	}
 	/* #face {opacity:.5} */
@@ -84,73 +88,73 @@
 <circle style="fill:var(--dial);" r="700" cx="1024" cy="1024"/>
 
 <path id="twelve" style="fill:var(--lume);stroke:var(--edge);stroke-width:12px;" d="M 940,392 l 84,192 84,-192z"/>
-<g style="fill:var(--bezel_text);font-size:100px;font-weight:bold;">
-	<text class="ten" transform="rotate(30 1024 1024) translate(1024 192) scale(27 16)">
+<g class="bezel-font" style="fill:var(--bezel_text);font-size:8px;">
+	<text transform="rotate(30 1024 1024) translate(1024 192) scale(27 16)">
 		2
 	</text>
-	<text class="ten" transform="rotate(60 1024 1024) translate(1024 192) scale(27 16)">
+	<text transform="rotate(60 1024 1024) translate(1024 192) scale(27 16)">
 		4
 	</text>
-	<text class="ten" transform="rotate(90 1024 1024) translate(1024 192) scale(27 16)">
+	<text transform="rotate(90 1024 1024) translate(1024 192) scale(27 16)">
 		6
 	</text>
-	<text class="ten" transform="rotate(-60 1024 1024) translate(1024 1952) scale(27 16)">
+	<text transform="rotate(-60 1024 1024) translate(1024 1952) scale(27 16)">
 		8
 	</text>
 
-	<text class="ten" transform="rotate(-26.5 1024 1024) translate(1024 1952) scale(27 16)">
+	<text transform="rotate(-26.5 1024 1024) translate(1024 1952) scale(27 16)">
 		1
 	</text>
-	<text class="ten" transform="rotate(-33.25 1024 1024) translate(1024 1952) scale(27 16)">
+	<text transform="rotate(-33.25 1024 1024) translate(1024 1952) scale(27 16)">
 		0
 	</text>
 
-	<text class="ten" transform="rotate(4.5 1024 1024) translate(1024 1952) scale(27 16)">
+	<text transform="rotate(4.5 1024 1024) translate(1024 1952) scale(27 16)">
 		1
 	</text>
-	<text class="ten" transform="rotate(-2.5 1024 1024) translate(1024 1952) scale(27 16)">
+	<text transform="rotate(-2.5 1024 1024) translate(1024 1952) scale(27 16)">
 		2
 	</text>
 
-	<text class="ten" transform="rotate(35.5 1024 1024) translate(1024 1952) scale(27 16)">
+	<text transform="rotate(35.5 1024 1024) translate(1024 1952) scale(27 16)">
 		1
 	</text>
-	<text class="ten" transform="rotate(28.5 1024 1024) translate(1024 1952) scale(27 16)">
+	<text transform="rotate(28.5 1024 1024) translate(1024 1952) scale(27 16)">
 		4
 	</text>
 
-	<text class="ten" transform="rotate(65 1024 1024) translate(1024 1952) scale(27 16)">
+	<text transform="rotate(65 1024 1024) translate(1024 1952) scale(27 16)">
 		1
 	</text>
-	<text class="ten" transform="rotate(58 1024 1024) translate(1024 1952) scale(27 16)">
+	<text transform="rotate(58 1024 1024) translate(1024 1952) scale(27 16)">
 		6
 	</text>
 
-	<text class="ten" transform="rotate(265.5 1024 1024) translate(1024 192) scale(27 16)">
+	<text transform="rotate(265.5 1024 1024) translate(1024 192) scale(27 16)">
 		1
 	</text>
-	<text class="ten" transform="rotate(272.5 1024 1024) translate(1024 192) scale(27 16)">
+	<text transform="rotate(272.5 1024 1024) translate(1024 192) scale(27 16)">
 		8
 	</text>
 
-	<text class="ten" transform="rotate(295.5 1024 1024) translate(1024 192) scale(27 16)">
+	<text transform="rotate(295.5 1024 1024) translate(1024 192) scale(27 16)">
 		2
 	</text>
-	<text class="ten" transform="rotate(304.5 1024 1024) translate(1024 192) scale(27 16)">
+	<text transform="rotate(304.5 1024 1024) translate(1024 192) scale(27 16)">
 		0
 	</text>
 
-	<text class="ten" transform="rotate(325.5 1024 1024) translate(1024 192) scale(27 16)">
+	<text transform="rotate(325.5 1024 1024) translate(1024 192) scale(27 16)">
 		2
 	</text>
-	<text class="ten" transform="rotate(334.5 1024 1024) translate(1024 192) scale(27 16)">
+	<text transform="rotate(334.5 1024 1024) translate(1024 192) scale(27 16)">
 		2
 	</text>
 
-	<text class="ten" transform="rotate(355.5 1024 1024) translate(1024 192) scale(27 16)">
+	<text transform="rotate(355.5 1024 1024) translate(1024 192) scale(27 16)">
 		2
 	</text>
-	<text class="ten" transform="rotate(364.5 1024 1024) translate(1024 192) scale(27 16)">
+	<text transform="rotate(364.5 1024 1024) translate(1024 192) scale(27 16)">
 		4
 	</text>
 </g>
@@ -158,7 +162,7 @@
 	<rect id="date_window" x="-100" y="-60" width="192" height="128" style="fill:var(--lume);stroke:var(--edge);stroke-width:12px;"/>
 	<text id="day_of_month" dominant-baseline="central" style="font-size:144px;font-family:'Roboto Mono',monospace;"></text>
 </g>
-<text x="1024" y="716" style="fill:var(--text);font:148px serif;">
+<text class="serif" x="1024" y="716" style="fill:var(--text);font-size:148px;">
 	Θ
 </text>
 <text x="683" y="772" class="mono" style="fill:var(--text);font-size: 64px;letter-spacing:5px;" transform="scale(1.5 1)">
