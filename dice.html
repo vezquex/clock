@@ -326,7 +326,7 @@ suits[3].pip = {
 	shape: polygram(4, dl/((4+1) * pip_size), tau_8, sqrt(3)/3),
 }
 
-const chess = {
+const chess_pieces = {
 	b: {
 		name: 'bishop black',
 		color: 'red',
@@ -425,13 +425,14 @@ let chess_positions = [
 ]
 chess_positions = chess_positions.map(
 	fen => fen.split(' ')[0].split('').reduce((a, c)=>{
-		if(c === '/'){ return a }
 		const n = parseInt(c)
 		if(!isNaN(n)){
-			return a.concat(Array(n).fill())
+			a.push(...Array(n).fill())
+			return a
 		}
-		const shape = chess[c]
-		return a.concat(chess[c])
+		const piece = chess_pieces[c]
+		if(piece){ a.push(piece) }
+		return a
 	}, [])
 )
 
