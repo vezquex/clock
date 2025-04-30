@@ -123,7 +123,7 @@
 	</label>
 	<label class='row thick'>
 		<span class='label'><span class='hotkey'>B</span>ezel</span>
-		<input id='bezel_offset' accesskey='b' value='120' type='range' max='120' step='1' onInput='display_static()'>
+		<input id='bezel_offset' accesskey='b' value='60' type='range' max='60' step='1' onInput='display_static()'>
 	</label>
 	<label class='row thick'>
 		<span class='label'><span class='hotkey'>T</span>heme</span>
@@ -197,6 +197,7 @@ const width = height
 const half = width / 2
 const bezel_r = 50
 const bezel_mark_len = 9
+const bezel_mark_len_mini = 1.5
 const bezel_mark_thick = 0.75
 const dash = 1.2
 const hour_h = 26.5
@@ -458,7 +459,7 @@ function display_static(){
 	if(bezel_el.value === '0'){
 		bezel_el.value = bezel_el.max
 	}
-	const bezel_frac = Number(bezel_el.value) / 120
+	const bezel_frac = Number(bezel_el.value) / 60
 	const bezel_angle = bezel_frac * tau
 	eid('bezel_group').setAttribute(
 		'transform',
@@ -469,20 +470,24 @@ function display_static(){
 	c.lineCap = 'round'
 	c.lineWidth = 2 * bezel_mark_thick * z
 	c.strokeStyle = palettes.mark
-	Array(60).fill().map((_, i) => i)
-	.filter(x => x % 60)
-	.forEach(i => {
-		const a = (i+45)*tau_60 + bezel_angle
-		circle(
-			bezel_mark_thick,
-			half + (bezel_r * cos(a)),
-			half + (bezel_r * sin(a)),
-		)}
-	)
+	;[
+		2, 4, 6, 8, 10
+	].forEach(i => {
+		const a = i * tau_12 - tau_4 + bezel_angle
+		const x = half + (bezel_r * cos(a))
+		const y = half + (bezel_r * sin(a))
+		c.beginPath()
+		c.moveTo(x*z, y*z)
+		c.lineTo(
+			(half + ((bezel_r + bezel_mark_len_mini) * cos(a)))*z,
+			(half + ((bezel_r + bezel_mark_len_mini) * sin(a)))*z,
+		)
+		c.stroke()
+	})
 	;[
 		1, 3, 5, 7, 9, 11,
 	].forEach(i => {
-		const a = -i * tau_12 + tau_4 + bezel_angle
+		const a = i * tau_12 - tau_4 + bezel_angle
 		const x = half + (bezel_r * cos(a))
 		const y = half + (bezel_r * sin(a))
 		c.beginPath()
