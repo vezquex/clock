@@ -13,29 +13,23 @@
 		accent-color: var(--accent);
 		color-scheme: dark;
 	}
-	body {
-		min-height:100vh;
-		overflow: hidden;
-	}
-	body, .btn, input, select {
+	body, input, select {
 		font-family: Roboto, sans-serif;
 		font-size: 1rem;
 		margin: 0;
 	}
-	body, .btn, select {
+	body, select {
 		background-color: var(--bg);
 		color: var(--text);
 	}
-	.btn, input, select, summary, .label {
-		display: block;
-		padding: .5em;
-		border-width: 1px;
-	}
-	input {
-		width: 100%;
+	body {
+		min-height:100vh;
+		overflow: hidden;
 	}
 	select {
-		min-width: 8rem;
+		display: block;
+		border-width: 1px;
+		padding: .5em;
 	}
 	.column {
 		display: flex;
