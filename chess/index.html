@@ -329,10 +329,10 @@ const face_box = eid('face_box')
 function resize(event){
 	const scale = window.devicePixelRatio || 1
 	const face_box_height = floor(window.innerHeight - button_box.offsetHeight) - 1
-	z = floor(min(
+	z = max(1, floor(min(
 		window.innerWidth / width,
 		face_box_height / height,
-	))
+	)))
 	face_box.style.height = face_box_height + 'px'
 	button_box.style.width = window.innerWidth + 'px'
 	can.height = height * scale * z

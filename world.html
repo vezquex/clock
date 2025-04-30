@@ -78,7 +78,7 @@
 
 <div class='column' style='min-height:100vh;'>
 	<input hidden id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
-	<div id='LCD' class='grow'><canvas id='face'></canvas></div>
+	<div id='lcd' class='grow'><canvas id='face'></canvas></div>
 	<div class='fade row'>
 		<a href='..' accesskey='h' class='btn collapse'>
 			<span class='hotkey'>H</span>ome
@@ -102,7 +102,7 @@
 </div>
 
 <script type='text/javascript'>
-const {abs, cos, floor, min, sin} = Math
+const {abs, cos, floor, max, min, sin} = Math
 const doc = document
 const $ = doc.querySelector.bind(doc)
 const eid = doc.getElementById.bind(doc)
@@ -586,14 +586,14 @@ function colon(x, y){
 	shape(colon_shape, x, y+9)
 }
 
-const lcd_el = eid('LCD')
+const lcd_el = eid('lcd')
 function resize(event){
 	const rect = lcd_el.getBoundingClientRect()
 	const scale = window.devicePixelRatio || 1
-	z = floor(min(
+	z = max(1, floor(min(
 		rect.width / width,
 		rect.height / height,
-	))
+	)))
 	can.height = height * scale * z
 	can.width = width * scale * z
 	can.style.height = (height*z)+'px'

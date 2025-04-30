@@ -33,7 +33,7 @@
 </div>
 
 <script type='text/javascript'>
-const {floor, min} = Math
+const {floor, max, min} = Math
 
 let palettes
 const color_palettes = {
@@ -276,10 +276,10 @@ const face_box = document.getElementById('face_box')
 function resize(event){
 	const scale = window.devicePixelRatio || 1
 	const face_box_height = floor(window.innerHeight) - 1
-	z = floor(min(
+	z = max(1, floor(min(
 		window.innerWidth / width,
 		face_box_height / height,
-	))
+	)))
 	face_box.style.height = face_box_height + 'px'
 	can.height = height * scale * z
 	can.width = width * scale * z

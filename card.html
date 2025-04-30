@@ -142,10 +142,10 @@ function capitalize(s) {
 
 function resize(){
 	const scale = window.devicePixelRatio || 1
-	z = floor(min(
+	z = max(1, floor(min(
 		window.innerWidth / width,
 		window.innerHeight / height,
-	))
+	)))
 	can.height = height * scale * z
 	can.width = width * scale * z
 	can.style.height = (height*z)+'px'

@@ -157,14 +157,14 @@ const grid_w2 = grid_w * 2
 let z = 1
 
 const offset_el = eid('offset')
-const {cos, floor, min, sin} = Math
+const {cos, floor, max, min, sin} = Math
 
 function resize(){
 	const scale = window.devicePixelRatio || 1
-	z = floor(min(
+	z = max(1, floor(min(
 		window.innerWidth / width,
 		window.innerHeight / height,
-	))
+	)))
 	can.height = height * scale * z
 	can.width = width * scale * z
 	can.style.height = (height*z)+'px'
