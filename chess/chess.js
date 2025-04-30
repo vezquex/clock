@@ -27,10 +27,10 @@ const c = canvas.getContext('2d')
 
 function resize(event){
 	const scale = window.devicePixelRatio || 1
-	const canvas_height = floor(min(height, width))
-	x ??= floor((width - canvas_height) / 2)
-	z = floor(canvas_height / virt_height)
-	canvas.style.height = canvas_height + 'px'
+	const canvas_length = floor(min(height, width))
+	x ??= floor((width - canvas_length) / 2)
+	z = floor(canvas_length / virt_height)
+	canvas.style.height = canvas_length + 'px'
 	canvas.height = virt_height * scale * z
 	canvas.width = virt_width * scale * z
 	canvas.style.height = (virt_height*z)+'px'
