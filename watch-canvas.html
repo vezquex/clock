@@ -35,14 +35,14 @@
 		display: flex;
 		flex-direction: column;
 	}
+	.abs { position:absolute; }
 	.fade { opacity: 0.5; }
 	.grow { flex-grow: 1; }
 	.w100 { width: 100%; }
 </style>
 <body class='column'>
-<div id='lcd' class='grow'>
-	<canvas id='face'></canvas>
-</div>
+<canvas id='face' class='abs'></canvas>
+<div id='lcd' class='grow'></div>
 <div class='fade'>
 	<input id='offset' class='w100' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
 	<select id='theme' class='w100' title='Theme' onChange='setTheme(this.value)'></select>
@@ -125,8 +125,8 @@ const months = ['JAN.', 'FEB.', 'MAR.', 'APR.', 'MAY', 'JUNE', 'JULY', 'AUG.', '
 
 const _ = void 0
 
-const can = eid('face')
-const c = can.getContext('2d')
+const face = eid('face')
+const fc = face.getContext('2d')
 
 const height = 160
 const width = 130
@@ -138,17 +138,15 @@ let z = 1
 const lcd_el = eid('lcd')
 function resize(){
 	const rect = lcd_el.getBoundingClientRect()
-	const scale = window.devicePixelRatio || 1
 	z = max(1, floor(min(
 		rect.width / width,
 		rect.height / height,
 	)))
-	console.log(z, rect.height/height, rect.height, height)
-	can.height = height * z
-	can.width = width * z
-	// can.style.height = height + 'px';
-	// can.style.width = width + 'px';
-	c.setTransform(z, 0, 0, z, 0, 0)
+	face.height = height * z
+	face.width = width * z
+	face.style.left = ((window.innerWidth - face.width)/2) + 'px'
+	face.style.top = ((rect.height - face.height)/2) + 'px'
+	fc.setTransform(z, 0, 0, z, 0, 0)
 	synchronize()
 }
 window.addEventListener('resize', resize)
@@ -889,7 +887,7 @@ function symbol(s, x, y, m, p, f, c = c){
 	}
 }
 
-function str(s, x, y, m = 1, p = 'body', f = font, ctx = c){
+function str(s, x, y, m = 1, p = 'body', f = font, ctx = fc){
 	s = [...s] // unicode
 	for(var i = 0; i < s.length; ++i){
 		symbol(
@@ -914,16 +912,16 @@ function display(t){
 		'-'+
 		zeropad2(t.getDate())
 
-	c.clearRect(0, 0, width, height)
+	fc.clearRect(0, 0, width, height)
 
 	const tiles = tiles_h * tiles_v
 	for(var i = 0; i < tiles; ++i){
-		c.fillStyle = 'rgba('+
+		fc.fillStyle = 'rgba('+
 			Array.apply(null, Array(3)).map(
 				() => floor(random() * 256)
 			).concat(.1).join()
 			+')'
-		c.fillRect(
+		fc.fillRect(
 			i % tiles_h * g2,
 			floor(i / tiles_h) * g2,
 			sym_w2, sym_w2
