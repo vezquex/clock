@@ -14,6 +14,7 @@
 		color-scheme: dark;
 	}
 	body {
+		min-height:100vh;
 		overflow: hidden;
 	}
 	body, .btn, input, select {
@@ -36,15 +37,21 @@
 	select {
 		min-width: 8rem;
 	}
-
+	.column {
+		display: flex;
+		flex-direction: column;
+	}
 	.fade { opacity: 0.5; }
+	.grow { flex-grow: 1; }
 	.w100 { width: 100%; }
 </style>
-
-<canvas id='face'></canvas>
+<body class='column'>
+<div id='lcd' class='grow'>
+	<canvas id='face'></canvas>
+</div>
 <div class='fade'>
 	<input id='offset' class='w100' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
-	<select id='theme' title='Theme' onChange='setTheme(this.value)'></select>
+	<select id='theme' class='w100' title='Theme' onChange='setTheme(this.value)'></select>
 </div>
 <canvas id='icon'></canvas>
 
@@ -132,13 +139,26 @@ const width = 130
 const pad_h = 6
 const pad_v = 6
 
-// zoom dev
-const z = 5
-can.height = height * z
-can.width = width * z
-// can.style.height = height + 'px';
-// can.style.width = width + 'px';
-c.setTransform(z, 0, 0, z, 0, 0)
+// zoom
+let z = 1
+const lcd_el = eid('lcd')
+function resize(){
+	const rect = lcd_el.getBoundingClientRect()
+	const scale = window.devicePixelRatio || 1
+	z = max(1, floor(min(
+		rect.width / width,
+		rect.height / height,
+	)))
+	console.log(z, rect.height/height, rect.height, height)
+	can.height = height * z
+	can.width = width * z
+	// can.style.height = height + 'px';
+	// can.style.width = width + 'px';
+	c.setTransform(z, 0, 0, z, 0, 0)
+	synchronize()
+}
+window.addEventListener('resize', resize)
+window.screen.orientation.addEventListener('change', resize)
 
 // icon
 const icon_size = 32
@@ -835,7 +855,7 @@ const fonts = {
 	},
 }
 
-const {ceil, floor, random, round} = Math
+const {ceil, floor, max, min, random, round} = Math
 
 const sym_w = 5
 const sym_w2 = sym_w * 2
@@ -967,6 +987,6 @@ function zeropad2(s){
 	return ('0' + s).slice(-2)
 }
 
-synchronize()
+resize()
 
 </script>
