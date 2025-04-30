@@ -44,7 +44,7 @@
 <canvas id='face' class='abs'></canvas>
 <div id='lcd' class='grow'></div>
 <div class='fade'>
-	<input id='offset' class='w100' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onChange='synchronize()'>
+	<input id='offset' class='w100' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
 	<select id='theme' class='w100' title='Theme' onChange='setTheme(this.value)'></select>
 </div>
 <canvas id='icon'></canvas>
