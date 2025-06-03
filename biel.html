@@ -662,6 +662,14 @@ function display_static(){
 	waves_c.restore()
 
 	c.clearRect(0, 0, width*z, height*z)
+
+	// wave gap 12 o'clock
+	shape(
+		rect_my(hour_len/2, hour_thick),
+		half-hour_thick/2,
+		half - hour_r_rect - hour_len/2,
+	)
+
 	c.fillStyle = palettes.mark
 	c.lineWidth = lineWidth*z
 	;[
