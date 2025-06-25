@@ -18,7 +18,6 @@ body {
 	display:flex;
 	flex-direction:column;
 	align-items:center;
-	justify-content:center;
 	height:100vh;
 }
 p {margin:0;overflow:hidden;}
@@ -95,8 +94,6 @@ function clock_widget(){
 		return `${pad2(t.getHours())}:${pad2(t.getMinutes())}${clock.sec?':'+pad2(t.getSeconds()):''}`
 	}
 
-
-	// display at the start of each second
 	const synchronize = function(){
 		let t = new Date()
 		// t = new Date(Date.now() + 1*864e5)
