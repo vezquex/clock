@@ -127,7 +127,7 @@ function copy_text(get_text, ev){
 	navigator.clipboard.writeText(get_text ? get_text() : ev.currentTarget.innerText)
 	const target = ev.currentTarget
 	target.classList.add('day-bg')
-	window.setTimeout(()=>target.classList.remove('day-bg'), 500)
+	window.setTimeout(()=>target.classList.remove('day-bg'), 150)
 }
 
 // icon
