@@ -14,16 +14,17 @@
 		box-sizing: border-box;
 	}
 	body, .btn, input, select {
-		background-color: var(--bg);
 		color: var(--color);
 		font-family: monospace;
 		font-size: 1rem;
 		margin: 0;
 	}
 	body {
+		background-color: var(--bg);
 		overflow-x: hidden;
 	}
 	.btn {
+		background: 0;
 		border-color: rgba(0, 0, 0, .5);
 		border-style: outset;
 		border-width: 1px;
@@ -47,6 +48,8 @@
 		display: flex;
 		flex-direction: column;
 	}
+	.copied { background: var(--tertiary); }
+	.copy { cursor: copy;}
 	.fade { opacity: .5; }
 	.grow { flex-grow: 1; }
 	.grow2 { flex-grow: 2; }
@@ -78,8 +81,8 @@
 
 <div class='column' style='min-height:100vh;'>
 	<input hidden id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
-	<div id='lcd' class='grow'><canvas id='face'></canvas></div>
-	<div class='fade row'>
+	<div id='lcd' class='copy grow'><canvas id='face'></canvas></div>
+	<div id='controls' class='fade row'>
 		<a href='..' accesskey='h' class='btn collapse'>
 			<span class='hotkey'>H</span>ome
 		</a>
@@ -167,6 +170,7 @@ const zone_count = city_info.reduce(
 	{count: 0, found: {}}
 ).count
 
+let t = new Date()
 let dst
 let mem_zone = 0
 let zone_index = city_info.findIndex(([z])=>(z === mem_zone))
@@ -186,12 +190,16 @@ const themes = {
 		_body: '3',
 		bg: color_palettes.black,
 		color: color_palettes.white,
+		secondary: color_palettes.gray_2_3,
+		tertiary: color_palettes.gray_1_3,
 	},
 	Light: {
 		_scale: four_positive,
 		_body: '3',
 		bg: color_palettes.white,
 		color: color_palettes.black,
+		secondary: color_palettes.gray_1_3,
+		tertiary: color_palettes.gray_2_3,
 	},
 }
 for(k in themes){
@@ -199,7 +207,7 @@ for(k in themes){
 	;(theme._scale||[]).forEach((color, i)=>theme[i] = color_palettes[color])
 	Object.assign(theme, color_palettes)
 }
-const colors = ['bg', 'color'].concat(Object.keys(color_palettes))
+const colors = ['bg','color','secondary','tertiary'].concat(Object.keys(color_palettes))
 eid('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
 
 
@@ -351,7 +359,23 @@ bind_on_button(
 	zone_inc,
 	['ArrowRight','ArrowDown',...'dfjns+=.>]})'],
 )
+const lcd_el = eid('lcd')
+bind_on_button(
+	lcd_el,
+	copy_text.bind(null, eid('controls'), ()=>time_text(t)),
+	['c'],
+)
 
+function copy_text(el, get_text){
+	navigator.clipboard.writeText(get_text())
+	el.classList.add('copied')
+	window.setTimeout(()=>el.classList.remove('copied'), 150)
+}
+function time_text(t){
+	let hours = t.getUTCHours()
+	if(dst){ hours += 1 }
+	return `${zeropad2(hours)}:${zeropad2(t.getUTCMinutes())}:${zeropad2(t.getUTCSeconds())}`
+}
 function zone_dec(){
 	zone_index = (zone_index - 1 + city_info.length) % city_info.length
 	mem_zone = city_info[zone_index][0]
@@ -378,7 +402,7 @@ function zone_desc(zone){
 function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(offset_el.value) + (mem_zone * 36e5)
-	const t = new Date(Date.now() + offset)
+	t = new Date(Date.now() + offset)
 	dst ??= isDST(t)
 	display(t)
 	const r = 1000 - (t % 1000)
@@ -586,7 +610,6 @@ function colon(x, y){
 	shape(colon_shape, x, y+9)
 }
 
-const lcd_el = eid('lcd')
 function resize(event){
 	const rect = lcd_el.getBoundingClientRect()
 	const scale = window.devicePixelRatio || 1
