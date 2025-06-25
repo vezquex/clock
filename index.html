@@ -7,81 +7,76 @@
 Clock
 </title>
 <style>
-:root {color-scheme: dark;}
+:root {color-scheme:dark;}
 body {
 	background:#000;
 	color:#BEBEBE;
 	font-family:'Roboto Mono','Consolas',monospace;
-	font-size:1.5rem;
-	line-height:1.25;
-	margin:0 auto;
-	padding:0.5em;
+	font-size:min(15vh, 7vw);
+	line-height:1.5;
+	margin:0;
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	justify-content:center;
+	height:100vh;
 }
-.time {font-size:3.5em; cursor:pointer; clear:left;}
-.seconds-wrap {font-size:.5em;}
-.numdate {float:left;}
-.weekday_ja {
-	float:left;
-	font-family:sans-serif;
-	font-size:.75em;
-	height:1.5rem;
-	line-height:1.5rem;
-	margin:.25rem 0 0 .5rem;
-	text-align:center;
-	width:1.5rem;
-}
-[day='0'] .day-color {color:#E0E000;}
-[day='1'] .day-color {color:#9060FF;}
-[day='2'] .day-color {color:#C02000;}
-[day='3'] .day-color {color:#3060C0;}
-[day='4'] .day-color {color:#30C030;}
-[day='5'] .day-color {color:#E8D880;}
-[day='6'] .day-color {color:#FFA040;}
+p {margin:0;overflow:hidden;}
+.copy {cursor:copy;}
+.seconds-wrap {font-size:.5em; flex-grow:1; line-height:3; height:2em;}
+.time {font-size:3.5em; line-height:1; display:flex;}
 [day='0'] .day-bg {background:#202000;}
+[day='0'] .day-color {color:#E0E000;}
 [day='1'] .day-bg {background:#201820;}
+[day='1'] .day-color {color:#9060FF;}
 [day='2'] .day-bg {background:#200000;}
+[day='2'] .day-color {color:#C02000;}
 [day='3'] .day-bg {background:#001020;}
+[day='3'] .day-color {color:#3060C0;}
 [day='4'] .day-bg {background:#001000;}
+[day='4'] .day-color {color:#30C030;}
 [day='5'] .day-bg {background:#201A08;}
+[day='5'] .day-color {color:#E8D880;}
 [day='6'] .day-bg {background:#180900;}
+[day='6'] .day-color {color:#FFA040;}
 </style>
 <div class="clock">
-	<div class="numdate">&nbsp;</div>
-	<div class="weekday_ja day-bg day-color">&nbsp;</div>
-	<div class="time day-color">
-		<span class="hours">--</span>:<span class="minutes">--</span><span class="seconds-wrap">:<span class="seconds">--</span></span>
-	</div>
-	<div>
-		<span class="weekday">&nbsp;</span>,
-		<span class="date"></span>
-	</div>
+	<p>
+		<span class="numdate copy"></span>
+		<span class="weekday_ja copy day-color"></span>
+	</p>
+	<p class="time copy day-color">
+		<span class="hours">&nbsp;&nbsp;</span><span class='sep'>:</span><span class="minutes">&nbsp;&nbsp;</span><span class="seconds-wrap" style="cursor:zoom-out;"><span><span class='sep'>:</span><span class="seconds"></span></span></span>
+	</p>
+	<p class="date copy"></p>
 </div>
 <canvas id='icon-render'></canvas>
 <script>
 const eid = document.getElementById.bind(document)
 function clock_widget(){
-	const clock = {}
-	const clock_el = document.querySelector('.clock')
+	const clock = {
+		el: document.querySelector('.clock'),
+		sec: true,
+	}
 
-	;(['weekday','weekday_ja','hours', 'minutes', 'seconds', 'date','numdate']).forEach(function(component){
-		clock[component] = clock_el.querySelector('.'+component)
+	;(['date','hours','minutes','numdate','seconds','weekday_ja']).forEach(function(component){
+		clock[component] = clock.el.querySelector('.'+component)
 	})
 
 	const locale = 'en-us'
 
 	const display = function(t){
-		const hours = t.getHours()
-		const hours_fmt = clock.hours.innerHTML = pad2(hours)
+		const seconds_fmt = pad2(t.getSeconds())
+		clock.seconds.innerHTML = seconds_fmt
 		const minutes = t.getMinutes()
 		const minutes_fmt = clock.minutes.innerHTML = pad2(minutes)
-		const month_name = t.toLocaleString(locale, {month:'long'})
-		clock.seconds.innerHTML = pad2(t.getSeconds())
-		clock.weekday.innerHTML = t.toLocaleString(locale, {weekday:'long'})
+		const hours = t.getHours()
+		const hours_fmt = clock.hours.innerHTML = pad2(hours)
+		clock.numdate.innerHTML = numdate_text(t)
 		clock.weekday_ja.innerHTML = t.toLocaleString('ja-JP', {weekday:'short'})
-		clock_el.setAttribute('day', t.getDay())
-		const numdate = clock.numdate.innerHTML = t.getFullYear()+'-'+('0' + (t.getMonth()+1)).slice(-2)+'-'+('0' + t.getDate()).slice(-2)
-		const date = clock.date.innerHTML = month_name+' '+ t.getDate()
-		document.title = `${hours_fmt}:${minutes_fmt} ${date}, ${numdate}`
+		clock.el.setAttribute('day', t.getDay())
+		clock.date.innerHTML = date_text(t)
+		document.title = `${time_text(t)} ${t.toLocaleString(locale, {weekday:'short'})}, ${t.getDate()} ${t.toLocaleString(locale, {month:'short'})} ${t.getFullYear()}`
 		const emoji = String.fromCodePoint(
 			((hours % 12) || 12) + 0x1F54F
 			+ (minutes < 30 ? 0 : 12)
@@ -90,21 +85,52 @@ function clock_widget(){
 		favicon.href = icon.toDataURL('image/png')
 	}
 
+	function date_text(t){
+		return `${t.toLocaleString(locale, {weekday:'long'})}, ${t.toLocaleString(locale, {month:'long'})} ${t.getDate()}`
+	}
+	function numdate_text(t){
+		return t.getFullYear()+'-'+pad2(t.getMonth()+1)+'-'+pad2(t.getDate())
+	}
+	function time_text(t){
+		return `${pad2(t.getHours())}:${pad2(t.getMinutes())}${clock.sec?':'+pad2(t.getSeconds()):''}`
+	}
+
+
 	// display at the start of each second
 	const synchronize = function(){
-		const t = new Date()
-		// const t = new Date(Date.now() + 2*864e5)
+		let t = new Date()
+		// t = new Date(Date.now() + 1*864e5)
+		clock.t = t
 		display(t)
 		window.setTimeout(synchronize, 1000 - (t % 1000))
 	}
 
 	synchronize()
 
-	// seconds toggle
-	clock_el.querySelector('.time').addEventListener('click', function(){
-		const sec_style = clock_el.querySelector('.seconds-wrap').style
-		sec_style.display = sec_style.display !== 'none' ? 'none' : 'inline'
-	})
+	clock.numdate.addEventListener('click', copy_text.bind(null, ()=> numdate_text(clock.t)))
+	clock.el.querySelector('.time').addEventListener('click',
+		copy_text.bind(null, ()=>time_text(clock.t))
+	)
+	clock.date.addEventListener('click',
+		copy_text.bind(null, ()=>date_text(clock.t))
+	)
+	clock.weekday_ja.addEventListener('click',copy_text.bind(null, null))
+	clock.el.querySelector('.seconds-wrap').addEventListener('click', toggle_sec)
+
+	function toggle_sec(ev){
+		clock.sec = !clock.sec
+		const sec_style = ev.currentTarget.style
+		sec_style.cursor = (clock.sec) ? 'zoom-out' : 'zoom-in'
+		ev.currentTarget.firstElementChild.style.visibility = (clock.sec) ? 'visible' : 'hidden'
+		ev.stopPropagation();
+	}
+}
+
+function copy_text(get_text, ev){
+	navigator.clipboard.writeText(get_text ? get_text() : ev.currentTarget.innerText)
+	const target = ev.currentTarget
+	target.classList.add('day-bg')
+	window.setTimeout(()=>target.classList.remove('day-bg'), 500)
 }
 
 // icon
@@ -118,7 +144,7 @@ icon.style.width = icon.style.height = icon_size + 'px'
 const scale = window.devicePixelRatio
 icon.height = icon.width = Math.floor(icon_size * scale)
 ic.scale(scale, scale)
-ic.font = '32px sans-serif'
+ic.font = '28px sans-serif'
 ic.textAlign = 'center'
 ic.textBaseline = 'middle'
 
