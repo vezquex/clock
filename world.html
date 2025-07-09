@@ -374,7 +374,6 @@ function copy_text(el, get_text){
 }
 function time_text(t){
 	let hours = t.getUTCHours()
-	if(dst){ hours += 1 }
 	return `${zeropad2(hours)}:${zeropad2(t.getUTCMinutes())}:${zeropad2(t.getUTCSeconds())}`
 }
 function zone_dec(){
@@ -402,9 +401,10 @@ function zone_desc(zone){
 
 function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
-	const offset = Number(offset_el.value) + (mem_zone * 36e5)
-	t = new Date(Date.now() + offset)
 	dst ??= isDST(t)
+	const dst_offset = dst ? 1 : 0
+	const offset = Number(offset_el.value) + ((mem_zone + dst_offset) * 36e5)
+	t = new Date(Date.now() + offset)
 	display(t)
 	const r = 1000 - (t % 1000)
 	window.synchronizeTimeout = window.setTimeout(synchronize, r)
@@ -643,7 +643,6 @@ function display(t){
 	const seconds = zeropad2(t.getUTCSeconds())
 
 	eid(`dst`).checked = dst
-	if(dst){ hours += 1 }
 
 	c.fillStyle = palettes.color
 	c.clearRect(0, 0, width*z, height*z)
