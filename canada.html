@@ -3,7 +3,7 @@
 <meta name='viewport' content='width=device-width, initial-scale=1'/>
 <meta name='theme-color' content='#000000'/>
 <title>
-	Chaux chronograph & tachymeter
+	Canada chronograph & tachymeter
 </title>
 <style type='text/css'>
 	*, *::before, *::after {
@@ -99,14 +99,14 @@
 	<rect id="date_window_border" x="-60" y="-68" width="120" height="146" style="fill:none;stroke:var(--edge);stroke-width:8px;"/>
 	<text id="day_of_month" dominant-baseline="central" style="font-size:84px;font-family:'Roboto Mono',monospace;" transform="scale(1 1.5)"></text>
 </g>
-<g id="sub_seconds" class="sans" transform="translate(732 1024)" style="fill:var(--bezel_mark);font-size:60px;">
-	<circle style="fill:var(--subdial);" r="192"/>
+<g id="sub_seconds" class="sans" transform="translate(628 1024)" style="fill:var(--bezel_mark);font-size:60px;">
+	<circle style="fill:var(--subdial);" r="256"/>
 	<text x="139" y="80" style="text-anchor:end;">4</text>
 	<text x="-138" y="80" style="text-anchor:start;">8</text>
 	<text x="0" y="-160" dominant-baseline="hanging">12</text>
 </g>
-<g id="chrono_minutes" class="sans" transform="translate(1316 1024)" style="fill:var(--bezel_mark);font-size:60px;">
-	<circle style="fill:var(--subdial);" r="192"/>
+<g id="chrono_minutes" class="sans" transform="translate(1424 1024)" style="fill:var(--bezel_mark);font-size:60px;">
+	<circle style="fill:var(--subdial);" r="256"/>
 	<text x="139" y="80" style="text-anchor:end;">10</text>
 	<text x="-139" y="80" style="text-anchor:start;">20</text>
 	<text x="0" y="-160" dominant-baseline="hanging">30</text>
@@ -224,7 +224,7 @@ const minute_len = 5
 const minute_r = half * 768/scale
 const shadowBlur = .5
 const shadowOffset = .25
-const sub_r = 192 * ratio
+const sub_r = 248 * ratio
 const sub_tick_len = 1.5
 const tach_length = 1
 const tach_r = bezel_r + 1.5
@@ -245,21 +245,21 @@ const minute_hand_w = 2.5
 const stem_w = 1.5
 const sub_hand_w = 1
 
-const chrono_hour_hand = [
+const sub_hand = [
 	[0, 0],
-	[10, 0],
-	[11.5, sub_hand_w/2],
-	[10, sub_hand_w],
+	[14, 0],
+	[15.5, sub_hand_w/2],
+	[14, sub_hand_w],
 	[0, sub_hand_w],
 	[0, 0],
 ]
-const chrono_minute_hand = [
-	[0, 0],
-	[10, 0],
-	[11.5, sub_hand_w/2],
-	[10, sub_hand_w],
-	[0, sub_hand_w],
-	[0, 0],
+const sub_hand_2 = [
+	[-4, 0],
+	[14, 0],
+	[15.5, sub_hand_w/2],
+	[14, sub_hand_w],
+	[-4, sub_hand_w],
+	[-4, 0],
 ]
 const chr_sec = [
 	[-10, -stem_w],
@@ -467,14 +467,7 @@ function display(t, chrono_offset){
 	fc.arc(0, 0, 2*z, 0, tau)
 	shapep(
 		fc,
-		[
-			[0, 0],
-			[10, 0],
-			[11.5, sub_hand_w/2],
-			[10, sub_hand_w],
-			[0, sub_hand_w],
-			[0, 0],
-		],
+		sub_hand_2,
 		0, 0-sub_hand_w/2,
 	)
 	fc.fill()
@@ -488,7 +481,7 @@ function display(t, chrono_offset){
 	shadow_on(fc)
 	fc.beginPath()
 	fc.arc(0, 0, 2*z, 0, tau)
-	shapep(fc, chrono_minute_hand, 0, -sub_hand_w/2)
+	shapep(fc, sub_hand, 0, -sub_hand_w/2)
 	fc.fill()
 	stem(fc)
 	fc.restore()
@@ -500,7 +493,7 @@ function display(t, chrono_offset){
 	shadow_on(fc)
 	fc.beginPath()
 	fc.arc(0, 0, 2*z, 0, tau)
-	shapep(fc, chrono_hour_hand, 0, -sub_hand_w/2)
+	shapep(fc, sub_hand, 0, -sub_hand_w/2)
 	fc.fill()
 	stem(fc)
 	fc.restore()
