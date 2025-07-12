@@ -171,21 +171,33 @@ const themes = {
 	'Blue': {
 		bezel: '#002040',
 		dial: '#002040',
-		dial_fade: '#002040',
+		dial_fade: '#003060',
 		highlight: '#C0FFFF',
 		subdial: '#002040',
 	},
 	'Blue_Fume': {
-		dial: '#002040',
+		dial: '#003060',
+	},
+	'Green': {
+		dial: '#008000',
+		dial_fade: '#004000',
 	},
 	'Green_Fume': {
-		dial: '#004000',
+		dial: '#006000',
+	},
+	'Purple': {
+		dial: '#800080',
+		dial_fade: '#400040',
 	},
 	'Purple_Fume': {
-		dial: '#400040',
+		dial: '#600060',
+	},
+	'Red': {
+		dial: '#800000',
+		dial_fade: '#400000',
 	},
 	'Red_Fume': {
-		dial: '#400000',
+		dial: '#600000',
 	},
 }
 const chrono_max = 43200e3
@@ -705,6 +717,6 @@ function display_static(){
 		c.fill()
 	})
 }
-setTheme('Red_Fume')
+setTheme('Red')
 resize()
 </script>
