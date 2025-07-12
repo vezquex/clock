@@ -1,0 +1,724 @@
+<!doctype html>
+<meta charset='utf-8'/>
+<meta name='viewport' content='width=device-width, initial-scale=1'/>
+<meta name='theme-color' content='#000000'/>
+<title>
+	Chaux chronograph & tachymeter
+</title>
+<style type='text/css'>
+	*, *::before, *::after {
+		box-sizing: border-box;
+	}
+	:root {
+		accent-color: var(--accent);
+		color-scheme: dark;
+	}
+	body {
+		background: #000;
+		overflow: hidden;
+	}
+	body, .btn, input, select {
+		color: #FFF;
+		font-family: Roboto, sans-serif;
+		font-size: 1em;
+		margin: 0;
+	}
+	details {
+		opacity: 0.5;
+	}
+	input, select, .label, summary {
+		padding: 0 .5em;
+	}
+	input {
+		width: 100%;
+	}
+	select {
+		min-width: 8rem;
+	}
+	summary {
+		cursor:pointer;
+		list-style: none;
+		user-select: none;
+	}
+	text {text-anchor:middle;fill:var(--text);}
+	.abs { position:absolute; }
+	.btn {
+		border-color: rgba(0, 0, 0, .5);
+		border-style: outset;
+		border-width: 0px;
+		cursor: pointer;
+		padding: 0 .5em;
+		text-decoration: none;
+	}
+	.column { display: flex; flex-direction: column; }
+	.home {
+		border-color: inherit;
+		border-width: 1px 1px 0 0;
+		position: absolute;
+		right:0;
+		text-align: right;
+		top:0;
+		width: 50%;
+	}
+	.hotkey { text-decoration: underline dotted; }
+	.mono {font-family: 'Roboto Mono', monospace;}
+	.row { display: flex; }
+	.sans {font-family: Roboto, sans-serif;}
+	.slab {font-family: 'Roboto Slab', serif;}
+	.svg {
+		margin: 0 auto;
+		max-height: 100vh;
+	}
+	.thick { line-height: 3em; }
+	.uppercase {text-transform:uppercase;}
+	.wide { width: 100vw; }
+</style>
+<!-- <img src="file:///C:/Users/r/Downloads/img/.png" -->
+<!-- style="display:block; height:auto; position:absolute; width:auto;"> -->
+<div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
+<svg version="1.1" viewBox="100 100 1848 1848" xmlns="http://www.w3.org/2000/svg" class='svg'>
+<defs>
+	<radialGradient id="dial-gradient">
+		<stop offset="60%" style="stop-color:var(--dial)"/>
+		<stop offset="100%" style="stop-color:var(--dial_fade)"/>
+	</radialGradient>
+</defs>
+<rect id="canvas" x="0" y="0" width="2048" height="2048" fill="none"/>
+<g transform="translate(1024 1024)">
+	<circle id="edge" style="fill:var(--edge);" r="924"/>
+	<circle id="bezel" style="fill:var(--bezel);" r="912"/>
+	<circle id="dial" fill="url(#dial-gradient)" r="672"/>
+</g>
+<g id="chrono_hours" class="sans" transform="translate(1024 1472)">
+	<text y="60" style="font:bold 24px sans-serif;">
+		HTML
+	</text>
+</g>
+<g transform="translate(1024 1612)">
+	<rect id="date_window_bg" x="-60" y="-68" width="120" height="146" style="fill:var(--subdial);"/>
+	<rect id="date_window_border" x="-60" y="-68" width="120" height="146" style="fill:none;stroke:var(--edge);stroke-width:8px;"/>
+	<text id="day_of_month" dominant-baseline="central" style="font-size:84px;font-family:'Roboto Mono',monospace;" transform="scale(1 1.5)"></text>
+</g>
+<g id="sub_seconds" class="sans" transform="translate(732 1024)" style="fill:var(--bezel_mark);font-size:60px;">
+	<circle style="fill:var(--subdial);" r="192"/>
+	<text x="139" y="80" style="text-anchor:end;">4</text>
+	<text x="-138" y="80" style="text-anchor:start;">8</text>
+	<text x="0" y="-160" dominant-baseline="hanging">12</text>
+</g>
+<g id="chrono_minutes" class="sans" transform="translate(1316 1024)" style="fill:var(--bezel_mark);font-size:60px;">
+	<circle style="fill:var(--subdial);" r="192"/>
+	<text x="139" y="80" style="text-anchor:end;">10</text>
+	<text x="-139" y="80" style="text-anchor:start;">20</text>
+	<text x="0" y="-160" dominant-baseline="hanging">30</text>
+</g>
+<text transform="translate(1024 576) scale(1.25 1)"
+class="uppercase slab"
+style="font-size:80px;">
+Canada
+</text>
+<g transform="translate(1024 616)">
+	<rect x="-64" width="128" height="64" stroke="var(--edge)" stroke-width="4" fill="none"/>
+	<rect x="-64" width="128" height="100" stroke="var(--edge)" stroke-width="4" fill="none"/>
+</g>
+<g transform="translate(1024 672)" class="uppercase">
+	<text style="font:bold 64px sans-serif;">
+		Cat
+	</text>
+	<text y="38" style="font-size:32px;">
+		Power
+	</text>
+</g>
+</svg>
+<canvas id='face-static' class='abs'></canvas>
+<canvas id='face' class='abs'></canvas>
+</div>
+<details class='abs column wide'>
+	<summary accesskey='s' title='Settings' class='btn thick'>☰</summary>
+	<a href='..' accesskey='h' class='btn home thick'>
+		<span class='hotkey'>H</span>ome
+	</a>
+	<label class='row thick'>
+		<span class='label'><span class='hotkey'>O</span>ffset</span>
+		<input id='offset' accesskey='o' value='0' type='range' onInput='synchronize()'>
+	</label>
+	<label class='row thick'>
+		<span class='label'><span class='hotkey'>C</span>hrono&nbsp;Offset</span>
+		<input id='chrono_offset' accesskey='c' value='0' type='range' onInput='synchronize()'>
+	</label>
+	<label class='row thick'>
+		<span class='label'><span class='hotkey'>T</span>heme</span>
+		<select id='theme' accesskey='t' onChange='setTheme(this.value)'></select>
+	</label>
+</details>
+
+<script type='text/javascript'>
+const _ = void 0
+const doc = document
+const $ = document.querySelector.bind(document)
+const eid = document.getElementById.bind(document)
+
+const bps = 4
+const delay = 1000 / bps
+let palettes
+const color_palettes = {
+	bezel: '#000000',
+	dial: '#000000',
+	dial_fade: '#000000',
+	edge: '#C0C0C0',
+	highlight: '#FFFFFF',
+	mark: '#FFFFFF',
+	subdial: '#000000',
+	text: '#FFFFFF',
+}
+const themes = {
+	'Black': {
+		highlight: '#9DE5B3',
+	},
+	'Blue': {
+		bezel: '#002040',
+		dial: '#002040',
+		dial_fade: '#002040',
+		highlight: '#C0FFFF',
+		subdial: '#002040',
+	},
+	'Blue_Fume': {
+		dial: '#002040',
+	},
+	'Green_Fume': {
+		dial: '#004000',
+	},
+	'Purple_Fume': {
+		dial: '#400040',
+	},
+	'Red_Fume': {
+		dial: '#400000',
+	},
+}
+const chrono_max = 43200e3
+const scale = 1024
+const width = 128
+const height = width
+const half = width / 2
+const ratio = half / scale
+const bezel_font_size = 3.5
+const bezel_r = 50
+const tach_labels = [
+	400,300,
+	85,80,75,70,65,60,55,
+]
+const tach_labels_inv = [
+	240,200,
+	170,150,140,130,120,110,100,
+	90,
+]
+const bezel_mark_len = 9.5
+const bezel_mark_r = .5
+const dash = 1.2
+const hour_len = 10
+const hour_len_short = 3
+const hour_r_rect = 45.5
+const hour_thick = 1.75
+const lw = .5
+const lw_2 = lw / 2
+const minute_len = 5
+const minute_r = half * 768/scale
+const shadowBlur = .5
+const shadowOffset = .25
+const sub_r = 192 * ratio
+const sub_tick_len = 1.5
+const tach_length = 1
+const tach_r = bezel_r + 1.5
+const thick = .1
+const tick_len = 3
+const tick_len_short = 2
+const tw_gap = 2.25
+
+const arm_w = 2
+const arm_w2 = 3
+const base_h = 1.5
+const base_w = 4
+const cstw = 1.5
+const fudge = .5
+const lume_inset = 2
+const lume_inset_arm = .75
+const minute_hand_w = 2.5
+const stem_w = 1.5
+const sub_hand_w = 1
+
+const chrono_hour_hand = [
+	[0, 0],
+	[10, 0],
+	[11.5, sub_hand_w/2],
+	[10, sub_hand_w],
+	[0, sub_hand_w],
+	[0, 0],
+]
+const chrono_minute_hand = [
+	[0, 0],
+	[10, 0],
+	[11.5, sub_hand_w/2],
+	[10, sub_hand_w],
+	[0, sub_hand_w],
+	[0, 0],
+]
+const chr_sec = [
+	[-10, -stem_w],
+	[43, -fudge/2],
+	[43, fudge/2],
+	[-10, stem_w],
+]
+
+const hour_hand = [
+	[0, 0],
+	[23, 0],
+	[26, minute_hand_w/2],
+	[23, minute_hand_w],
+	[0, minute_hand_w],
+	[0, 0],
+]
+const minute_hand = [
+	[0, 0],
+	[40, 0],
+	[43 + fudge, minute_hand_w/2],
+	[40, minute_hand_w],
+	[0, minute_hand_w],
+	[0, 0],
+]
+
+const chrono_minutes_el = eid('chrono_minutes')
+const chrono_minutes = {
+	x: chrono_minutes_el.transform.baseVal[0].matrix.e * ratio,
+	y: chrono_minutes_el.transform.baseVal[0].matrix.f * ratio,
+}
+const chrono_hours_el = eid('chrono_hours')
+const chrono_hours = {
+	x: chrono_hours_el.transform.baseVal[0].matrix.e * ratio,
+	y: chrono_hours_el.transform.baseVal[0].matrix.f * ratio,
+}
+const sub_seconds_el = eid('sub_seconds')
+const sub_seconds = {
+	x: sub_seconds_el.transform.baseVal[0].matrix.e * ratio,
+	y: sub_seconds_el.transform.baseVal[0].matrix.f * ratio,
+}
+
+const day_of_month_el = eid('day_of_month')
+
+// zoom
+let z = 1
+
+const {cos, min, sin, tan} = Math
+const tau = 2 * Math.PI
+const tau_2 = tau / 2
+const tau_4 = tau / 4
+const tau_12 = tau / 12
+const tau_24 = tau / 24
+const tau_30 = tau / 30
+const tau_60 = tau / 60
+
+for(k in themes){
+	themes[k] = Object.assign({}, color_palettes, themes[k])
+}
+const colors = Object.keys(color_palettes)
+eid('theme').innerHTML = Object.keys(themes).map(
+	t => `<option value='${t}'>${t.replaceAll('_',' ')}</option>`
+).join('')
+
+
+const face = eid('face')
+const fc = face.getContext('2d')
+
+const can = eid('face-static')
+const c = can.getContext('2d')
+
+const faces = [face, can]
+const faces_c = [fc, c]
+
+function resize(){
+	const canvas_el = eid('canvas')
+	const rect = canvas_el.getBoundingClientRect()
+	const scale = window.devicePixelRatio || 1
+	z = min(
+		(rect.height / height),
+		(rect.width / width),
+	)
+	faces.forEach(can =>{
+		can.height = height * scale * z
+		can.width = width * scale * z
+		can.style.left = rect.x + 'px'
+		can.style.top = rect.y + 'px'
+		can.style.height = rect.height+'px'
+		can.style.width = rect.width+'px'
+	})
+	faces_c.forEach(
+		c => c.scale(scale, scale)
+	)
+	display_static()
+	synchronize()
+}
+window.addEventListener('resize', resize)
+
+const offset_el = eid('offset')
+offset_el.setAttribute('max', 86400 * bps)
+
+const chrono_offset_el = eid('chrono_offset')
+chrono_offset_el.setAttribute('max', 43200 * bps)
+
+function setTheme(theme){
+	palettes = themes[theme]
+	$(`#theme [value=${theme}]`).selected = true
+	doc.documentElement.style.setProperty('--accent', palettes.highlight)
+	colors.forEach(color => {
+		doc.documentElement.style.setProperty('--'+color, palettes[color])
+	})
+	display_static()
+	synchronize()
+}
+
+function synchronize(){
+	window.clearTimeout(window.synchronizeTimeout)
+	const offset = parseInt(offset_el.value) * 1000 / bps
+	const chrono_offset = parseInt(chrono_offset_el.value) * 1000 / bps
+	let t = new Date(Date.now() + offset)
+	// t = new Date(new Date(2000,0,30,10,8,37,333).getTime() + offset)
+	display(t, chrono_offset)
+	const r = delay - (t % delay)
+	window.synchronizeTimeout = window.setTimeout(synchronize, r)
+}
+
+function shapec(c, path, x = 0, y = 0, m = 1, fill = true, beginPath = true){
+	m = m*z
+	beginPath && c.beginPath()
+	c.moveTo((path[0][0] + x)*m, (path[0][1] + y)*m)
+	for(i=1; i<path.length; ++i){
+		c.lineTo((path[i][0] + x)*m, (path[i][1] + y)*m)
+	}
+	fill && c.fill()
+}
+const shape = shapec.bind(null, c)
+function shapep(){
+	const a = [...arguments]
+	a[5] = a[6] = false
+	shapec.apply(null, a)
+}
+
+function circle(r, x, y, m = 1){
+	m = m*z
+	c.beginPath()
+	c.arc(x*m, y*m, r*m, 0, tau)
+	c.fill()
+}
+
+function rot(a, [x,y]){
+	return [
+		x * cos(a) + y * sin(a),
+		y * cos(a) - x * sin(a),
+	]
+}
+
+const rect_my = (y, h) => ([
+	[0, -y],
+	[h, -y],
+	[h, y],
+	[0, y],
+])
+
+const tach_rect = rect_my(lw_2, tach_length)
+
+function shadow_on(c){
+	c.shadowBlur = z*shadowBlur
+	c.shadowOffsetX = c.shadowOffsetY = z*shadowOffset
+}
+function shadow_off(c){
+	c.shadowBlur = 0
+	c.shadowOffsetX = 0
+	c.shadowOffsetY = 0
+}
+
+let chrono_align
+function display(t, chrono_offset){
+	chrono_align ??= performance.now()
+	const hours = t.getHours()
+	const minutes = t.getMinutes()
+	const seconds = t.getSeconds() + t.getMilliseconds() / 1000
+	const day_of_month = day_of_month_el.innerHTML = (t.getDate()+'')
+	let chrono = (performance.now() - chrono_align)
+	chrono = (chrono - (chrono % delay) + chrono_offset) % chrono_max
+	fc.shadowColor = 'rgba(0,0,0,1)'
+
+	fc.fillStyle = palettes.edge
+	fc.strokeStyle = palettes.edge
+	fc.save()
+	fc.lineWidth = lw*z
+	fc.clearRect(0, 0, width*z, height*z)
+	fc.translate(half*z, half*z)
+	fc.rotate(-tau_4)
+
+	const hr = hours % 12
+
+	face.innerText = `The time is ${hr} hours, ${(minutes+'').padStart(2, '0')} minutes, and ${seconds} seconds`
+
+	// subdials
+	// second hand
+	fc.save()
+	shadow_on(fc)
+	fc.translate((half - chrono_hours.y) * z, (chrono_hours.x - half) * z)
+	fc.rotate(seconds * tau_60)
+	fc.beginPath()
+	fc.arc(0, 0, 2*z, 0, tau)
+	shapep(
+		fc,
+		[
+			[0, 0],
+			[10, 0],
+			[11.5, sub_hand_w/2],
+			[10, sub_hand_w],
+			[0, sub_hand_w],
+			[0, 0],
+		],
+		0, 0-sub_hand_w/2,
+	)
+	fc.fill()
+	stem(fc)
+	fc.restore()
+
+	// chrono minute hand (30)
+	fc.save()
+	fc.translate((half - chrono_minutes.y) * z, (chrono_minutes.x - half) * z)
+	fc.rotate(((chrono % 1800e3) / 1800e3) * tau)
+	shadow_on(fc)
+	fc.beginPath()
+	fc.arc(0, 0, 2*z, 0, tau)
+	shapep(fc, chrono_minute_hand, 0, -sub_hand_w/2)
+	fc.fill()
+	stem(fc)
+	fc.restore()
+
+	// chrono hour hand
+	fc.save()
+	fc.translate((half - sub_seconds.y) * z, (sub_seconds.x - half) * z)
+	fc.rotate((chrono / chrono_max) * tau)
+	shadow_on(fc)
+	fc.beginPath()
+	fc.arc(0, 0, 2*z, 0, tau)
+	shapep(fc, chrono_hour_hand, 0, -sub_hand_w/2)
+	fc.fill()
+	stem(fc)
+	fc.restore()
+
+	// hour hand
+	fc.save()
+	fc.rotate(
+		(hr / 12 + minutes / 720 + seconds / 43200) * tau,
+	)
+	shadow_on(fc)
+	fc.beginPath()
+	fc.arc(0, 0, 3.5*z, 0, tau)
+	shapep(fc, hour_hand, 0, -minute_hand_w/2)
+	fc.fill()
+	shadow_off(fc)
+	// hour lume
+	fc.lineWidth = 1.5*z
+	fc.strokeStyle = palettes.highlight
+	fc.beginPath()
+	fc.moveTo(6*z, 0)
+	fc.lineTo(22*z, 0)
+	fc.stroke()
+	fc.restore()
+
+	// minute hand
+	fc.save()
+	fc.rotate((minutes / 60 + seconds / 3600) * tau)
+	shadow_on(fc)
+	fc.beginPath()
+	fc.arc(0, 0, 2.75*z, 0, tau)
+	shapep(fc, minute_hand, 0, -minute_hand_w/2)
+	fc.fill()
+	shadow_off(fc)
+	// minute lume
+	fc.beginPath()
+	fc.moveTo(6*z, 0)
+	fc.lineTo(39*z, 0)
+	fc.lineWidth = 1.5*z
+	fc.strokeStyle = palettes.highlight
+	fc.stroke()
+	fc.restore()
+
+	// chrono second hand
+	fc.save()
+	fc.rotate(((chrono % 60e3) / 60e3) * tau)
+	shadow_on(fc)
+	fc.beginPath()
+	fc.arc(0, 0, 2*z, 0, tau)
+	shapep(fc, chr_sec)
+	fc.fill()
+	fc.restore()
+
+	stem(fc)
+	fc.restore()
+}
+
+function stem(c){
+	c.save()
+	shadow_on(c)
+	c.beginPath()
+	c.arc(0, 0, .375*z, 0, tau)
+	c.fill()
+	c.restore()
+}
+function display_static(){
+	c.clearRect(0, 0, width*z, height*z)
+	c.fillStyle = palettes.mark
+	c.font = `${(bezel_font_size)*z}px 'Roboto Mono', monospace`
+	c.lineWidth = lw*z
+	c.strokeStyle = palettes.mark
+	;[400,350]
+	.concat(Array(4).fill().map((_, i) => i*20 + 240))
+	.concat(Array(4).fill().map((_, i) => i*10 + 200))
+	.concat(Array(15).fill().map((_, i) => i*5 + 120))
+	.concat(Array(66).fill().map((_, i) => i + 55))
+	.forEach(i => {
+		const a = -(60/i) * tau + tau_4
+		const r = bezel_r - bezel_mark_r
+		shape(
+			tach_rect.map(v => rot(a, v)),
+			half + (r * cos(-a)),
+			half + (r * sin(-a)),
+		)
+	})
+	c.save()
+	c.translate(half*z, half*z)
+	;tach_labels
+	.concat(Array(7).fill().map((_, i) => i*5 + 55))
+	.forEach(i => {
+		const a = -(60/i) * tau
+		c.save()
+		c.rotate(-a)
+		c.fillText(
+			i,
+			-(i+'').length*bezel_font_size*z/3.33,
+			(-tach_r)*z,
+		)
+		c.restore()
+	})
+	;tach_labels_inv
+	.forEach(i => {
+		const a = (60/i) * tau + tau_2
+		c.save()
+		c.rotate(a)
+		c.fillText(
+			i,
+			-(i+'').length*bezel_font_size*z/3.33,
+			(tach_r + bezel_font_size - 1)*z,
+		)
+		c.restore()
+	})
+	c.restore()
+	Array(12).fill().map((_, i) => i*5)
+	.forEach(i => {
+		const a = -i * tau_60 + tau_4
+		circle(
+			(tick_len_short - fudge)/2,
+			half + ((minute_r - tick_len_short/2) * cos(-a)),
+			half + ((minute_r - tick_len_short/2) * sin(-a)),
+		)
+	})
+	Array(240).fill().map((_, i) => i)
+	.filter(x => (x % 4) || x === 4 || x === (240-4))
+	.forEach(i => {
+		const a = -(i/4) * tau_60 + tau_4
+		const len = (
+			(((i % 20) <= 2) || ((i % 20) >= 18) || (i === 3) || (i === (240-3)))
+			? tick_len_short
+			: tick_len
+		)
+		shape(
+			rect_my(thick, -len).map(v => rot(a, v)),
+			half + (minute_r * cos(-a)),
+			half + (minute_r * sin(-a)),
+		)
+	})
+	Array(57).fill().map((_, i) => i+2)
+	.filter(x => x % 5)
+	.forEach(i => {
+		const a = -i * tau_60 + tau_4
+		shape(
+			rect_my(thick, -minute_len).map(v => rot(a, v)),
+			half + (minute_r * cos(-a)),
+			half + (minute_r * sin(-a)),
+		)
+	})
+	// west
+	Array(24).fill().map((_, i) => i)
+	.forEach(i => {
+		const a = i * tau_24
+		shape(
+			rect_my(thick, -sub_tick_len).map(v => rot(a, v)),
+			sub_seconds.x + (sub_r * cos(-a)),
+			sub_seconds.y + (sub_r * sin(-a)),
+		)
+	})
+	// east
+	Array(30).fill().map((_, i) => i)
+	.forEach(i => {
+		const a = i * tau_30 + tau_4
+		let len = sub_tick_len
+		let thickness = thick
+		if(!((i) % 10)){ thickness *= 1.5}
+		shape(
+			rect_my(thickness, -len).map(v => rot(a, v)),
+			chrono_minutes.x + (sub_r * cos(-a)),
+			chrono_minutes.y + (sub_r * sin(-a)),
+		)
+	})
+	// chrono_hours
+	Array(11).fill().map((_, i) => i+1)
+	.forEach(i => {
+		const a = i * tau_12 - tau_4
+		let len = tick_len
+		shape(
+			rect_my(thick, -len).map(v => rot(a, v)),
+			chrono_hours.x + (sub_r * cos(-a)),
+			chrono_hours.y + (sub_r * sin(-a)),
+		)
+	})
+	// hour markers
+	c.lineCap = 'square'
+	c.strokeStyle = palettes.edge
+	c.fillStyle = palettes.highlight
+	;[-1,1].forEach(i => {
+		const a = tau_4
+		const gap = tw_gap * i
+		shape(
+			rect_my(hour_thick, -hour_len).map(v => rot(a, v)),
+			half + (hour_r_rect * cos(-a)) + gap,
+			half + (hour_r_rect * sin(-a)),
+		)
+		c.closePath()
+		c.fill()
+	})
+	;[1,2,4,5,7,8,10,11]
+	.forEach(i => {
+		const a = -i * tau_12 + tau_4
+		shape(
+			rect_my(hour_thick, -hour_len).map(v => rot(a, v)),
+			half + (hour_r_rect * cos(-a)),
+			half + (hour_r_rect * sin(-a)),
+		)
+		c.closePath()
+		c.fill()
+	})
+	;[3,6,9]
+	.forEach(i => {
+		const a = -i * tau_12 + tau_4
+		shape(
+			rect_my(hour_thick, -hour_len_short).map(v => rot(a, v)),
+			half + (hour_r_rect * cos(-a)),
+			half + (hour_r_rect * sin(-a)),
+		)
+		c.closePath()
+		c.fill()
+	})
+}
+setTheme('Red_Fume')
+resize()
+</script>
