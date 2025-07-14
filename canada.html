@@ -89,27 +89,27 @@
 	<circle id="bezel" style="fill:var(--bezel);" r="912"/>
 	<circle id="dial" fill="url(#dial-gradient)" r="672"/>
 </g>
-<g id="chrono_hours" class="sans" transform="translate(1024 1472)">
-	<text y="60" style="font:bold 24px sans-serif;">
+<g id="sub_seconds" class="sans" transform="translate(1024 1460)">
+	<text y="72" style="font:bold 24px sans-serif;">
 		HTML
 	</text>
 </g>
-<g transform="translate(1024 1612)">
+<g transform="translate(1024 1622)">
 	<rect id="date_window_bg" x="-60" y="-68" width="120" height="146" style="fill:var(--subdial);"/>
 	<rect id="date_window_border" x="-60" y="-68" width="120" height="146" style="fill:none;stroke:var(--edge);stroke-width:8px;"/>
 	<text id="day_of_month" dominant-baseline="central" style="font-size:84px;font-family:'Roboto Mono',monospace;" transform="scale(1 1.5)"></text>
 </g>
-<g id="sub_seconds" class="sans" transform="translate(628 1024)" style="fill:var(--bezel_mark);font-size:60px;">
+<g id="chrono_hours" class="sans" transform="translate(628 1024)" style="fill:var(--bezel_mark);font-size:72px;">
 	<circle style="fill:var(--subdial);" r="256"/>
-	<text x="139" y="80" style="text-anchor:end;">4</text>
-	<text x="-138" y="80" style="text-anchor:start;">8</text>
-	<text x="0" y="-160" dominant-baseline="hanging">12</text>
+	<text x="166" y="96" style="text-anchor:end;">4</text>
+	<text x="-166" y="96" style="text-anchor:start;">8</text>
+	<text x="0" y="-192" dominant-baseline="hanging">12</text>
 </g>
-<g id="chrono_minutes" class="sans" transform="translate(1424 1024)" style="fill:var(--bezel_mark);font-size:60px;">
+<g id="chrono_minutes" class="sans" transform="translate(1424 1024)" style="fill:var(--bezel_mark);font-size:72px;">
 	<circle style="fill:var(--subdial);" r="256"/>
-	<text x="139" y="80" style="text-anchor:end;">10</text>
-	<text x="-139" y="80" style="text-anchor:start;">20</text>
-	<text x="0" y="-160" dominant-baseline="hanging">30</text>
+	<text x="166" y="96" style="text-anchor:end;">10</text>
+	<text x="-166" y="96" style="text-anchor:start;">20</text>
+	<text x="0" y="-192" dominant-baseline="hanging">30</text>
 </g>
 <text transform="translate(1024 576) scale(1.25 1)"
 class="uppercase slab"
@@ -467,7 +467,7 @@ function display(t, chrono_offset){
 	// second hand
 	fc.save()
 	shadow_on(fc)
-	fc.translate((half - chrono_hours.y) * z, (chrono_hours.x - half) * z)
+	fc.translate((half - sub_seconds.y) * z, (sub_seconds.x - half) * z)
 	fc.rotate(seconds * tau_60)
 	fc.beginPath()
 	fc.arc(0, 0, 2*z, 0, tau)
@@ -494,7 +494,7 @@ function display(t, chrono_offset){
 
 	// chrono hour hand
 	fc.save()
-	fc.translate((half - sub_seconds.y) * z, (sub_seconds.x - half) * z)
+	fc.translate((half - chrono_hours.y) * z, (chrono_hours.x - half) * z)
 	fc.rotate((chrono / chrono_max) * tau)
 	shadow_on(fc)
 	fc.beginPath()
@@ -651,8 +651,8 @@ function display_static(){
 		const a = i * tau_24
 		shape(
 			rect_my(thick, -sub_tick_len).map(v => rot(a, v)),
-			sub_seconds.x + (sub_r * cos(-a)),
-			sub_seconds.y + (sub_r * sin(-a)),
+			chrono_hours.x + (sub_r * cos(-a)),
+			chrono_hours.y + (sub_r * sin(-a)),
 		)
 	})
 	// east
@@ -668,15 +668,15 @@ function display_static(){
 			chrono_minutes.y + (sub_r * sin(-a)),
 		)
 	})
-	// chrono_hours
+	// south
 	Array(11).fill().map((_, i) => i+1)
 	.forEach(i => {
 		const a = i * tau_12 - tau_4
 		let len = tick_len
 		shape(
 			rect_my(thick, -len).map(v => rot(a, v)),
-			chrono_hours.x + (sub_r * cos(-a)),
-			chrono_hours.y + (sub_r * sin(-a)),
+			sub_seconds.x + (sub_r * cos(-a)),
+			sub_seconds.y + (sub_r * sin(-a)),
 		)
 	})
 	// hour markers
