@@ -53,6 +53,10 @@
 	}
 	.column { display: flex; flex-direction: column; }
 	.condensed {font-family:'Roboto Condensed';}
+	.full {
+		margin: 0 auto;
+		max-height: 100vh;
+	}
 	.home {
 		border-color: inherit;
 		border-width: 1px 1px 0 0;
@@ -66,10 +70,6 @@
 	.mono {font-family: 'Roboto Mono', monospace;}
 	.row { display: flex; }
 	.serif {font-family: 'Roboto Serif', serif;}
-	.svg {
-		margin: 0 auto;
-		max-height: 100vh;
-	}
 	.bezel-font {
 		letter-spacing: -.051em;
 		font-weight: bold;
@@ -80,7 +80,7 @@
 	/* #face-static {opacity:.5} */
 </style>
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
-<svg version="1.1" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg" class='svg'>
+<svg viewBox="0 0 2048 2048" class='full'>
 <rect id="canvas" x="0" y="0" width="2048" height="2048" fill="none"/>
 <circle style="fill:var(--bezel);opacity:1.0;" r="968" cx="1024" cy="1024"/>
 <!-- <image style="opacity:.5;" href="/C:/Users/r/OneDrive/time/explorer-ii.avif" width="3916" x="-932" y="-1888"/> -->

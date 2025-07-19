@@ -51,6 +51,12 @@
 	}
 	.column { display: flex; flex-direction: column; }
 	.cursive {font-family: 'Dancing Script', cursive; letter-spacing: -1px; font-style:italic; }
+	.full {
+		height: 100vh;
+		margin: 0 auto;
+		position:absolute;
+		width: 100vw;
+	}
 	.home {
 		border-color: inherit;
 		border-width: 1px 1px 0 0;
@@ -65,17 +71,11 @@
 	.mono {font-family: 'Roboto Mono', monospace;}
 	.row { display: flex; }
 	.sans {font-family: Roboto, sans-serif; letter-spacing: 3px;}
-	.svg {
-		height: 100vh;
-		margin: 0 auto;
-		position:absolute;
-		width: 100vw;
-	}
 	.thick { line-height: 3em; }
 	.wide { width: 100vw; }
 </style>
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
-<svg version="1.1" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg" class='svg'>
+<svg viewBox="0 0 2048 2048" class='full'>
 	<rect id="canvas" x="0" y="0" width="2048" height="2048" fill="none"/>
 	<circle id="edge" style="fill:var(--edge);" r="1024" cx="1024" cy="1024"/>
 	<circle id="bezel" style="fill:var(--bezel);" r="968" cx="1024" cy="1024"/>
@@ -83,7 +83,7 @@
 </svg>
 <canvas id='waves' class='abs'></canvas>
 <canvas id='face-static' class='abs'></canvas>
-<svg version="1.1" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg" class='svg'>
+<svg viewBox="0 0 2048 2048" class='full'>
 <g id="bezel_group">
 <path id="twelve_bezel" style="stroke:var(--mark);stroke-width:16;fill:none;" d="M 1024,224 l -118,-140 q 118,-16 236,0z"/>
 <circle id="twelve_pip" style="fill:var(--mark);stroke:var(--edge);stroke-width:8;" r="32" cx="1024" cy="132"/>

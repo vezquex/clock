@@ -83,6 +83,10 @@
 	.flex {
 		display: flex;
 	}
+	.full {
+		margin: 0 auto;
+		max-height: 100vh;
+	}
 	.grow {
 		flex-grow: 1;
 	}
@@ -100,10 +104,6 @@
 	}
 	.sideways {
 		writing-mode: vertical-lr;
-	}
-	.svg {
-		margin: 0 auto;
-		max-height: 100vh;
 	}
 </style>
 <div class='abs flex' style='top:0;bottom:0;left:0;right:0;align-content:center;'>
@@ -136,7 +136,7 @@
 		<span class='hotkey'>H</span>
 	</a>
 </div>
-<svg version="1.1" viewBox="0 0 3200 3200" xmlns="http://www.w3.org/2000/svg" class='svg'>
+<svg viewBox="0 0 3200 3200" class='full'>
 <filter id='inset-shadow'>
 	<feOffset dx='-20' dy='20'/>
 	<feGaussianBlur stdDeviation='10' result='offset-blur'/>

@@ -50,6 +50,10 @@
 		text-decoration: none;
 	}
 	.column { display: flex; flex-direction: column; }
+	.full {
+		margin: 0 auto;
+		max-height: 100vh;
+	}
 	.home {
 		border-color: inherit;
 		border-width: 1px 1px 0 0;
@@ -62,15 +66,11 @@
 	.hotkey { text-decoration: underline dotted; }
 	.mono {font-family: 'Roboto Mono', monospace;}
 	.row { display: flex; }
-	.svg {
-		margin: 0 auto;
-		max-height: 100vh;
-	}
 	.thick { line-height: 3em; }
 	.wide { width: 100vw; }
 </style>
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
-<svg version="1.1" viewBox="0 0 2048 2048" xmlns="http://www.w3.org/2000/svg" class='svg'>
+<svg viewBox="0 0 2048 2048" class='full'>
 <rect id="canvas" x="0" y="0" width="2048" height="2048" fill="none"/>
 <circle id="edge" style="fill:var(--dial);opacity:1.0;" r="1024" cx="1024" cy="1024"/>
 <circle id="bezel" style="fill:var(--bezel);opacity:1.0;" r="968" cx="1024" cy="1024"/>

@@ -52,6 +52,10 @@
 	}
 	.column { display: flex; flex-direction: column; }
 	.cursive {font-family: 'Dancing Script', cursive; letter-spacing: -1px; font-style:italic; }
+	.full {
+		margin: 0 auto;
+		max-height: 100vh;
+	}
 	.home {
 		border-color: inherit;
 		border-width: 1px 1px 0 0;
@@ -65,17 +69,13 @@
 	.mono {font-family: 'Roboto Mono', monospace;}
 	.row { display: flex; }
 	.sans {font-family: Roboto, sans-serif;}
-	.svg {
-		margin: 0 auto;
-		max-height: 100vh;
-	}
 	.thick { line-height: 3em; }
 	.wide { width: 100vw; }
 </style>
 <!-- <img src="file:///C:/Users/r/Downloads/img/.png" -->
 <!-- style="display:block; height:auto; position:absolute; width:auto;"> -->
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
-<svg version="1.1" viewBox="100 100 1848 1848" xmlns="http://www.w3.org/2000/svg" class='svg'>
+<svg viewBox="100 100 1848 1848" class='full'>
 <rect id="canvas" x="0" y="0" width="2048" height="2048" fill="none"/>
 <circle id="edge" style="fill:var(--edge);" r="924" cx="1024" cy="1024"/>
 <circle id="bezel" style="fill:var(--bezel);" r="912" cx="1024" cy="1024"/>

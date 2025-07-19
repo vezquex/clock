@@ -51,6 +51,10 @@
 		text-decoration: none;
 	}
 	.column { display: flex; flex-direction: column; }
+	.full {
+		margin: 0 auto;
+		max-height: 100vh;
+	}
 	.home {
 		border-color: inherit;
 		border-width: 1px 1px 0 0;
@@ -65,10 +69,6 @@
 	.row { display: flex; }
 	.sans {font-family: Roboto, sans-serif;}
 	.slab {font-family: 'Roboto Slab', serif;}
-	.svg {
-		margin: 0 auto;
-		max-height: 100vh;
-	}
 	.thick { line-height: 3em; }
 	.uppercase {text-transform:uppercase;}
 	.wide { width: 100vw; }
@@ -76,7 +76,7 @@
 <!-- <img src="file:///C:/Users/r/Downloads/img/.png" -->
 <!-- style="display:block; height:auto; position:absolute; width:auto;"> -->
 <div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
-<svg version="1.1" viewBox="100 100 1848 1848" xmlns="http://www.w3.org/2000/svg" class='svg'>
+<svg viewBox="100 100 1848 1848" class='full'>
 <defs>
 	<radialGradient id="dial-gradient">
 		<stop offset="60%" style="stop-color:var(--dial)"/>
