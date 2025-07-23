@@ -567,7 +567,7 @@ function stem(c){
 function display_static(){
 	c.clearRect(0, 0, width*z, height*z)
 	c.fillStyle = palettes.mark
-	c.font = `${(bezel_font_size)*z}px 'Roboto Mono', monospace`
+	c.font = `${(bezel_font_size)*z}px Roboto, sans-serif`
 	c.lineWidth = lw*z
 	c.strokeStyle = palettes.mark
 	;[400,350]
@@ -593,7 +593,7 @@ function display_static(){
 		c.rotate(-a)
 		c.fillText(
 			i,
-			-(i+'').length*bezel_font_size*z/3.33,
+			-(i+'').length*bezel_font_size*z/3.5,
 			(-tach_r)*z,
 		)
 		c.restore()
@@ -605,7 +605,7 @@ function display_static(){
 		c.rotate(a)
 		c.fillText(
 			i,
-			-(i+'').length*bezel_font_size*z/3.33,
+			-(i+'').length*bezel_font_size*z/3.5,
 			(tach_r + bezel_font_size - 1)*z,
 		)
 		c.restore()
