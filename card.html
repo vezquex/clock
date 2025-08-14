@@ -1,7 +1,7 @@
 <!doctype html>
-<meta charset='utf-8'/>
-<meta name='viewport' content='width=device-width, initial-scale=1'/>
-<meta name='theme-color' content='#000000'/>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='theme-color' content='#000000'>
 <title>
 	Cards
 </title>
@@ -247,11 +247,12 @@ function draw_die(
 	})
 }
 
-const card_abbrs = {
-	1: 'A',
-	11: 'J',
-	12: 'Q',
-	13: 'K',
+const card_labels = {
+	1: {s:'A'},
+	10: {s:'I0',m:.8},
+	11: {s:'J'},
+	12: {s:'Q'},
+	13: {s:'K'},
 }
 const card_patterns = {
 	1: [0b1n, [1,1], 'ace'],
@@ -271,11 +272,10 @@ const card_patterns = {
 function card_pattern_decode(mask, pip){
 	let pips = []
 	let i = 0
-	let i_mask = 1n
-	while(i_mask <= mask){
-		pips.push((mask & i_mask) ? pip : _)
+	while(mask){
+		pips.push((mask & 1n) ? pip : _)
 		++i
-		i_mask = i_mask << 1n
+		mask >>= 1n
 	}
 	return pips
 }
@@ -310,9 +310,10 @@ function draw_card(
 	c.stroke()
 	if(suit){
 		c.fillStyle = color_palettes[suit.color]
-		let s = card_abbrs[card_val] || (card_val+'')
-		const m = pow(s.length, -3/4)
-		c.font = `${(6)*m*z}px monospace`
+		const label = card_labels[card_val]
+		const s = label?.s || (card_val+'')
+		const m = label?.m || 1
+		c.font = `${(5)*m*z}px Roboto, sans-serif`
 		c.fillText(
 			s,
 			(x + 2 - 1/m)*z,

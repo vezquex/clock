@@ -1,7 +1,7 @@
 <!doctype html>
-<meta charset='utf-8'/>
-<meta name='viewport' content='width=device-width, initial-scale=1'/>
-<meta name='theme-color' content='#000000'/>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='theme-color' content='#000000'>
 <title>
 	Segmented Clock
 </title>
@@ -293,13 +293,12 @@ const char_masks = {
 function mask_segs(mask){
 	let s = []
 	let i = 0
-	let i_mask = 1
-	while(i_mask <= mask){
-		if(mask & i_mask){
+	while(mask){
+		if(mask & 1){
 			s.push(segs[i])
 		}
 		++i
-		i_mask = i_mask << 1
+		mask >>= 1
 	}
 	return s
 }
