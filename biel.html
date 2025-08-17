@@ -693,10 +693,10 @@ function display_static(){
 			half + (bezel_r * sin(-a)),
 		)}
 	)
-	Array(59).fill().map((_, i) => i)
-	.filter(x => !((x+1) % 5))
+	Array(59).fill().map((_, i) => i + 1)
+	.filter(x => !(x % 5))
 	.forEach(i => {
-		const a = -(i + 1) * tau_60 + tau_4 - bezel_angle
+		const a = -i * tau_60 + tau_4 - bezel_angle
 		const r = bezel_r - bezel_mark_r
 		shape(
 			bezel_minute.map(v => rot(a, v)),
@@ -772,8 +772,8 @@ function display_static(){
 		c.stroke()
 	})
 	;[-1,1].forEach(i => {
-		const a = -9/12*tau
-		const gap = i * tw_gap
+		const a = tau_4
+		const gap = tw_gap * i
 		shape(
 			rect_my(hour_thick, hour_len).map(([x,y]) => rot(a, [x, y + gap])),
 			half + (hour_r_rect * cos(-a)),
