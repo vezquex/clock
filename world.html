@@ -13,6 +13,7 @@
 	* {
 		box-sizing: border-box;
 	}
+	body, html, main {height:100%;}
 	body, .btn, input, select {
 		color: var(--color);
 		font-family: monospace;
@@ -78,32 +79,29 @@
 		}
 	}
 </style>
-
-<div class='column' style='min-height:100vh;'>
-	<input hidden id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
-	<div id='lcd' class='copy grow'><canvas id='face'></canvas></div>
-	<div id='controls' class='fade row'>
-		<a href='..' accesskey='h' class='btn collapse'>
-			<span class='hotkey'>H</span>ome
-		</a>
-		<select id='theme' class='grow btn' title='Theme' onChange='setTheme(this.value)' accesskey='t'></select>
-		<button id='dst_btn' class='btn nosel'>
-			<input id='dst' type='checkbox' disabled>
-			<span style='margin: 0 0 0 .25em;'>DS<span class='hotkey'>T
-		</button>
-		<button id='zone_dec' class='grow2 btn nosel center-content'>
-			<span class='btn round'>
-				-
-			</span>
-		</button>
-		<button id='zone_inc' class='grow2 btn nosel center-content'>
-			<span class='btn round'>
-				+
-			</span>
-		</button>
-	</div>
+<main class='column'>
+<input hidden id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
+<div id='lcd' class='copy grow'><canvas id='face'></canvas></div>
+<div id='controls' class='fade row'>
+	<a href='..' accesskey='h' class='btn collapse'>
+		<span class='hotkey'>H</span>ome
+	</a>
+	<select id='theme' class='grow btn' title='Theme' onChange='setTheme(this.value)' accesskey='t'></select>
+	<button id='dst_btn' class='btn nosel'>
+		<input id='dst' type='checkbox' disabled>
+		<span style='margin: 0 0 0 .25em;'>DS<span class='hotkey'>T
+	</button>
+	<button id='zone_dec' class='grow2 btn nosel center-content'>
+		<span class='btn round'>
+			-
+		</span>
+	</button>
+	<button id='zone_inc' class='grow2 btn nosel center-content'>
+		<span class='btn round'>
+			+
+		</span>
+	</button>
 </div>
-
 <script type='text/javascript'>
 const {abs, cos, floor, max, min, sin} = Math
 const doc = document
@@ -111,7 +109,6 @@ const $ = doc.querySelector.bind(doc)
 const eid = doc.getElementById.bind(doc)
 const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEPT', 'OCT', 'NOV', 'DEC']
 const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
-
 const city_info = [
 	[-11, 'PPG', 'Pago Pago'],
 	[-10, 'HNL', 'Honolulu'],
@@ -170,7 +167,6 @@ const zone_count = city_info.reduce(
 	)),
 	{count: 0, found: {}}
 ).count
-
 let t = new Date()
 let dst
 let mem_zone = 0
@@ -182,7 +178,6 @@ const color_palettes = {
 	'gray_2_3': '#5555A5',
 	'white': '#F1EDDB',
 }
-
 const four_negative = ['black', 'gray_1_3', 'gray_2_3', 'white']
 const four_positive = [...four_negative].reverse()
 const themes = {
@@ -210,8 +205,6 @@ for(k in themes){
 }
 const colors = ['bg','color','secondary','tertiary'].concat(Object.keys(color_palettes))
 eid('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
-
-
 const ch = 14
 const cw = 10
 const grid_h = ch + 1
@@ -219,38 +212,29 @@ const grid_w = cw + 4
 const grid_w2 = grid_w * 2
 const hch = ch/2
 const hcw = cw/2
-
 const _ = void 0
-
 const can = eid('face')
 const c = can.getContext('2d')
-
 const height = 44
 const width = 89
 const pad_h = 2
 const pad_v = 4
-
 // zoom
 let z = 1
-
 can.height = height * z
 can.width = width * z
 c.setTransform(z, 0, 0, z, 0, 0)
-
 const offset_el = eid('offset')
-
 function isDST(d){
 	let jan = new Date(d.getFullYear(), 0, 1).getTimezoneOffset()
 	let jul = new Date(d.getFullYear(), 6, 1).getTimezoneOffset()
 	return Math.max(jan, jul) !== d.getTimezoneOffset()
 }
-
 function setDST(on){
 	const d = eid('dst')
 	dst = d.checked = on ?? !d.checked
 	synchronize()
 }
-
 function setTheme(theme){
 	palettes = themes[theme]
 	$(`#theme [value=${theme}]`).selected = true
@@ -260,7 +244,6 @@ function setTheme(theme){
 	$(`meta[name='theme-color']`).setAttribute('content', palettes.bg)
 	synchronize()
 }
-
 function on_button(ev, callback){
 	if(ev.repeat){ return }
 	const self = this
@@ -292,7 +275,6 @@ function on_button(ev, callback){
 		interval = window.setInterval(callback, 50)
 	}, 300)
 }
-
 const Hotkeys = {}
 const separator = '•'
 function bind_on_button(el, cb, hotkeys=[]){
@@ -344,7 +326,6 @@ doc.addEventListener('keyup', function(event){
 		new KeyboardEvent('keyup', {key: event.key})
 	)
 })
-
 bind_on_button(
 	eid('dst_btn'),
 	setDST,
@@ -366,7 +347,6 @@ bind_on_button(
 	copy_text.bind(null, eid('controls'), ()=>time_text(t)),
 	['c'],
 )
-
 function copy_text(el, get_text){
 	navigator.clipboard.writeText(get_text())
 	el.classList.add('copied')
@@ -386,7 +366,6 @@ function zone_inc(){
 	mem_zone = city_info[zone_index][0]
 	synchronize()
 }
-
 function zone_desc(zone){
 	const prefix = (zone > 0) ? '+' : (zone < 0) ? '-' : ' '
 	const n = abs(zone)
@@ -398,7 +377,6 @@ function zone_desc(zone){
 		.replace('.75','¾')
 	return `${prefix}${s}`
 }
-
 function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	dst ??= isDST(t)
@@ -409,11 +387,9 @@ function synchronize(){
 	const r = 1000 - (t % 1000)
 	window.synchronizeTimeout = window.setTimeout(synchronize, r)
 }
-
 function zeropad2(s){
 	return ('0' + s).slice(-2)
 }
-
 const char_masks = {
 	'0': 0b111111,
 	'1': 0b1001,
@@ -464,7 +440,6 @@ const char_masks = {
 	'¾': 0b10000001101,
 	'↉': 0b10000111111,
 }
-
 const pad = .25
 const dpad = pad*2
 const hpad = pad/2
@@ -529,7 +504,6 @@ const char_paths = Object.fromEntries(
 		([k, mask], i) => [k, mask_segs(mask, segs)]
 	)
 )
-
 const char_masks_sixteen = {
 	' ': 0,
 	'□': 0b1111111111111111,
@@ -573,7 +547,6 @@ const char_paths_sixteen = Object.fromEntries(
 		([k, mask], i) => [k, mask_segs(mask, sixteen_segs)]
 	)
 )
-
 function shape(path, x, y, m = 1){
 	m = m*z
 	c.beginPath()
@@ -583,13 +556,11 @@ function shape(path, x, y, m = 1){
 	}
 	c.fill()
 }
-
 function draw_char(s, x, y, m = 1, paths = char_paths){
 	(paths[s] || paths['□']).forEach(
 		path => shape(path, x, y, m)
 	)
 }
-
 function draw_str(chars, x, y, m = 1, paths, gw = grid_w){
 	if(!(chars instanceof Array)){
 		chars = (chars+'').split('')
@@ -609,7 +580,6 @@ function colon(x, y){
 	shape(colon_shape, x, y+5)
 	shape(colon_shape, x, y+9)
 }
-
 function resize(event){
 	const rect = lcd_el.getBoundingClientRect()
 	const scale = window.devicePixelRatio || 1
@@ -624,13 +594,10 @@ function resize(event){
 	c.scale(scale, scale)
 	synchronize()
 }
-
 window.addEventListener('resize', resize)
 window.screen.orientation.addEventListener('change', resize)
-
 const dash = [[2.25, 7], [3.25,6], [6.75,6], [7.75, 7], [6.75,8], [3.25,8]]
 const zone_bg_shape = [[-hcw,hch],[0,0],[4*grid_w,0],[4*grid_w,ch],[0,ch]]
-
 function display(t){
 	const day_of_month = zeropad2(t.getUTCDate())
 	const month = zeropad2(t.getUTCMonth()+1)
@@ -640,9 +607,7 @@ function display(t){
 	let hours = t.getUTCHours()
 	const minutes = zeropad2(t.getUTCMinutes())
 	const seconds = zeropad2(t.getUTCSeconds())
-
 	eid(`dst`).checked = dst
-
 	c.fillStyle = palettes.color
 	c.clearRect(0, 0, width*z, height*z)
 	let x = 0, y = pad_v, m = .25, m_scale = 2
@@ -662,7 +627,6 @@ function display(t){
 	draw_str(minutes, x += grid_w2+7, y)
 	m = 0.75
 	draw_str(seconds, (x + grid_w2)/m, (y+3.5)/m, m)
-
 	m = .09
 	const tiles = zone_count
 	for(var i = 0; i < tiles; ++i){
@@ -697,7 +661,6 @@ function display(t){
 	}
 	// draw_str('□KMNQRTVWXYZ', pad_h/m, y/m, m, char_paths_sixteen)
 }
-
 function resetTheme(){
 	const light = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches
 	setTheme(light ? 'Light' : 'Dark')
@@ -706,7 +669,5 @@ resetTheme()
 window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', event => {
 	resetTheme()
 })
-
 resize()
-
 </script>
