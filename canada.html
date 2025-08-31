@@ -52,8 +52,11 @@
 	}
 	.column { display: flex; flex-direction: column; }
 	.full {
-		margin: 0 auto;
-		max-height: 100vh;
+		height: 100vh;
+		left: 50%;
+		position:absolute;
+		transform: translate(-50%, 0);
+		width: 100vw;
 	}
 	.home {
 		border-color: inherit;
@@ -112,7 +115,7 @@ Canada
 </g>
 </svg>
 <canvas id='face-static' class='abs'></canvas>
-<svg viewBox="100 100 1848 1848" class='abs full'>
+<svg viewBox="100 100 1848 1848" class='full'>
 <g id="chrono_hours" class="sans" transform="translate(628 1024)" style="fill:var(--bezel_mark);font-size:72px;">
 	<text x="166" y="96" style="text-anchor:end;">4</text>
 	<text x="-166" y="96" style="text-anchor:start;">8</text>
@@ -239,6 +242,7 @@ const minute_len = 5
 const minute_r = half * 768/scale
 const shadowBlur = .5
 const shadowOffset = .25
+const sub_r_outer = 256 * ratio
 const sub_r = 248 * ratio
 const sub_tick_len = 1.5
 const tach_length = 1
@@ -658,7 +662,7 @@ function display_static(){
 	c.strokeStyle = palettes.ridge
 	c.lineWidth = lw_2*z
 	;[chrono_hours, chrono_minutes].forEach(subdial => {
-		circle(sub_r, subdial.x, subdial.y)
+		circle(sub_r_outer, subdial.x, subdial.y)
 		Array(15).fill().map((_, i) => i)
 		.forEach(i => {
 			c.beginPath()
