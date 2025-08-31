@@ -99,18 +99,6 @@
 	<rect id="date_window_border" x="-60" y="-68" width="120" height="146" style="fill:none;stroke:var(--edge);stroke-width:8px;"/>
 	<text id="day_of_month" dominant-baseline="central" class="mono" style="font-size:84px;" transform="scale(1 1.5)"></text>
 </g>
-<g id="chrono_hours" class="sans" transform="translate(628 1024)" style="fill:var(--bezel_mark);font-size:72px;">
-	<circle style="fill:var(--subdial);" r="256"/>
-	<text x="166" y="96" style="text-anchor:end;">4</text>
-	<text x="-166" y="96" style="text-anchor:start;">8</text>
-	<text x="0" y="-192" dominant-baseline="hanging">12</text>
-</g>
-<g id="chrono_minutes" class="sans" transform="translate(1424 1024)" style="fill:var(--bezel_mark);font-size:72px;">
-	<circle style="fill:var(--subdial);" r="256"/>
-	<text x="166" y="96" style="text-anchor:end;">10</text>
-	<text x="-166" y="96" style="text-anchor:start;">20</text>
-	<text x="0" y="-192" dominant-baseline="hanging">30</text>
-</g>
 <text transform="translate(1024 576) scale(1.25 1)"
 class="uppercase slab"
 style="font-size:80px;">
@@ -124,6 +112,18 @@ Canada
 </g>
 </svg>
 <canvas id='face-static' class='abs'></canvas>
+<svg viewBox="100 100 1848 1848" class='abs full'>
+<g id="chrono_hours" class="sans" transform="translate(628 1024)" style="fill:var(--bezel_mark);font-size:72px;">
+	<text x="166" y="96" style="text-anchor:end;">4</text>
+	<text x="-166" y="96" style="text-anchor:start;">8</text>
+	<text x="0" y="-192" dominant-baseline="hanging">12</text>
+</g>
+<g id="chrono_minutes" class="sans" transform="translate(1424 1024)" style="fill:var(--bezel_mark);font-size:72px;">
+	<text x="166" y="96" style="text-anchor:end;">10</text>
+	<text x="-166" y="96" style="text-anchor:start;">20</text>
+	<text x="0" y="-192" dominant-baseline="hanging">30</text>
+</g>
+</svg>
 <canvas id='face' class='abs'></canvas>
 </div>
 <details class='abs column wide'>
@@ -161,6 +161,7 @@ const color_palettes = {
 	edge: '#C0C0C0',
 	highlight: '#FFFFFF',
 	mark: '#FFFFFF',
+	ridge: '#202020',
 	subdial: '#000000',
 	text: '#FFFFFF',
 }
@@ -173,31 +174,39 @@ const themes = {
 		dial: '#003060',
 		dial_fade: '#003060',
 		highlight: '#C0FFFF',
+		ridge: '#003060',
 		subdial: '#002040',
 	},
 	'Blue_Fume': {
 		dial: '#003060',
+		ridge: '#001020',
 	},
 	'Green': {
 		dial: '#008000',
 		dial_fade: '#004000',
+		ridge: '#002000',
 	},
 	'Green_Fume': {
 		dial: '#006000',
+		ridge: '#002000',
 	},
 	'Purple': {
 		dial: '#800080',
 		dial_fade: '#400040',
+		ridge: '#200020',
 	},
 	'Purple_Fume': {
 		dial: '#600060',
+		ridge: '#200020',
 	},
 	'Red': {
 		dial: '#800000',
 		dial_fade: '#400000',
+		ridge: '#200000',
 	},
 	'Red_Fume': {
 		dial: '#600000',
+		ridge: '#200000',
 	},
 }
 const chrono_max = 43200e3
@@ -598,8 +607,7 @@ function display_static(){
 		)
 		c.restore()
 	})
-	;tach_labels_inv
-	.forEach(i => {
+	;tach_labels_inv.forEach(i => {
 		const a = (60/i) * tau + tau_2
 		c.save()
 		c.rotate(a)
@@ -645,7 +653,21 @@ function display_static(){
 			half + (minute_r * sin(-a)),
 		)
 	})
+	// subdial background
+	c.fillStyle = palettes.subdial
+	c.strokeStyle = palettes.ridge
+	c.lineWidth = lw_2*z
+	;[chrono_hours, chrono_minutes].forEach(subdial => {
+		circle(sub_r, subdial.x, subdial.y)
+		Array(15).fill().map((_, i) => i)
+		.forEach(i => {
+			c.beginPath()
+			c.arc(subdial.x * z, subdial.y * z, (sub_r - sub_tick_len - lw_2 - i*.8)*z, 0, tau)
+			c.stroke()
+		})
+	})
 	// west
+	c.fillStyle = palettes.mark
 	Array(24).fill().map((_, i) => i)
 	.forEach(i => {
 		const a = i * tau_24
