@@ -69,10 +69,10 @@ const hcw = cw/2
 const can = document.getElementById('face')
 const c = can.getContext('2d')
 
-const height = 68
-const width = 92
+const height = 37
+const width = 53
 const pad_h = 1
-const pad_v = 4
+const pad_v = p
 
 // zoom
 let z = 1
@@ -200,7 +200,7 @@ const char_masks = {
 	'H': 0b1011011111011010,
 	'I': 0b0100100100100100,
 	'J': 0b0010010011011110,
-	'K': 0b1011111111011010,
+	'K': 0b1011011101011010,
 	'L': 0b1001001001001110,
 	'M': 0b1011111111011010,
 	'N': 0b1011111111111010,
@@ -216,32 +216,6 @@ const char_masks = {
 	'X': 0b1011011111011010,
 	'Y': 0b1011011110100100,
 	'Z': 0b1110111101001110,
-	'a': 0b0,
-	'b': 0b0,
-	'c': 0b0,
-	'd': 0b0,
-	'e': 0b0,
-	'f': 0b0,
-	'g': 0b0,
-	'h': 0b0,
-	'i': 0b0,
-	'j': 0b0,
-	'k': 0b0,
-	'l': 0b0,
-	'm': 0b0,
-	'n': 0b0,
-	'o': 0b0,
-	'p': 0b0,
-	'q': 0b0,
-	'r': 0b0,
-	's': 0b0,
-	't': 0b0,
-	'u': 0b0,
-	'v': 0b0,
-	'w': 0b0,
-	'x': 0b0,
-	'y': 0b0,
-	'z': 0b0,
 }
 const segs = seg_order.map(k => seg_paths[k])
 const char_paths = Object.fromEntries(
@@ -299,7 +273,7 @@ function display(t){
 	c.fillStyle = palettes.color
 	c.clearRect(0, 0, width*z, height*z)
 	let x = pad_h, y = pad_v - grid_h, m = .5
-	const out = `\`1234567890-=~!@#$%^&*()_+[]\\;',./    □{}|:"<>?¡    AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz`
+	const out = `\`1234567890-=~!@#$%^&*()_+[]\\;',./    □{}|:"<>?¡    ABCDEFGHIJKLMNOPQRSTUVWXYZ`
 	let i = 0
 	let w = 13
 	;[...Array(8)].forEach(() =>
