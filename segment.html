@@ -10,31 +10,47 @@
 		--bg: #000;
 		--text: #FFF;
 		accent-color: var(--accent);
-		color-scheme: dark;
 	}
-	body {
-		overflow: hidden;
+	body, .bg::before, input {
+		background-color: var(--bg);
+	}
+	.bg {
+		position: relative;
+	}
+	.bg::before {
+		background: var(--bg);
+		bottom: 0;
+		content:'';
+		left: 0;
+		opacity:.85;
+		position:absolute;
+		right: 0;
+		top: 0;
 	}
 	body, .btn, input, select {
+		color: var(--text);
 		font-family: Roboto, sans-serif;
-		font-size: 1rem;
+		font-size: 1em;
 		margin: 0;
 	}
-	body, .btn, select {
-		background-color: var(--bg);
-		color: var(--text);
-	}
-	.btn, input, select, summary, .label {
-		display: block;
-		padding: .5em;
-		border-width: 1px;
+	input, select, .label, summary {
+		padding: 0 .5em;
 	}
 	input {
+		opacity: 0.5;
 		width: 100%;
 	}
 	select {
+		background: 0;
+		border-width: 1px;
 		min-width: 8rem;
 	}
+	summary {
+		cursor:pointer;
+		list-style: none;
+		user-select: none;
+	}
+	.abs {position: absolute;}
 	.btn {
 		border-color: rgba(0, 0, 0, .5);
 		border-style: outset;
@@ -46,35 +62,46 @@
 		min-width: 2em;
 		text-decoration: none;
 	}
-	.fade {
-		opacity: 0.5;
-	}
-	.flex {
+	.column {
 		display: flex;
+		flex-direction: column;
 	}
-	.nosel {
-		user-select: none;
+	.grow {flex-grow: 1;}
+	.home {
+		bottom:0;
+		border-color: inherit;
+		border-width: 0 0 0 1px;
+		right:0;
+		text-align: right;
+		width: 50%;
 	}
+	.hotkey {text-decoration: underline dotted;}
+	.nosel {user-select: none;}
+	.rel {position: relative;}
+	.rev {flex-flow:column-reverse;}
+	.row {display: flex;}
+	.thick {line-height: 3em;}
+	.wide {width: 100vw;}
 </style>
-
-<details class='fade flex wide'>
-	<summary accesskey='s' class='btn nosel' title='Settings'>☰</summary>
-	<label class='flex'>
-		<span class='label'>Offset</span>
-		<input id='offset' value='0' type='range' max='86400000' step='50000' onInput='synchronize()'>
-	</label>
-	<label class='flex'>
-		<span class='label'>Theme</span>
-		<select id='theme' onChange='setTheme(this.value)'></select>
-	</label>
-	<div>
-		<a href='..' accesskey='h' class='btn'>
-			<span class='hotkey'>H</span>ome
-		</a>
-	</div>
-</details>
-
+<body class='column' style='justify-content:center;min-height:100vh;'>
 <div><canvas id='face'></canvas></div>
+
+<div class='abs bg column grow' style='bottom:0;'>
+<details class='column grow rel rev wide'>
+	<summary accesskey='s' class='btn grow nosel thick' style='align-items:end;'>☰</summary>
+	<a href='..' accesskey='h' class='abs btn home thick'>
+		<span class='hotkey'>H</span>ome
+	</a>
+	<label class='row thick'>
+		<span class='label'><span class='hotkey'>O</span>ffset</span>
+		<input id='offset' accesskey='o' value='0' type='range' max='86400000' step='50000' onInput='synchronize()'>
+	</label>
+	<label class='row thick'>
+		<span class='label'><span class='hotkey'>T</span>heme</span>
+		<select id='theme' class='grow' accesskey='t' onChange='setTheme(this.value)'></select>
+	</label>
+</details>
+</div>
 
 <script type='text/javascript'>
 const _ = void 0
@@ -84,61 +111,69 @@ const eid = doc.getElementById.bind(doc)
 const locale = 'en-us'
 
 let palettes
-const color_palettes = {
-	'amber': '#E2A71E',
-	'black': '#000000',
-	'blue': '#0080DB',
-	'cyan': '#00F0F0',
-	'green': '#00ED00',
-	'magenta': '#F000F0',
-	'red': '#F10000',
-	'yellow': '#F0F000',
-	'white': '#F1EDDB',
+const colors = {
+	amber: '#E2A71E',
+	black: '#000000',
+	blue: '#0080DB',
+	cyan: '#00F0F0',
+	green: '#00ED00',
+	magenta: '#F000F0',
+	red: '#F10000',
+	yellow: '#F0F000',
+	white: '#F1EDDB',
 }
 const themes = {
 	Dark: {
-		bg: color_palettes.black,
-		color: color_palettes.white,
+		bg: colors.black,
+		color: colors.white,
+		text: colors.white,
 	},
 	Light: {
-		bg: color_palettes.white,
-		color: color_palettes.black,
-		text: color_palettes.black,
+		bg: colors.white,
+		color: colors.black,
+		text: colors.black,
 	},
 	Amber: {
-		bg: color_palettes.black,
-		color: color_palettes.amber,
+		bg: colors.black,
+		color: colors.amber,
+		text: colors.amber,
 	},
 	Blue: {
-		bg: color_palettes.black,
-		color: color_palettes.blue,
+		bg: colors.black,
+		color: colors.blue,
+		text: colors.blue,
 	},
 	Cyan: {
-		bg: color_palettes.black,
-		color: color_palettes.cyan,
+		bg: colors.black,
+		color: colors.cyan,
+		text: colors.cyan,
 	},
 	Green: {
-		bg: color_palettes.black,
-		color: color_palettes.green,
+		bg: colors.black,
+		color: colors.green,
+		text: colors.green,
 	},
 	Magenta: {
-		bg: color_palettes.black,
-		color: color_palettes.magenta,
+		bg: colors.black,
+		color: colors.magenta,
+		text: colors.magenta,
 	},
 	Red: {
-		bg: color_palettes.black,
-		color: color_palettes.red,
+		bg: colors.black,
+		color: colors.red,
+		text: colors.red,
 	},
 	Yellow: {
-		bg: color_palettes.black,
-		color: color_palettes.yellow,
+		bg: colors.black,
+		color: colors.yellow,
+		text: colors.yellow,
 	},
 }
 for(k in themes){
 	const theme = themes[k]
-	Object.assign(theme, color_palettes)
+	Object.assign(theme, colors)
 }
-const colors = ['accent', 'bg', 'color', 'text'].concat(Object.keys(color_palettes))
+const color_vars = ['accent', 'bg', 'color', 'text'].concat(Object.keys(colors))
 eid('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
 
 const can = eid('face')
@@ -148,9 +183,8 @@ const height = 30
 const width = 87
 const pad_h = 2
 const pad_v = 4
-const char_height = 10
-const char_width = 14
-const grid_w = char_width + 0
+const char_height = 14
+const grid_w = 14
 const grid_w2 = grid_w * 2
 
 // zoom
@@ -179,7 +213,7 @@ function setTheme(theme){
 	palettes = themes[theme]
 	$(`#theme [value=${theme}]`).selected = true
 	palettes.accent = palettes.color
-	colors.forEach(color => {
+	color_vars.forEach(color => {
 		doc.documentElement.style.setProperty('--'+color, palettes[color])
 	})
 	$(`meta[name='theme-color']`).setAttribute('content', palettes.bg)
@@ -308,7 +342,19 @@ const char_paths = Object.fromEntries(
 		([k, mask], i) => [k, mask_segs(mask)]
 	)
 )
-
+const svg = s => {
+	return `<svg alt='${s}' viewBox='0 0 ${
+		grid_w*s.length} ${char_height}'>${
+		s.split('').map((c,i)=>
+			`<g transform='translate(${grid_w*i})'>${
+				(c===':')
+				? `<polygon transform='translate(5,5)' points='${colon_shape}'/><polygon transform='translate(5,9)' points='${colon_shape}'/>`
+				: char_paths[c].map(p=>`<path d='M${p[0]}L${p.slice(1)}z'/>`).join('')
+			}</g>`
+	).join('')
+	}</svg>`
+}
+// console.log(svg('SEGMENTED:CLOCK'))
 function draw_char(s, x, y, m = 1){
 	(char_paths[s] || char_paths['?']).forEach(
 		path => shape(path, x, y, m)
