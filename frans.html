@@ -94,14 +94,6 @@ function zeropad2(s){
 	return ('0' + s).slice(-2)
 }
 
-const pad = .25
-const dpad = pad*2
-const hpad = pad/2
-const chp = ch - pad
-const cwp = cw - pad
-const inset = 1.25 + hpad
-const insetx = cw - inset
-const insety = ch - inset
 let x, y
 const seg_paths = {
 	C1: [[2,0],[2,2],[4,2],[4,0]],
@@ -241,7 +233,17 @@ const char_paths = Object.fromEntries(
 		([k, mask], i) => [k, mask_segs(mask, segs)]
 	)
 )
-
+const svg = s => {
+	return `<svg alt='${s}' viewBox='0 0 ${
+		grid_w*s.length-p} ${ch}'>${
+		s.split('').map((c,i)=>
+			`<g transform='translate(${grid_w*i})'>${
+				char_paths[c].map(p=>`<path d='M${p[0]}L${p.slice(1)}z'/>`).join('')
+			}</g>`
+	).join('')
+	}</svg>`
+}
+// console.log(svg('38-SEGMENT CHARACTERS'))
 function mask_segs(mask, segs){
 	let s = []
 	let i = 0
