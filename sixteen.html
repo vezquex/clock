@@ -245,7 +245,17 @@ const char_paths_sixteen = Object.fromEntries(
 		([k, mask], i) => [k, mask_segs(mask, sixteen_segs)]
 	)
 )
-
+const svg = s => {
+	return `<svg alt='${s}' viewBox='0 0 ${
+		grid_w*s.length} ${ch}'>${
+		s.split('').map((c,i)=>
+			`<g transform='translate(${grid_w*i})'>${
+				char_paths_sixteen[c].map(p=>`<path d='M${p[0]}L${p.slice(1)}z'/>`).join('')
+			}</g>`
+	).join('')
+	}</svg>`
+}
+// console.log(svg('16-SEGMENT□ALPHANUMRIC'))
 function shape(path, x, y, m = 1){
 	m = m*z
 	c.beginPath()

@@ -18,22 +18,16 @@
 		overflow: hidden;
 	}
 	body, .btn, input, select {
-		font-family: sans-serif;
+		font-family: Roboto,sans-serif;
 		font-size: 1em;
 		margin: 0;
 	}
-	details {
-		opacity: 0.5;
-	}
+	details {opacity: 0.5;}
 	input, select, .label, summary {
 		padding: 0 .5em;
 	}
-	input {
-		width: 100%;
-	}
-	select {
-		min-width: 8rem;
-	}
+	input {width: 100%;}
+	select {min-width: 8rem;}
 	summary {
 		cursor:pointer;
 		list-style: none;
@@ -57,7 +51,6 @@
 	.home {
 		border-color: inherit;
 		border-width: 1px 1px 0 0;
-		position: absolute;
 		right:0;
 		text-align: right;
 		top:0;
@@ -65,11 +58,12 @@
 	}
 	.hotkey { text-decoration: underline dotted; }
 	.mono {font-family: 'Roboto Mono', monospace;}
+	.nosel {user-select: none;}
 	.row { display: flex; }
 	.thick { line-height: 3em; }
 	.wide { width: 100vw; }
 </style>
-<div style='position:absolute;top:0;bottom:0;left:0;right:0;display:flex;align-content: center;'>
+<div class='abs row' style='top:0;bottom:0;left:0;right:0;display:flex;align-content:center;'>
 <svg viewBox="0 0 2048 2048" class='full'>
 <rect id="canvas" x="0" y="0" width="2048" height="2048" fill="transparent"/>
 <circle id="edge" style="fill:var(--dial);opacity:1.0;" r="1024" cx="1024" cy="1024"/>
@@ -77,7 +71,7 @@
 <circle id="dial" style="fill:var(--dial);" r="780" cx="1024" cy="1024"/>
 
 <path id="twelve" style="fill:var(--mark);stroke:var(--edge);stroke-width:8px;" d="M 940,316 l 84,192 84,-192z"/>
-<g id="bezel_group"
+<g id="bezel_group" class="nosel"
 	style="fill:var(--mark);font-size:100px;font-weight:bold;">
 	<path id="twelve_bezel" style="fill:var(--mark);" d="M 1024,220 l -108,-140 q 108,-16 216,0"/>
 	<text transform="rotate(60 1024 1024) translate(1024 176)">
@@ -115,7 +109,7 @@
 </div>
 <details class='abs column wide'>
 	<summary accesskey='s' title='Settings' class='btn thick'>☰</summary>
-	<a href='..' accesskey='h' class='btn home thick'>
+	<a href='..' accesskey='h' class='abs btn home thick'>
 		<span class='hotkey'>H</span>ome
 	</a>
 	<label class='row thick'>

@@ -177,7 +177,8 @@ const digit_pattern = /\d/
 const piece_pattern = /[BKNPQR]/
 const file_pattern = /[a-h]/
 
-const parse_pgn_mode = [
+// parse_pgn_mode
+const pmode = [
 	'none',
 	'tag_key',
 	'tag_val',
@@ -196,27 +197,27 @@ function parse_pgn(pgn){
 		tags: {},
 	}
 	const tokens = []
-	let mode = parse_pgn_mode.none, pgn_length = pgn.length, tag_key, tag_val
+	let mode = pmode.none, pgn_length = pgn.length, tag_key, tag_val
 	let move = blank_move()
 	for(let i = 0; i < pgn_length; ++i){
 		let c = pgn[i]
 		if(c === '['){
-			mode = parse_pgn_mode.tag_key
+			mode = pmode.tag_key
 			tag_key = ''
 		}
 		else if(c === ']'){
-			mode = parse_pgn_mode.none
+			mode = pmode.none
 		}
-		else if(mode === parse_pgn_mode.tag_key){
+		else if(mode === pmode.tag_key){
 			if(c === '"'){
 				game.tags[tag_key] = ''
-				mode = parse_pgn_mode.tag_val
+				mode = pmode.tag_val
 			}
 			else {
 				tag_key += c
 			}
 		}
-		else if(mode === parse_pgn_mode.tag_val){
+		else if(mode === pmode.tag_val){
 			if(c !== '"'){
 				game.tags[tag_key] += c
 			}
@@ -233,33 +234,33 @@ function parse_pgn(pgn){
 			}
 			game.moves.push(move)
 			move = blank_move()
-			mode = parse_pgn_mode.end_move
+			mode = pmode.end_move
 		}
 		else if(piece_pattern.test(c)){
 			move.piece = c
-			mode = parse_pgn_mode.piece
+			mode = pmode.piece
 		}
 		else if(file_pattern.test(c)){
-			if(mode === parse_pgn_mode.file){
+			if(mode === pmode.file){
 				move.from = move.file
 				move.file = c
 			}
 			else {
 				move.file = c
-				mode = parse_pgn_mode.file
+				mode = pmode.file
 			}
 		}
 		else if(digit_pattern.test(c)){
-			if(mode === parse_pgn_mode.piece){
+			if(mode === pmode.piece){
 				move.from = c
-				mode = parse_pgn_mode.from
+				mode = pmode.from
 			}
 			// assume 1-digit rank
-			else if(mode === parse_pgn_mode.file) {
+			else if(mode === pmode.file) {
 				move.rank = c
 				game.moves.push(move)
 				move = blank_move()
-				mode = parse_pgn_mode.end_move
+				mode = pmode.end_move
 			}
 		}
 	}

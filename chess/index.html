@@ -851,8 +851,8 @@ step_el.setAttribute('max', chess_positions.length - 1)
 
 function display(){
 	c.clearRect(0, 0, width*z, height*z)
-	let x = pad_h - g, y = pad_v, m = 1, p = ps
-	draw_die(chessboards[0], x += g, y, _, _, 0)
+	let x = pad_h, y = pad_v, m = 1, p = ps
+	draw_die(chessboards[0], x, y, _, _, 0)
 	draw_die(
 		chess_positions[step].map(p => chess_shapes[p]),
 		x, y, false
