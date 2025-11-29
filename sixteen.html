@@ -169,6 +169,7 @@ const char_masks_sixteen = {
 	'<': 0b1000000001000000,
 	'>': 0b0010000000010000,
 	'?': 0b0101110100000001,
+	'¿': 0b0000001010101110,
 	'`': 0b0010000000000000,
 	'-': 0b110000000,
 	'=': 0b110000110,
@@ -182,6 +183,14 @@ const char_masks_sixteen = {
  	'^': 0b1100000000000000,
 	'&': 0b0001011111001011,
 	'*': 0b1010001001010001,
+	'⌛': 0b1010110001010110,
+	'⧖': 0b1000101000010011,
+	'☀': 0b1011101111110011,
+	'⏳': 0b1010111001010111,
+	'⧗': 0b0010011001000101,
+	'☼': 0b1110011111011101,
+	'☼': 0b1110011111011101,
+	'卍': 0b0100011110001101,
 	'(': 0b1000000000000101,
 	')': 0b0010000000000011,
 	'_': 0b0000000000000110,
@@ -247,7 +256,7 @@ const char_paths_sixteen = Object.fromEntries(
 )
 const svg = s => {
 	return `<svg alt='${s}' viewBox='0 0 ${
-		grid_w*s.length} ${ch}'>${
+		grid_w*s.length-4} ${ch}'>${
 		s.split('').map((c,i)=>
 			`<g transform='translate(${grid_w*i})'>${
 				char_paths_sixteen[c].map(p=>`<path d='M${p[0]}L${p.slice(1)}z'/>`).join('')
@@ -256,7 +265,8 @@ const svg = s => {
 	}</svg>`
 }
 // console.log(svg('16-SEGMENT□ALPHANUMERIC'))
-// console.log(svg('WORLDTIME'))
+// console.log(svg('WORLD/TIME'))
+// console.log(svg('VEZQUEX'))
 function shape(path, x, y, m = 1){
 	m = m*z
 	c.beginPath()
@@ -306,7 +316,7 @@ function display(t){
 	c.fillStyle = palettes.color
 	c.clearRect(0, 0, width*z, height*z)
 	let x = pad_h, y = pad_v - grid_h, m = .5
-	const out = `\`1234567890-=~!@#$%^&*()_+[]\\;',./    □{}|:"<>?¡    AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz`
+	const out = `\`1234567890-=~!@#$%^&*()_+[]\\;',./⌛⏳⧖☼□{}|:"<>?¿¡⧗☀卍AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz`
 	let i = 0
 	let w = 13
 	;[...Array(8)].forEach(() =>
