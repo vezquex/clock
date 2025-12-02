@@ -82,7 +82,7 @@
 	<path style="stroke:var(--bezel);" d="M 150,1024 A 512,512 0 0 1 1898,1024" stroke-width="188" fill="none"/>
 	<path style="stroke:var(--bezel_day);" d="M 150,1024 A 512,512 0 0 0 1898,1024" stroke-width="188" fill="none"/>
 	<path id="twelve_bezel" style="fill:var(--bezel_mark);stroke:var(--edge);" d="M 1024,200 L 892,83 Q 1024,64 1156,83"/>
-	<g class="bezel-font" style="fill:var(--text);font-size:8px;">
+	<g class="bezel-font" style="fill:var(--bezel_mark);font-size:8px;">
 		<text transform="rotate(30 1024 1024) translate(1024 192) scale(27 16)">
 			2
 		</text>
@@ -159,7 +159,7 @@
 <text x="1024" y="850" class="sans" style="fill:var(--text);font-size:44px;letter-spacing:12px;">
 	PEACE IN OUR TIME
 </text>
-<text x="1028" y="1320" class="sans" style="fill:var(--text);font-size:56px;letter-spacing:4px;">
+<text x="1028" y="1320" class="sans" style="fill:var(--bezel_mark);font-size:56px;letter-spacing:4px;">
 	WORLD TIME
 </text>
 <text x="1024" y="1372" class="condensed" style="fill:var(--text);font-size:44px;">
@@ -233,8 +233,9 @@ const themes = {
 	'Black-Brown': {
 		highlight: '#FCCD65',
 		bezel_day: '#402000',
-		bezel_mark: '#FCCD65',
+		bezel_mark: '#DEA079',
 		edge: '#B1935D',
+		gmt: '#B1935D',
 	},
 	'Black-Gray': {
 		bezel_day: '#303030',
