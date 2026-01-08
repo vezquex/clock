@@ -647,7 +647,7 @@ function display(t){
 	m = .09
 	for(var i = 0; i < zone_count; ++i){
 		let {zone, city} = zone_select(i)
-		const lit = zone === mem.zone
+		const lit = i === mem.zone_index
 		c.fillStyle = palettes[1]
 		lit && shape(
 			zone_bg_shape,
