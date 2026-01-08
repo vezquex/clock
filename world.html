@@ -75,20 +75,20 @@
 	}
 	@media(pointer: coarse){
 		.btn {
-			font-size: 1.5rem;
+			font-size: 1.25rem;
 		}
 	}
 </style>
 <main class='column'>
 <input hidden id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
-<div id='lcd' class='copy grow'><canvas id='face'></canvas></div>
+<div id='lcd' class='copy grow row center-content'><canvas id='face'></canvas></div>
 <div id='controls' class='fade row'>
 	<a href='..' accesskey='h' class='btn collapse'>
 		<span class='hotkey'>H</span>ome
 	</a>
-	<select id='theme' class='grow btn' title='Theme' onChange='setTheme(this.value)' accesskey='t'></select>
+	<select id='theme' class='grow btn' title='Theme' onChange='setTheme(this.value);synchronize()' accesskey='t'></select>
 	<button id='dst_btn' class='btn nosel'>
-		<input id='dst' type='checkbox' disabled>
+		<input id='dst' type='checkbox' disabled autocomplete='off'>
 		<span style='margin: 0 0 0 .25em;'>DS<span class='hotkey'>T
 	</button>
 	<button id='zone_dec' class='grow2 btn nosel center-content'>
@@ -109,33 +109,30 @@ const $ = doc.querySelector.bind(doc)
 const eid = doc.getElementById.bind(doc)
 const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUNE', 'JULY', 'AUG', 'SEPT', 'OCT', 'NOV', 'DEC']
 const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
-const city_info = [
+const zones = [
 	[-11, 'PPG', 'Pago Pago'],
 	[-10, 'HNL', 'Honolulu'],
-	[-9, 'ANC', 'Anchorage'],
-	[-8, 'LAX', 'Los Angeles'],
-	// [-8, 'YVR', 'Vancouver'],
-	[-7, 'DEN', 'Denver'],
-	// [-7, 'YEA', 'Edmonton'],
-	// [-6, 'CHI', 'Chicago'],
-	[-6, 'GTM', 'Guatemala'],
-	[-5, 'NYC', 'New York'],
-	// [-5, 'YTO', 'Toronto'],
+	[-9, 'ANC', 'Anchorage', true],
+	[-8, 'LAX', 'Los Angeles', true],
+	// [-8, 'YVR', 'Vancouver', true],
+	[-7, 'DEN', 'Denver', true],
+	// [-7, 'YEA', 'Edmonton', true],
+	[-6, 'CHI', 'Chicago', true],
+	// [-6, 'GTM', 'Guatemala'],
+	[-5, 'NYC', 'New York', true],
+	// [-5, 'YTO', 'Toronto', true],
 	[-4, 'MAO', 'Manaus'],
 	// [-4, 'SRE', 'Sucre'],
-	[-3.5 , 'YYT', 'St John\'s'],
+	[-3.5 , 'YYT', 'St John\'s', true],
 	[-3, 'RIO', 'Rio_Janeiro'],//Rio de Janeiro
 	[-2, 'FEN', 'Fern_Noronha'],//Fernando de Noronha
 	[-1, 'RAI', 'Praia'],
-	[0, 'UTC', 'Universal'], // Universal Coordinated Time
-	// [0, 'LIS', 'Lisbon'],
-	// [0, 'LON', 'London'],
-	// [1, 'MAD', 'Madrid'],
-	[1, 'PAR', 'Paris'],
-	// [1, 'ROM', 'Rome'],
-	// [2, 'ATH', 'Athens'],
-	[2, 'CAI', 'Cairo'],
-	// [2, 'HEL', 'Helsinki'],
+	// [0, 'UTC', 'Universal'], // Universal Coordinated Time
+	[0, 'LON', 'London', true],
+	// [1, 'PAR', 'Paris', true],
+	[1, 'ROM', 'Rome', true],
+	[2, 'CAI', 'Cairo', true],
+	// [2, 'HEL', 'Helsinki', true],
 	[3, 'BGW', 'Baghdad'],
 	[3.5, 'THR', 'Tehran'],
 	[4, 'DXB', 'Dubai'],
@@ -150,16 +147,16 @@ const city_info = [
 	[8, 'SIN', 'Singapore'],
 	// [8, 'TPE', 'Taipei'],
 	[9, 'TYO', 'Tokyo'],
-	[9.5, 'ADL', 'Adelaide'],
-	[10, 'SYD', 'Sydney'],
+	[9.5, 'ADL', 'Adelaide', true],
+	[10, 'SYD', 'Sydney', true],
 	[11, 'NOU', 'Noumea'],
-	[12, 'WLG', 'Wellington'],
+	[12, 'WLG', 'Wellington', true],
 ]
-const city_info_dst = [
-	[1, 'BST', 'British'],
-	[-5, 'MSP', 'Minneapolis'],
+const zones_dst = [
+	// [-5, 'MSP', 'Minneapolis', true],
+	// [1, 'BST', 'British', true],
 ]
-const zone_count = city_info.reduce(
+const zone_count = zones.reduce(
 	(a, [n])=>(
 		a.found[n] ? a : (
 		a.found[n] = true,
@@ -168,9 +165,11 @@ const zone_count = city_info.reduce(
 	{count: 0, found: {}}
 ).count
 let t = new Date()
-let dst
-let mem_zone = 0
-let zone_index = city_info.findIndex(([z])=>(z === mem_zone))
+const mem = {
+	dst: false,
+	zone: 0,
+}
+mem.zone_index = zones.findIndex(([z])=>(z === mem.zone))
 let palettes
 const color_palettes = {
 	'black': '#000000',
@@ -232,8 +231,7 @@ function isDST(d){
 }
 function setDST(on){
 	const d = eid('dst')
-	dst = d.checked = on ?? !d.checked
-	synchronize()
+	mem.dst = d.checked = on ?? !d.checked
 }
 function setTheme(theme){
 	palettes = themes[theme]
@@ -242,7 +240,6 @@ function setTheme(theme){
 		doc.documentElement.style.setProperty('--'+color, palettes[color])
 	})
 	$(`meta[name='theme-color']`).setAttribute('content', palettes.bg)
-	synchronize()
 }
 function on_button(ev, callback){
 	if(ev.repeat){ return }
@@ -328,17 +325,17 @@ doc.addEventListener('keyup', function(event){
 })
 bind_on_button(
 	eid('dst_btn'),
-	setDST,
+	() => { setDST(); synchronize() },
 	['t'],
 )
 bind_on_button(
 	eid('zone_dec'),
-	zone_dec,
+	() => { zone_move(-1); synchronize() },
 	['ArrowLeft','ArrowUp', ...'abkpuw,-_,<[{('],
 )
 bind_on_button(
 	eid('zone_inc'),
-	zone_inc,
+	() => { zone_move(1); synchronize() },
 	['ArrowRight','ArrowDown',...'dfjns+=.>]})'],
 )
 const lcd_el = eid('lcd')
@@ -356,15 +353,22 @@ function time_text(t){
 	let hours = t.getUTCHours()
 	return `${zeropad2(hours)}:${zeropad2(t.getUTCMinutes())}:${zeropad2(t.getUTCSeconds())}`
 }
-function zone_dec(){
-	zone_index = (zone_index - 1 + city_info.length) % city_info.length
-	mem_zone = city_info[zone_index][0]
-	synchronize()
+function zone_select(i){
+	const {dst} = mem
+	let city = zones[i]
+	const dst_zone = city[0] + 1
+	const dst_city = false && dst && zones_dst.find(a => a[0] === dst_zone)
+	// dst && dst_city && (city = zones[i])
+	const zone = (dst && !dst_city && city[3]) ? (city[0] + 1): city[0]
+	return {
+		// cities: dst && dst_city ? [] : zones.filter(a => a[0] === zone),
+		city,
+		zone,
+	}
 }
-function zone_inc(){
-	zone_index = (zone_index + 1) % city_info.length
-	mem_zone = city_info[zone_index][0]
-	synchronize()
+function zone_move(n){
+	mem.zone_index = (n + mem.zone_index + zones.length) % zones.length
+	Object.assign(mem, zone_select(mem.zone_index))
 }
 function zone_desc(zone){
 	const prefix = (zone > 0) ? '+' : (zone < 0) ? '-' : ' '
@@ -379,9 +383,9 @@ function zone_desc(zone){
 }
 function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
-	dst ??= isDST(t)
-	const dst_offset = dst ? 1 : 0
-	const offset = Number(offset_el.value) + ((mem_zone + dst_offset) * 36e5)
+	mem.dst ??= isDST(t)
+	const {zone} = zone_select(mem.zone_index)
+	const offset = Number(offset_el.value) + (zone * 36e5)
 	t = new Date(Date.now() + offset)
 	display(t)
 	const r = 1000 - (t % 1000)
@@ -506,8 +510,22 @@ const char_paths = Object.fromEntries(
 )
 const char_masks_sixteen = {
 	' ': 0,
-	'□': 0b1111111111111111,
 	'_': 0b0000000000000110,
+	'-': 0b110000000,
+	'.': 0b1,
+	'\'': 0b1000000000000000,
+	'+': 0b0000001110000001,
+	'□': 0b1111111111111111,
+	'0': 0b1101110000111110,
+	'1': 0b0100000000100000,
+	'2': 0b0100110110001110,
+	'3': 0b0100110110100110,
+	'4': 0b0101000110100000,
+	'5': 0b0010110100100110,
+	'6': 0b0001110110101110,
+	'7': 0b0100110000100000,
+	'8': 0b0101110110101110,
+	'9': 0b0101110110100110,
 	'A': 0b0101110110101000,
 	'B': 0b0100111100100111,
 	'C': 0b0001110000001110,
@@ -534,7 +552,6 @@ const char_masks_sixteen = {
 	'X': 0b1010000001010000,
 	'Y': 0b0101000110000001,
 	'Z': 0b1000110000010110,
-	'\'': 0b1000000000000000,
 }
 const seg_order_sixteen = [
 	'db', 'dcl', 'dcr','dl', 'dla', 'dr', 'dra',
@@ -607,11 +624,11 @@ function display(t){
 	let hours = t.getUTCHours()
 	const minutes = zeropad2(t.getUTCMinutes())
 	const seconds = zeropad2(t.getUTCSeconds())
-	eid(`dst`).checked = dst
+	eid(`dst`).checked = mem.dst
 	c.fillStyle = palettes.color
 	c.clearRect(0, 0, width*z, height*z)
 	let x = 0, y = pad_v, m = .25, m_scale = 2
-	dst && draw_str('DST', x = pad_h/(m*m_scale) + grid_w*4.5, y/m, m, char_paths_sixteen)
+	mem.dst && mem.city[3] && draw_str('DST', x = pad_h/(m*m_scale) + grid_w*4.5, y/m, m, char_paths_sixteen)
 	draw_str(month_name, x = pad_h/(m*m_scale) + grid_w*9.5, y/m, m, char_paths_sixteen)
 	draw_str(weekday, x += grid_w*6.5, y/m, m, char_paths_sixteen)
 	y += 6
@@ -628,10 +645,9 @@ function display(t){
 	m = 0.75
 	draw_str(seconds, (x + grid_w2)/m, (y+3.5)/m, m)
 	m = .09
-	const tiles = zone_count
-	for(var i = 0; i < tiles; ++i){
-		let zone = city_info[i][0]
-		let lit = zone === mem_zone
+	for(var i = 0; i < zone_count; ++i){
+		let {zone, city} = zone_select(i)
+		const lit = zone === mem.zone
 		c.fillStyle = palettes[1]
 		lit && shape(
 			zone_bg_shape,
@@ -640,7 +656,7 @@ function display(t){
 			m,
 		)
 		c.fillStyle = palettes[lit ? 3 : 2]
-		draw_str(zone_desc(zone + (dst ? 1 : 0)),
+		draw_str(zone_desc(zone),
 			(width-4.7)/m,
 			1/m + i * grid_h,
 			m,
@@ -649,25 +665,20 @@ function display(t){
 	y += 16
 	m = .5
 	c.fillStyle = palettes[1]
-	let city_codes = dst && city_info_dst.filter(a => a[0] === mem_zone + 1)
-	if(!city_codes || !city_codes.length){
-		city_codes = city_info.filter(a => a[0] === mem_zone)
-	}
-	if(city_codes.length > 1){
-		draw_str(city_codes.map(a => a[1]).join('.'), pad_h/m, y/m, m, char_paths_sixteen)
-	}
-	if(city_codes.length === 1){
-		draw_str(city_codes[0][2].toUpperCase().slice(0,12), pad_h/m, y/m, m, char_paths_sixteen)
-	}
-	// draw_str('□KMNQRTVWXYZ', pad_h/m, y/m, m, char_paths_sixteen)
+	// if(mem.cities.length > 1){
+	// 	draw_str(mem.cities.map(a => a[1]).join('.'), pad_h/m, y/m, m, char_paths_sixteen)
+	// }
+	mem.city && draw_str(mem.city[2].toUpperCase().slice(0,12), pad_h/m, y/m, m, char_paths_sixteen)
 }
 function resetTheme(){
 	const light = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches
 	setTheme(light ? 'Light' : 'Dark')
 }
-resetTheme()
 window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', event => {
 	resetTheme()
 })
+setDST(mem.dst)
+zone_move(0)
+resetTheme()
 resize()
 </script>
