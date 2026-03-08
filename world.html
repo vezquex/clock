@@ -166,7 +166,7 @@ const zone_count = zones.reduce(
 ).count
 let t = new Date()
 const mem = {
-	dst: false,
+	dst: isDST(t),
 	zone: 0,
 }
 mem.zone_index = zones.findIndex(([z])=>(z === mem.zone))
