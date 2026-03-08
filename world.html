@@ -383,7 +383,7 @@ function zone_desc(zone){
 }
 function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
-	mem.dst ??= isDST(t)
+	mem.dst = isDST(t)
 	const {zone} = zone_select(mem.zone_index)
 	const offset = Number(offset_el.value) + (zone * 36e5)
 	t = new Date(Date.now() + offset)
