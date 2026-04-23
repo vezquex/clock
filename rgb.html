@@ -3,13 +3,11 @@
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <meta name='theme-color' content='#000000'>
 <title>
-	Minimal
+	RGB Subpixel
 </title>
 <style type='text/css'>
 	:root {color-scheme: dark;}
 	body, input, select {
-		background: #000;
-		color: #FFF;
 		display: flex;
 		flex-direction: column;
 		font-family: sans-serif;
@@ -30,51 +28,16 @@
 </style>
 
 <input id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
-<label>
-	<span class='label'>Theme</span>
-	<select id='theme' onChange='setTheme(this.value)'></select>
-</label>
 <div><canvas id='face'></canvas></div>
 
 <script type='text/javascript'>
 const eid = document.getElementById.bind(document)
-
 let font = 'blockString'
 let palettes
-const color_palettes = {
-	'black': {
-		1: '#000000',
-	},
-	'gray_1_3': {
-		1: '#F85030',
-	},
-	'gray_2_3': {
-		1: '#60F858',
-	},
-	'white': {
-		1: '#FFFFFF',
-	},
-}
-const four_negative = ['black', 'gray_1_3', 'gray_2_3', 'white']
-const four_positive = [...four_negative].reverse()
+const color_palettes = {}
 const themes = {
-	Dark: {
-		_scale: four_negative,
-		_body: '3',
-		background: color_palettes.black[1],
-	},
-	Light: {
-		_scale: four_positive,
-		_body: '3',
-		background: color_palettes.white[1],
-	},
+	Dark: ['#000','#F00','#0F0','#4040FF'],
 }
-for(k in themes){
-	const theme = themes[k]
-	;(theme._scale||[]).forEach((color, i)=>theme[i] = color_palettes[color])
-	Object.assign(theme, color_palettes)
-}
-eid('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
 
 
 const locale = 'en-us'
@@ -85,13 +48,13 @@ const _ = void 0
 const can = eid('face')
 const c = can.getContext('2d')
 
-const height = 144
-const width = 160
-const pad_h = 11
-const pad_v = 19
+const height = 128
+const width = 96
+const pad_h = 3
+const pad_v = 3
 
 // zoom dev
-const z = 4
+const z = 1
 can.height = height * z
 can.width = width * z
 // can.style.height = height + 'px';
@@ -106,6 +69,8 @@ const sym_w2 = sym_w * 2
 const g = sym_w + 1
 const g2 = g * 2
 const {ceil, floor, random} = Math
+const tiles_h = ceil(width / g)
+const tiles_v = ceil(height / g)
 const slots_h = floor((width - pad_h) / g)
 // const slots_v = floor((height - pad_v) / g)
 
@@ -368,11 +333,11 @@ let fonts = {
 00100
 `,
 	"W": `
+10001
 10101
 10101
 10101
-10101
-11111
+11011
 `,
 	"X": `
 10001
@@ -457,40 +422,37 @@ for(f in fonts){
 
 function setTheme(theme){
 	palettes = themes[theme]
-	can.style.backgroundColor = palettes.background
-	document.querySelector(`#theme [value=${theme}]`).selected = true
+	can.style.backgroundColor = palettes[0]
 	synchronize()
 }
 
-function str(s, x, y, m = 1, p = palettes._body, f = font, ctx = c){
+function str(s, x, y, m, p, f = font, ctx = c){
 	s = [...s] // unicode
 	for(var i = 0; i < s.length; ++i){
 		symbol(
 			s[i],
 			x + i,
-			y, m, p, f, ctx
+			y, m, f, ctx
 		)
 	}
 }
 
-function symbol(s, x, y, m, p, f, c = c){
+function symbol(s, x, y, m = 1, f, c){
 	const font = fonts[f]
 	const bmp = font[s] || font.missing || fonts.block.missing
 	const l = bmp.length
-	// palettes[p] || console.log('p', p, Object.keys(palettes).join())
 	for(var i = 0; i < l; ++i){
 		let b = bmp[i]
 		if(b === 0) continue
-		c.fillStyle = palettes[p][b]
+		c.fillStyle = palettes[(i % sym_w % 3) + 1]
 		c.fillRect(
-			m * (x * g + (i % sym_w)) + pad_h,
-			(y * g + m * floor(i / sym_w)) + pad_v,
-			m, m
+			(x * g + (i % sym_w)) + pad_h,
+			3*(y * g + (floor(i /  sym_w))) + pad_v,
+			m, m*2.75
 		)
 	}
 }
 
-// display at the start of each second
 function synchronize(){
 	window.clearTimeout(window.synchronizeTimeout)
 	const offset = Number(offset_el.value)
@@ -499,7 +461,7 @@ function synchronize(){
 	// const t = new Date(offset)
 	display(t)
 	const r = 1000 - (t % 1000)
-	// window.synchronizeTimeout = window.setTimeout(synchronize, r)
+	window.synchronizeTimeout = window.setTimeout(synchronize, r)
 }
 
 function zeropad2(s){
@@ -507,6 +469,22 @@ function zeropad2(s){
 }
 
 function display(t){
+	c.clearRect(0, 0, width, height)
+
+	let x = y = 0
+	let chars = Object.keys(fonts.blockString)
+	for(var i = 0; i < chars.length / slots_h; ++i){
+		str(
+			chars.slice(
+				i * slots_h,
+				(i+1) * slots_h
+			),
+			0,
+			y+i
+		)
+	}
+	y += 3
+
 	const month = months[t.getMonth()]
 	const weekday = t.toLocaleString(locale, { weekday: 'long' }).toUpperCase()
 	const time = `${zeropad2(t.getHours())}:${zeropad2(t.getMinutes())}`
@@ -518,32 +496,12 @@ function display(t){
 		'-'+
 		zeropad2(t.getDate())
 
-	c.clearRect(0, 0, width, height)
-
-	let x = y = 0, m = 1
-	let chars = Object.keys(fonts.blockString)
-	for(var i = 0; i < chars.length / slots_h; ++i){
-		str(
-			chars.slice(
-				i * slots_h,
-				(i+1) * slots_h
-			),
-			0,
-			y+i,
-			_,
-			_,
-			font
-		)
-	}
-	y += 4
-
-	str(month, 10, y)
-	str(weekday.slice(0,3)+'.', 16, y)
-	str(numdate, 0, y+=1, 2)
-	str(time, 0, y+=3, 4)
-	str(seconds, 3, y+=4, 4, '1')
-	str(weekday, 0, y+=5, 2, '2')
-	str(weekday, 0, y+=5, 2)
+	str(month, 5, y)
+	str(weekday.slice(0,3)+'.', 9, y)
+	str(numdate, 0, y+=1)
+	str(time, x+=2, y+=1)
+	str(':'+seconds, x+5, y)
+	str(weekday, 1, y+=1)
 }
 
 setTheme('Dark')
