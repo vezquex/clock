@@ -184,7 +184,6 @@ const height = 30
 const width = 136
 const gh = 18
 const gw = 24
-const grid_w2 = gw * 2
 let z = 1
 
 function resize(){
@@ -342,20 +341,18 @@ function display(t){
 	c.fillStyle = palettes.color
 	c.clearRect(0, 0, width*z, height*z)
 	let x, y = 0, m = .5
-	draw_str(weekday, x = 10, y, m)
-	draw_str(month, x += 4*gw - 8, y, m)
+	draw_str(weekday, 20, y, m)
+	draw_str(month, x = 4*gw + 2, y, m)
 	shape(
 		[[3,(he-th)/2], [7,(he-th)/2], [7,(he+th)/2], [3,(he+th)/2]],
-		x + grid_w2 - 3, y, m
+		x + 2*gw - 3, y, m
 	)
-	draw_str(day_of_month, x += grid_w2+8, y, m)
-	x = 0
-	y += 12
-	draw_str(hours, x, y)
+	draw_str(day_of_month, x += 2*gw+8, y, m)
+	draw_str(hours, x = 0, y += 12)
 	colon(2*gw+1, y+2)
-	draw_str(minutes, x += grid_w2+7, y)
+	draw_str(minutes, x += 2*gw+7, y)
 	m = 0.75
-	draw_str(seconds, (x + grid_w2)/m, (y+3.5)/m, m)
+	draw_str(seconds, (x + 2*gw)/m, (y+3.5)/m, m)
 }
 setTheme('Blue')
 resize()
