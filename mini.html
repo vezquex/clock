@@ -1007,7 +1007,7 @@ function synchronize(){
 	// const t = new Date(offset)
 	display(t)
 	const r = 1000 - (t % 1000)
-	// window.synchronizeTimeout = window.setTimeout(synchronize, r)
+	window.synchronizeTimeout = window.setTimeout(synchronize, r)
 }
 
 function time_text(t){
@@ -1035,11 +1035,11 @@ function display(t){
 
 	c.clearRect(0, 0, width, height)
 
-	let x = 0, y = 0
+	let x, y = 0
 	{
 		const font = 'mip_7'
 		let gh = dim_grid_height(fonts_dimension[font])
-		str(`${numdate} ${time}`, 0, y, _, _, font)
+		str(`${numdate} ${time}:${seconds}`, 0, y, _, _, font)
 		// str(weekday, x+=11, y, _, _, font)
 		y += pad_vertical + gh
 	}
@@ -1048,7 +1048,8 @@ function display(t){
 		'mip_7',
 		'mip_15',
 	].forEach(f => {
-		str(Object.keys(fonts[f]), 0, y, _, _, f)
+		const s = Object.keys(fonts[f]).join('')
+		str(`${s} ${s}`, -t/1e3 % s.length, y, _, _, f)
 		y += fonts_dimension[f].h + 1
 	})
 }
