@@ -1,0 +1,1060 @@
+<!doctype html>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<meta name='theme-color' content='#000000'>
+<title>
+	Wide Pixel Display
+</title>
+<style type='text/css'>
+	:root {color-scheme: dark;}
+	body, input, select {
+		background: #000;
+		color: #FFF;
+		display: flex;
+		flex-direction: column;
+		font-family: sans-serif;
+		font-size: 1em;
+		margin: 0;
+	}
+	label {
+		display: flex;
+	}
+	input, select, .label {
+		border: 0;
+		opacity: 0.5;
+		padding: .5em;
+	}
+	select {
+		flex-grow: 1;
+	}
+</style>
+
+<input id='offset' title='Demo Offset' value='0' type='range' max='86400000' step='100000' onInput='synchronize()'>
+<label>
+	<span class='label'>Theme</span>
+	<select id='theme' onChange='setTheme(this.value)'></select>
+</label>
+<div><canvas id='face'></canvas></div>
+
+<script type='text/javascript'>
+const eid = document.getElementById.bind(document)
+
+let palettes
+
+const color_palettes = {
+	'black': {
+		1: '#121212',
+	},
+	'gray_1_3': {
+		1: '#4F4D47',
+	},
+	'gray_2_3': {
+		1: '#9E9B8F',
+	},
+	'white': {
+		1: '#80C0FF',
+	},
+}
+const four_negative = ['black', 'gray_1_3', 'gray_2_3', 'white']
+const four_positive = [...four_negative].reverse()
+const themes = {
+	Dark: {
+		_scale: four_negative,
+		_body: '3',
+		background: color_palettes.black[1],
+	},
+	Light: {
+		_scale: four_positive,
+		_body: '3',
+		background: color_palettes.white[1],
+	},
+}
+for(k in themes){
+	const theme = themes[k]
+	;(theme._scale ?? []).forEach((color, i)=>theme[i] = color_palettes[color])
+	Object.assign(theme, color_palettes)
+}
+eid('theme').innerHTML = Object.keys(themes).map(t => `<option value='${t}'>${t}</option>`).join('')
+
+
+const locale = 'en-us'
+const months = ['JAN.', 'FEB.', 'MAR.', 'APR.', 'MAY', 'JUNE', 'JULY', 'AUG.', 'SEPT', 'OCT.', 'NOV.', 'DEC.']
+
+const _ = void 0
+
+const can = eid('face')
+const c = can.getContext('2d')
+
+const height = 64
+const width = 128
+const pad_horizon = 0
+const pad_vertical = 0
+
+// zoom dev
+const z = 3
+can.height = height * z
+can.width = width * z
+c.setTransform(z, 0, 0, z, 0, 0)
+
+const offset_el = eid('offset')
+const {floor} = Math
+
+function slots_h(grid){ return floor((width - pad_horizon) / grid) }
+
+const decode_font = (area) => (s) => s.replace(/\s/g, '').padEnd(area, '0').split('').map(s=>parseInt(s))
+const fonts_decode = {}
+const fonts_dimension = {}
+const fonts = {}
+
+function dim_area(o){ return o.h * o.w }
+function dim_grid_height(o){ return o.h + (o.pad ?? 1) }
+function dim_grid_width(o){ return o.w + (o.pad ?? 1) }
+
+fonts_dimension.mip_5 = {h:5, w:5}
+fonts_decode.mip_5 = decode_font(dim_area(fonts_dimension.mip_5))
+fonts.mip_5 = {
+	"missing":`
+		10101
+		01010
+		10101
+		01010
+		10101
+	`,
+	" ":``,
+	"0":`
+		01110
+		10001
+		10101
+		10001
+		01110
+	`,
+	"1":`
+		00100
+		01100
+		00100
+		00100
+		01110
+	`,
+	"2":`
+		11110
+		00001
+		01110
+		10000
+		11111
+	`,
+	"3":`
+		11110
+		00001
+		01110
+		00001
+		11110
+	`,
+	"4":`
+		10001
+		10001
+		11111
+		00001
+		00001
+	`,
+	"4":`
+		10010
+		10010
+		11111
+		00010
+		00010
+	`,
+	"5":`
+		11111
+		10000
+		11110
+		00001
+		11110
+	`,
+	"6":`
+		01110
+		10000
+		11110
+		10001
+		01110
+	`,
+	"7":`
+		11111
+		00001
+		00010
+		00100
+		00100
+	`,
+	"8":`
+		01110
+		10001
+		01110
+		10001
+		01110
+	`,
+	"9":`
+		01110
+		10001
+		01111
+		00001
+		01110
+	`,
+	":":`
+		00000
+		00100
+		00000
+		00100
+		00000
+	`,
+	"A":`
+		00100
+		01010
+		10001
+		11111
+		10001
+	`,
+	"B":`
+		11110
+		10001
+		11110
+		10001
+		11110
+	`,
+	"C":`
+		01111
+		10000
+		10000
+		10000
+		01111
+	`,
+	"D":`
+		11110
+		10001
+		10001
+		10001
+		11110
+	`,
+	"E":`
+		11111
+		10000
+		11110
+		10000
+		11111
+	`,
+	"F":`
+		11111
+		10000
+		11110
+		10000
+		10000
+	`,
+	"G":`
+		01111
+		10000
+		10011
+		10001
+		01111
+	`,
+	"H":`
+		10001
+		10001
+		11111
+		10001
+		10001
+	`,
+	"I":`
+		11111
+		00100
+		00100
+		00100
+		11111
+	`,
+	"J":`
+		00001
+		00001
+		00001
+		10001
+		01110
+	`,
+	"K":`
+		10001
+		10010
+		11100
+		10010
+		10001
+	`,
+	"L":`
+		10000
+		10000
+		10000
+		10000
+		11111
+	`,
+	"M":`
+		10001
+		11011
+		10101
+		10001
+		10001
+	`,
+	"N":`
+		10001
+		11001
+		10101
+		10011
+		10001
+	`,
+	"O":`
+		01110
+		10001
+		10001
+		10001
+		01110
+	`,
+	"P":`
+		11110
+		10001
+		11110
+		10000
+		10000
+	`,
+	"Q":`
+		01110
+		10001
+		10101
+		10010
+		01101
+	`,
+	"R":`
+		11110
+		10001
+		11110
+		10010
+		10001
+	`,
+	"S":`
+		01111
+		10000
+		01110
+		00001
+		11110
+	`,
+	"T":`
+		11111
+		00100
+		00100
+		00100
+		00100
+	`,
+	"U":`
+		10001
+		10001
+		10001
+		10001
+		01110
+	`,
+	"V":`
+		10001
+		10001
+		10001
+		01010
+		00100
+	`,
+	"Z":`
+		11111
+		00010
+		00100
+		01000
+		11111
+	`,
+}
+
+fonts_dimension.mip_7 = {h:7, w:5}
+fonts_decode.mip_7 = decode_font(dim_area(fonts_dimension.mip_7))
+fonts.mip_7 = {
+	"missing":`
+	10101
+	01010
+	10101
+	01010
+	10101
+	01010
+	10101
+	`,
+	" ":``,
+	":":`
+	00000
+	00000
+	00100
+	00000
+	00100
+	`,
+	"0":`
+	01110
+	10001
+	10001
+	10101
+	10001
+	10001
+	01110
+	`,
+	"1":`
+	00100
+	01100
+	00100
+	00100
+	00100
+	00100
+	01110
+	`,
+	"2":`
+	01110
+	10001
+	00001
+	00010
+	00100
+	01000
+	11111
+	`,
+	"3":`
+	01110
+	10001
+	00001
+	01110
+	00001
+	10001
+	01110
+	`,
+	"4":`
+	00010
+	00110
+	01010
+	10010
+	11111
+	00010
+	00010
+	`,
+	"5":`
+	11111
+	10000
+	10000
+	11110
+	00001
+	10001
+	01110
+	`,
+	"6":`
+	01110
+	10001
+	10000
+	11110
+	10001
+	10001
+	01110
+	`,
+	"7":`
+	11111
+	00001
+	00001
+	00010
+	00100
+	00100
+	00100
+	`,
+	"8":`
+	01110
+	10001
+	10001
+	01110
+	10001
+	10001
+	01110
+	`,
+	"9":`
+	01110
+	10001
+	10001
+	01111
+	00001
+	10001
+	01110
+	`,
+	"A":`
+	00100
+	01010
+	10001
+	10001
+	11111
+	10001
+	10001
+	`,
+	"B":`
+	11110
+	10001
+	10001
+	11110
+	10001
+	10001
+	11110
+	`,
+	"C":`
+	01111
+	10000
+	10000
+	10000
+	10000
+	10000
+	01111
+	`,
+	"D":`
+	11110
+	10001
+	10001
+	10001
+	10001
+	10001
+	11110
+	`,
+	"E":`
+	11111
+	10000
+	10000
+	11110
+	10000
+	10000
+	11111
+	`,
+	"F":`
+	11111
+	10000
+	10000
+	11110
+	10000
+	10000
+	10000
+	`,
+	"G":`
+	01111
+	10000
+	10000
+	10011
+	10001
+	10001
+	01111
+	`,
+	"H":`
+	10001
+	10001
+	10001
+	11111
+	10001
+	10001
+	10001
+	`,
+	"I":`
+	01110
+	00100
+	00100
+	00100
+	00100
+	00100
+	01110
+	`,
+	"J":`
+	00001
+	00001
+	00001
+	00001
+	00001
+	10001
+	01110
+	`,
+	"K":`
+	10001
+	10010
+	10100
+	11000
+	10100
+	10010
+	10001
+	`,
+	"L":`
+	10000
+	10000
+	10000
+	10000
+	10000
+	10000
+	11111
+	`,
+	"M":`
+	10001
+	11011
+	10101
+	10101
+	10001
+	10001
+	10001
+	`,
+	"N":`
+	10001
+	11001
+	10101
+	10101
+	10011
+	10001
+	10001
+	`,
+	"O":`
+	01110
+	10001
+	10001
+	10001
+	10001
+	10001
+	01110
+	`,
+	"P":`
+	11110
+	10001
+	10001
+	11110
+	10000
+	10000
+	10000
+	`,
+	"Q":`
+	01110
+	10001
+	10001
+	10001
+	10101
+	10010
+	01101
+	`,
+	"R":`
+	11110
+	10001
+	10001
+	11110
+	10100
+	10010
+	10001
+	`,
+	"S":`
+	01110
+	10001
+	10000
+	01110
+	00001
+	10001
+	01110
+	`,
+	"T":`
+	11111
+	00100
+	00100
+	00100
+	00100
+	00100
+	00100
+	`,
+	"U":`
+	10001
+	10001
+	10001
+	10001
+	10001
+	10001
+	01110
+	`,
+	"V":`
+	10001
+	10001
+	10001
+	10001
+	10001
+	01010
+	00100
+	`,
+	"W":`
+	10001
+	10001
+	10001
+	10101
+	10101
+	01010
+	01010
+	`,
+	"X":`
+	10001
+	10001
+	01010
+	00100
+	01010
+	10001
+	10001
+		`,
+	"Y":`
+	10001
+	10001
+	10001
+	01010
+	00100
+	00100
+	00100
+	`,
+	"Z":`
+	11111
+	00001
+	00010
+	00100
+	01000
+	10000
+	11111
+	`,
+	"-":`
+	00000
+	00000
+	00000
+	11111
+	00000
+	00000
+	00000
+	`,
+	"_":`
+	00000
+	00000
+	00000
+	00000
+	00000
+	00000
+	11111
+	`,
+	".":`
+	00000
+	00000
+	00000
+	00000
+	00000
+	00100
+	00100
+	`,
+	"/":`
+	00010
+	00010
+	00110
+	00100
+	01100
+	01000
+	01000
+	`,
+	"":`
+	00100
+	10110
+	01101
+	00110
+	01101
+	10110
+	00100
+	`,
+}
+
+fonts_dimension.mip_15 = {h:15, w:11, pad: 2}
+fonts_decode.mip_15 = decode_font(dim_area(fonts_dimension.mip_15))
+fonts.mip_15 = {
+	"0": `
+		00111111100
+		11111111111
+		11111111111
+		11100000111
+		11100000111
+		11100000111
+		11100000111
+		11100000111
+		11100000111
+		11100000111
+		11100000111
+		11100000111
+		11111111111
+		11111111111
+		00111111100
+	`,
+	"1": `
+		00000001111
+		00000011111
+		00000111111
+		00000111111
+		00000000111
+		00000000111
+		00000000111
+		00000000111
+		00000000111
+		00000000111
+		00000000111
+		00000000111
+		00000000111
+		00000000111
+		00000000111
+	`,
+	"2": `
+		01111111110
+		11111111111
+		11111111111
+		11100000111
+		00000000111
+		00000000111
+		00111111111
+		01111111111
+		11111111110
+		11100000000
+		11100000000
+		11100000111
+		11111111111
+		11111111111
+		11111111111
+	`,
+	"3": `
+		00111111100
+		11111111111
+		11111111111
+		11100000111
+		11100000111
+		00000000111
+		00000111111
+		00000111110
+		00000111111
+		00000000111
+		11100000111
+		11100000111
+		11111111111
+		11111111111
+		00111111100
+	`,
+	"4": `
+		00000001110
+		00000011110
+		00000111110
+		00001111110
+		00011111110
+		00111101110
+		01111001110
+		11110001110
+		11100001110
+		11111111111
+		11111111111
+		11111111111
+		00000001110
+		00000001110
+		00000001110
+	`,
+		"5": `
+		11111111111
+		11111111111
+		11111111111
+		11100000000
+		11100000000
+		11100000000
+		11111111110
+		11111111111
+		11111111111
+		00000000111
+		00000000111
+		11100000111
+		11111111111
+		11111111111
+		00111111100
+	`,
+	"6": `
+		00111111100
+		01111111110
+		11111111111
+		11100000111
+		11100000000
+		11100000000
+		11111111110
+		11111111111
+		11111111111
+		11100000111
+		11100000111
+		11100000111
+		11111111111
+		01111111110
+		00111111100
+	`,
+	"7": `
+		11111111111
+		11111111111
+		11111111111
+		11100000111
+		00000000111
+		00000001110
+		00000001110
+		00000011100
+		00000011100
+		00000111000
+		00000111000
+		00001110000
+		00001110000
+		00001110000
+		00001110000
+	`,
+	"8": `
+		00111111100
+		11111111111
+		11111111111
+		11100000111
+		11100000111
+		11100000111
+		11111111111
+		01111111110
+		11111111111
+		11100000111
+		11100000111
+		11100000111
+		11111111111
+		11111111111
+		00111111100
+	`,
+	"9": `
+		00111111100
+		11111111111
+		11111111111
+		11100000111
+		11100000111
+		11100000111
+		11111111111
+		11111111111
+		01111111111
+		00000000111
+		00000000111
+		11100000111
+		11111111111
+		11111111111
+		00111111100
+	`,
+	"missing": `
+		01111111110
+		11111111111
+		01111111110
+		00111111100
+		01111111110
+		11111111111
+		01111111110
+		00111111100
+		01111111110
+		11111111111
+		01111111110
+		00111111100
+		01111111110
+		11111111111
+		01111111110
+	`,
+	" ": ``,
+}
+
+for(f in fonts){
+	const decode = fonts_decode[f]
+	if(!decode) continue
+	const font = fonts[f]
+	for(char in font){
+		font[char] = decode(font[char])
+	}
+}
+
+function setTheme(theme){
+	palettes = themes[theme]
+	eid('face').style.backgroundColor = palettes.background
+	document.querySelector(`#theme [value=${theme}]`).selected = true
+	synchronize()
+}
+
+function str(s, x = 0, y = 0, m = 1, p = palettes._body, f = font, ctx = c){
+	s = [...s] // unicode
+	for(var i = 0; i < s.length; ++i){
+		symbol(
+			s[i],
+			x + i,
+			y, m, p, f, ctx
+		)
+	}
+}
+
+function symbol(s, x, y, m, p, f, c = c){
+	const font = fonts[f]
+	const dim = fonts_dimension[f]
+	const w = dim.w
+	const cell = dim_grid_width(dim)
+	const bmp = font[s] ?? font.missing ?? fonts.block.missing
+	const l = bmp.length
+	for(var i = 0; i < l; ++i){
+		let b = bmp[i]
+		if(b === 0) continue
+		c.fillStyle = palettes[p][b]
+		c.fillRect(
+			m * (x * cell + (i % w)) + pad_horizon,
+			(y + m * floor(i / w)) + pad_vertical,
+			m, m
+		)
+	}
+}
+
+// display at the start of each second
+function synchronize(){
+	window.clearTimeout(window.synchronizeTimeout)
+	const offset = Number(offset_el.value)
+	// const offset = 0
+	const t = new Date(Date.now() + offset)
+	// const t = new Date(offset)
+	display(t)
+	const r = 1000 - (t % 1000)
+	// window.synchronizeTimeout = window.setTimeout(synchronize, r)
+}
+
+function time_text(t){
+	let hours = t.getUTCHours()
+	return `${zeropad2(hours)}:${zeropad2(t.getUTCMinutes())}`
+}
+
+function zeropad2(s){
+	return ('0' + s).slice(-2)
+}
+
+function display(t){
+	const month = t.toLocaleString(locale, { month: 'short' }).toUpperCase()
+	const weekday = t.toLocaleString(locale, { weekday: 'long' }).toUpperCase()
+	const hours = t.getHours()
+	const minutes = t.getMinutes()
+	const time = zeropad2(hours) + ':' + zeropad2(minutes)
+	const seconds = zeropad2(t.getSeconds())
+	const numdate =
+		t.getFullYear()+
+		'-'+
+		zeropad2(t.getMonth() + 1)+
+		'-'+
+		zeropad2(t.getDate())
+
+	c.clearRect(0, 0, width, height)
+
+	let x = 0, y = 0
+	{
+		const font = 'mip_7'
+		let gh = dim_grid_height(fonts_dimension[font])
+		str(`${numdate} ${time}`, 0, y, _, _, font)
+		// str(weekday, x+=11, y, _, _, font)
+		y += pad_vertical + gh
+	}
+	;[
+		'mip_5',
+		'mip_7',
+		'mip_15',
+	].forEach(f => {
+		str(Object.keys(fonts[f]), 0, y, _, _, f)
+		y += fonts_dimension[f].h + 1
+	})
+}
+
+setTheme('Dark')
+
+synchronize()
+
+</script>
